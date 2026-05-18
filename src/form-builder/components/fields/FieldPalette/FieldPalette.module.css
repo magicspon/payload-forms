@@ -1,0 +1,45 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.heading {
+  color: var(--theme-elevation-700);
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+.paletteList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+}
+
+.paletteItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  background-color: var(--theme-elevation-50);
+  border: 1px solid var(--theme-elevation-150);
+  border-radius: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  cursor: grab;
+  user-select: none;
+  font-size: 0.8125rem;
+}
+
+.paletteItem:hover {
+  border-color: var(--theme-elevation-400);
+}
+
+.paletteItemDragging {
+  opacity: 0.5;
+  cursor: grabbing;
+}
+
+.paletteItemIcon {
+  color: var(--theme-elevation-500);
+  font-size: 0.75rem;
+  line-height: 1;
+}

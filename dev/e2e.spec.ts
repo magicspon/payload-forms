@@ -1,15 +1,22 @@
 import { expect, test } from '@playwright/test'
 
-// this is an example Playwright e2e test
-test('should render admin panel logo', async ({ page }) => {
-  await page.goto('/admin')
+test.describe('Admin smoke tests', () => {
+  test('dashboard loads and shows navigation', async ({ page }) => {
+    await page.goto('/admin')
+    await expect(page).toHaveURL(/\/admin($|\/)(?!login)/)
+    await expect(page).toHaveTitle(/Dashboard/)
+  })
 
-  // login
-  await page.fill('#field-email', 'dev@payloadcms.com')
-  await page.fill('#field-password', 'test')
-  await page.click('.form-submit button')
+  test('forms collection is registered and accessible', async ({ page }) => {
+    await page.goto('/admin/collections/forms')
+    await expect(page).toHaveURL(/\/collections\/forms/)
+    // The create button confirms the collection is registered
+    await expect(page.getByRole('link', { name: /create new/i }).first()).toBeVisible()
+  })
 
-  // should show dashboard
-  await expect(page).toHaveTitle(/Dashboard/)
-  await expect(page.locator('.graphic-icon')).toBeVisible()
+  test('submissions collection is registered and accessible', async ({ page }) => {
+    await page.goto('/admin/collections/submissions')
+    await expect(page).toHaveURL(/\/collections\/submissions/)
+    await expect(page.getByRole('link', { name: /create new/i }).first()).toBeVisible()
+  })
 })

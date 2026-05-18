@@ -1,0 +1,36 @@
+.container {
+  gap: 1rem;
+}
+
+.fieldEditor {
+  padding: 1rem;
+  border: 1px dashed var(--theme-elevation-100);
+}
+
+.newRowTarget {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px dashed;
+  padding: 1rem;
+  min-height: 4rem;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+  border-radius: 0.25rem;
+}
+
+.newRowTargetNormal {
+  border-color: var(--theme-elevation-300);
+  background-color: var(--theme-elevation-50);
+}
+
+.newRowTargetOver {
+  border-color: var(--theme-elevation-500);
+  background-color: var(--theme-elevation-200);
+}
+
+.dropText {
+  margin-left: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--theme-elevation-600);
+}

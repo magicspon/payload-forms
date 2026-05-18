@@ -1,0 +1,35 @@
+.box {
+  padding: 1rem;
+  border: 1px dashed var(--theme-elevation-100);
+}
+
+.innerStack {
+  gap: 1rem;
+}
+
+.advancedStack {
+  gap: 0.75rem;
+}
+
+.twoColGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+}
+
+.divider {
+  border-color: var(--theme-elevation-150);
+}
+
+.actions {
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.mb1 {
+  margin-bottom: 0.25rem;
+}
+
+.mt2 {
+  margin-top: 0.5rem;
+}

@@ -1,6 +1,9 @@
 {
   "compilerOptions": {
     "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    },
     "lib": [
       "DOM",
       "DOM.Iterable",
@@ -11,8 +14,8 @@
     "skipLibCheck": true,
     "strict": true,
     "esModuleInterop": true,
-    "module": "NodeNext",
-    "moduleResolution": "nodenext",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "react-jsx",

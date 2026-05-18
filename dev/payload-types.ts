@@ -6,38 +6,104 @@
  * and re-run `payload generate:types` to regenerate this file.
  */
 
+/**
+ * Supported timezones in IANA format.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "supportedTimezones".
+ */
+export type SupportedTimezones =
+  | 'Pacific/Midway'
+  | 'Pacific/Niue'
+  | 'Pacific/Honolulu'
+  | 'Pacific/Rarotonga'
+  | 'America/Anchorage'
+  | 'Pacific/Gambier'
+  | 'America/Los_Angeles'
+  | 'America/Tijuana'
+  | 'America/Denver'
+  | 'America/Phoenix'
+  | 'America/Chicago'
+  | 'America/Guatemala'
+  | 'America/New_York'
+  | 'America/Bogota'
+  | 'America/Caracas'
+  | 'America/Santiago'
+  | 'America/Buenos_Aires'
+  | 'America/Sao_Paulo'
+  | 'Atlantic/South_Georgia'
+  | 'Atlantic/Azores'
+  | 'Atlantic/Cape_Verde'
+  | 'Europe/London'
+  | 'Europe/Berlin'
+  | 'Africa/Lagos'
+  | 'Europe/Athens'
+  | 'Africa/Cairo'
+  | 'Europe/Moscow'
+  | 'Asia/Riyadh'
+  | 'Asia/Dubai'
+  | 'Asia/Baku'
+  | 'Asia/Karachi'
+  | 'Asia/Tashkent'
+  | 'Asia/Calcutta'
+  | 'Asia/Dhaka'
+  | 'Asia/Almaty'
+  | 'Asia/Jakarta'
+  | 'Asia/Bangkok'
+  | 'Asia/Shanghai'
+  | 'Asia/Singapore'
+  | 'Asia/Tokyo'
+  | 'Asia/Seoul'
+  | 'Australia/Brisbane'
+  | 'Australia/Sydney'
+  | 'Pacific/Guam'
+  | 'Pacific/Noumea'
+  | 'Pacific/Auckland'
+  | 'Pacific/Fiji';
+
 export interface Config {
   auth: {
     users: UserAuthOperations;
   };
+  blocks: {};
   collections: {
-    posts: Post;
     media: Media;
-    'plugin-collection': PluginCollection;
+    forms: Form;
+    submissions: Submission;
+    'form-uploads': FormUpload;
+    'payload-kv': PayloadKv;
     users: User;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
   };
-  collectionsJoins: {};
+  collectionsJoins: {
+    forms: {
+      submissions: 'submissions';
+    };
+  };
   collectionsSelect: {
-    posts: PostsSelect<false> | PostsSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
-    'plugin-collection': PluginCollectionSelect<false> | PluginCollectionSelect<true>;
+    forms: FormsSelect<false> | FormsSelect<true>;
+    submissions: SubmissionsSelect<false> | SubmissionsSelect<true>;
+    'form-uploads': FormUploadsSelect<false> | FormUploadsSelect<true>;
+    'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
   };
   db: {
-    defaultIDType: string;
+    defaultIDType: number;
   };
+  fallbackLocale: null;
   globals: {};
   globalsSelect: {};
   locale: null;
-  user: User & {
-    collection: 'users';
+  widgets: {
+    collections: CollectionsWidget;
   };
+  user: User;
   jobs: {
     tasks: unknown;
     workflows: unknown;
@@ -63,20 +129,10 @@ export interface UserAuthOperations {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "posts".
- */
-export interface Post {
-  id: string;
-  addedByPlugin?: string | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "media".
  */
 export interface Media {
-  id: string;
+  id: number;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -91,19 +147,960 @@ export interface Media {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "plugin-collection".
+ * via the `definition` "forms".
  */
-export interface PluginCollection {
-  id: string;
+export interface Form {
+  id: number;
+  title: string;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  /**
+   * Form fields become locked once a form has submissions or connected data
+   */
+  locked?: boolean | null;
+  confirmationType?: ('redirect' | 'message') | null;
+  confirmationMessage?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  redirectUrl?: string | null;
+  redirect?: string | null;
+  notification?:
+    | {
+        email: string;
+        subject: string;
+        message: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        };
+        conditions?:
+          | {
+              [k: string]: unknown;
+            }
+          | unknown[]
+          | string
+          | number
+          | boolean
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  formSchema?: Record<string, unknown> | null;
+  submissions?: {
+    docs?: (number | Submission)[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
+  pages?: {
+    id: string;
+    title: string;
+    backButton?: string;
+    nextButton?: string;
+    rows: {
+      id: string;
+      columns: (
+        | {
+            id: string;
+            name: string;
+            label: string;
+            required: boolean;
+            hidden: boolean;
+            errorMessage?: string;
+            instructions?: string;
+            _draft?: boolean;
+            conditions?: {
+              logic: 'and' | 'or';
+              conditions: {
+                field: string;
+                operator:
+                  | 'equals'
+                  | 'notEquals'
+                  | 'greaterThan'
+                  | 'lessThan'
+                  | 'greaterThanOrEquals'
+                  | 'lessThanOrEquals'
+                  | 'contains'
+                  | 'isEmpty'
+                  | 'isNotEmpty'
+                  | 'hasChanged'
+                  | 'hasNotChanged';
+                value?: string | number;
+              }[];
+            };
+            type: 'text';
+            placeholder?: string;
+            defaultValue?: string;
+            minLength?: number;
+            maxLength?: number;
+          }
+        | {
+            id: string;
+            name: string;
+            label: string;
+            required: boolean;
+            hidden: boolean;
+            errorMessage?: string;
+            instructions?: string;
+            _draft?: boolean;
+            conditions?: {
+              logic: 'and' | 'or';
+              conditions: {
+                field: string;
+                operator:
+                  | 'equals'
+                  | 'notEquals'
+                  | 'greaterThan'
+                  | 'lessThan'
+                  | 'greaterThanOrEquals'
+                  | 'lessThanOrEquals'
+                  | 'contains'
+                  | 'isEmpty'
+                  | 'isNotEmpty'
+                  | 'hasChanged'
+                  | 'hasNotChanged';
+                value?: string | number;
+              }[];
+            };
+            type: 'textarea';
+            placeholder?: string;
+            defaultValue?: string;
+            minLength?: number;
+            maxLength?: number;
+            rows: number;
+          }
+        | {
+            id: string;
+            name: string;
+            label: string;
+            required: boolean;
+            hidden: boolean;
+            errorMessage?: string;
+            instructions?: string;
+            _draft?: boolean;
+            conditions?: {
+              logic: 'and' | 'or';
+              conditions: {
+                field: string;
+                operator:
+                  | 'equals'
+                  | 'notEquals'
+                  | 'greaterThan'
+                  | 'lessThan'
+                  | 'greaterThanOrEquals'
+                  | 'lessThanOrEquals'
+                  | 'contains'
+                  | 'isEmpty'
+                  | 'isNotEmpty'
+                  | 'hasChanged'
+                  | 'hasNotChanged';
+                value?: string | number;
+              }[];
+            };
+            type: 'email';
+            placeholder?: string;
+            defaultValue?: string | string;
+          }
+        | {
+            id: string;
+            name: string;
+            label: string;
+            required: boolean;
+            hidden: boolean;
+            errorMessage?: string;
+            instructions?: string;
+            _draft?: boolean;
+            conditions?: {
+              logic: 'and' | 'or';
+              conditions: {
+                field: string;
+                operator:
+                  | 'equals'
+                  | 'notEquals'
+                  | 'greaterThan'
+                  | 'lessThan'
+                  | 'greaterThanOrEquals'
+                  | 'lessThanOrEquals'
+                  | 'contains'
+                  | 'isEmpty'
+                  | 'isNotEmpty'
+                  | 'hasChanged'
+                  | 'hasNotChanged';
+                value?: string | number;
+              }[];
+            };
+            type: 'number';
+            placeholder?: string;
+            defaultValue?: number;
+            min?: number;
+            max?: number;
+            step?: number;
+          }
+        | {
+            id: string;
+            name: string;
+            label: string;
+            required: boolean;
+            hidden: boolean;
+            errorMessage?: string;
+            instructions?: string;
+            _draft?: boolean;
+            conditions?: {
+              logic: 'and' | 'or';
+              conditions: {
+                field: string;
+                operator:
+                  | 'equals'
+                  | 'notEquals'
+                  | 'greaterThan'
+                  | 'lessThan'
+                  | 'greaterThanOrEquals'
+                  | 'lessThanOrEquals'
+                  | 'contains'
+                  | 'isEmpty'
+                  | 'isNotEmpty'
+                  | 'hasChanged'
+                  | 'hasNotChanged';
+                value?: string | number;
+              }[];
+            };
+            type: 'checkbox';
+            options: {
+              label: string;
+              value: string;
+            }[];
+            defaultValue?: string[];
+          }
+        | {
+            id: string;
+            name: string;
+            label: string;
+            required: boolean;
+            hidden: boolean;
+            errorMessage?: string;
+            instructions?: string;
+            _draft?: boolean;
+            conditions?: {
+              logic: 'and' | 'or';
+              conditions: {
+                field: string;
+                operator:
+                  | 'equals'
+                  | 'notEquals'
+                  | 'greaterThan'
+                  | 'lessThan'
+                  | 'greaterThanOrEquals'
+                  | 'lessThanOrEquals'
+                  | 'contains'
+                  | 'isEmpty'
+                  | 'isNotEmpty'
+                  | 'hasChanged'
+                  | 'hasNotChanged';
+                value?: string | number;
+              }[];
+            };
+            type: 'radio';
+            options: {
+              label: string;
+              value: string;
+            }[];
+            defaultValue?: string;
+          }
+        | {
+            id: string;
+            name: string;
+            label: string;
+            required: boolean;
+            hidden: boolean;
+            errorMessage?: string;
+            instructions?: string;
+            _draft?: boolean;
+            conditions?: {
+              logic: 'and' | 'or';
+              conditions: {
+                field: string;
+                operator:
+                  | 'equals'
+                  | 'notEquals'
+                  | 'greaterThan'
+                  | 'lessThan'
+                  | 'greaterThanOrEquals'
+                  | 'lessThanOrEquals'
+                  | 'contains'
+                  | 'isEmpty'
+                  | 'isNotEmpty'
+                  | 'hasChanged'
+                  | 'hasNotChanged';
+                value?: string | number;
+              }[];
+            };
+            type: 'select';
+            options: {
+              label: string;
+              value: string;
+            }[];
+            placeholder?: string;
+            defaultValue?: string;
+          }
+        | {
+            id: string;
+            name: string;
+            label: string;
+            required: boolean;
+            hidden: boolean;
+            errorMessage?: string;
+            instructions?: string;
+            _draft?: boolean;
+            conditions?: {
+              logic: 'and' | 'or';
+              conditions: {
+                field: string;
+                operator:
+                  | 'equals'
+                  | 'notEquals'
+                  | 'greaterThan'
+                  | 'lessThan'
+                  | 'greaterThanOrEquals'
+                  | 'lessThanOrEquals'
+                  | 'contains'
+                  | 'isEmpty'
+                  | 'isNotEmpty'
+                  | 'hasChanged'
+                  | 'hasNotChanged';
+                value?: string | number;
+              }[];
+            };
+            type: 'date';
+            placeholder?: string;
+            defaultValue?: string;
+            minDate?: string;
+            maxDate?: string;
+          }
+        | {
+            id: string;
+            name: string;
+            label: string;
+            required: boolean;
+            hidden: boolean;
+            errorMessage?: string;
+            instructions?: string;
+            _draft?: boolean;
+            conditions?: {
+              logic: 'and' | 'or';
+              conditions: {
+                field: string;
+                operator:
+                  | 'equals'
+                  | 'notEquals'
+                  | 'greaterThan'
+                  | 'lessThan'
+                  | 'greaterThanOrEquals'
+                  | 'lessThanOrEquals'
+                  | 'contains'
+                  | 'isEmpty'
+                  | 'isNotEmpty'
+                  | 'hasChanged'
+                  | 'hasNotChanged';
+                value?: string | number;
+              }[];
+            };
+            type: 'file';
+            allowedFileTypes?: string;
+            maxFileSize?: number;
+            maxFiles?: number;
+            multiple?: boolean;
+          }
+        | {
+            id: string;
+            name: string;
+            label: string;
+            required: boolean;
+            hidden: boolean;
+            errorMessage?: string;
+            instructions?: string;
+            _draft?: boolean;
+            conditions?: {
+              logic: 'and' | 'or';
+              conditions: {
+                field: string;
+                operator:
+                  | 'equals'
+                  | 'notEquals'
+                  | 'greaterThan'
+                  | 'lessThan'
+                  | 'greaterThanOrEquals'
+                  | 'lessThanOrEquals'
+                  | 'contains'
+                  | 'isEmpty'
+                  | 'isNotEmpty'
+                  | 'hasChanged'
+                  | 'hasNotChanged';
+                value?: string | number;
+              }[];
+            };
+            type: 'toggle';
+            defaultValue?: boolean;
+          }
+        | {
+            id: string;
+            name: string;
+            label: string;
+            required: boolean;
+            hidden: boolean;
+            errorMessage?: string;
+            instructions?: string;
+            _draft?: boolean;
+            conditions?: {
+              logic: 'and' | 'or';
+              conditions: {
+                field: string;
+                operator:
+                  | 'equals'
+                  | 'notEquals'
+                  | 'greaterThan'
+                  | 'lessThan'
+                  | 'greaterThanOrEquals'
+                  | 'lessThanOrEquals'
+                  | 'contains'
+                  | 'isEmpty'
+                  | 'isNotEmpty'
+                  | 'hasChanged'
+                  | 'hasNotChanged';
+                value?: string | number;
+              }[];
+            };
+            type: 'consent';
+            defaultValue?: boolean;
+          }
+        | {
+            id: string;
+            type: 'message';
+            richText?: {
+              root: {
+                type: string;
+                version: number;
+                children: {
+                  type: string;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: 'ltr' | 'rtl' | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+              };
+            };
+            _draft?: boolean;
+            conditions?: {
+              logic: 'and' | 'or';
+              conditions: {
+                field: string;
+                operator:
+                  | 'equals'
+                  | 'notEquals'
+                  | 'greaterThan'
+                  | 'lessThan'
+                  | 'greaterThanOrEquals'
+                  | 'lessThanOrEquals'
+                  | 'contains'
+                  | 'isEmpty'
+                  | 'isNotEmpty'
+                  | 'hasChanged'
+                  | 'hasNotChanged';
+                value?: string | number;
+              }[];
+            };
+          }
+        | {
+            id: string;
+            name: string;
+            label: string;
+            required: boolean;
+            hidden: boolean;
+            errorMessage?: string;
+            instructions?: string;
+            _draft?: boolean;
+            conditions?: {
+              logic: 'and' | 'or';
+              conditions: {
+                field: string;
+                operator:
+                  | 'equals'
+                  | 'notEquals'
+                  | 'greaterThan'
+                  | 'lessThan'
+                  | 'greaterThanOrEquals'
+                  | 'lessThanOrEquals'
+                  | 'contains'
+                  | 'isEmpty'
+                  | 'isNotEmpty'
+                  | 'hasChanged'
+                  | 'hasNotChanged';
+                value?: string | number;
+              }[];
+            };
+            type: 'array';
+            rows: {
+              id: string;
+              columns: (
+                | {
+                    id: string;
+                    name: string;
+                    label: string;
+                    required: boolean;
+                    hidden: boolean;
+                    errorMessage?: string;
+                    instructions?: string;
+                    _draft?: boolean;
+                    conditions?: {
+                      logic: 'and' | 'or';
+                      conditions: {
+                        field: string;
+                        operator:
+                          | 'equals'
+                          | 'notEquals'
+                          | 'greaterThan'
+                          | 'lessThan'
+                          | 'greaterThanOrEquals'
+                          | 'lessThanOrEquals'
+                          | 'contains'
+                          | 'isEmpty'
+                          | 'isNotEmpty'
+                          | 'hasChanged'
+                          | 'hasNotChanged';
+                        value?: string | number;
+                      }[];
+                    };
+                    type: 'text';
+                    placeholder?: string;
+                    defaultValue?: string;
+                    minLength?: number;
+                    maxLength?: number;
+                  }
+                | {
+                    id: string;
+                    name: string;
+                    label: string;
+                    required: boolean;
+                    hidden: boolean;
+                    errorMessage?: string;
+                    instructions?: string;
+                    _draft?: boolean;
+                    conditions?: {
+                      logic: 'and' | 'or';
+                      conditions: {
+                        field: string;
+                        operator:
+                          | 'equals'
+                          | 'notEquals'
+                          | 'greaterThan'
+                          | 'lessThan'
+                          | 'greaterThanOrEquals'
+                          | 'lessThanOrEquals'
+                          | 'contains'
+                          | 'isEmpty'
+                          | 'isNotEmpty'
+                          | 'hasChanged'
+                          | 'hasNotChanged';
+                        value?: string | number;
+                      }[];
+                    };
+                    type: 'textarea';
+                    placeholder?: string;
+                    defaultValue?: string;
+                    minLength?: number;
+                    maxLength?: number;
+                    rows: number;
+                  }
+                | {
+                    id: string;
+                    name: string;
+                    label: string;
+                    required: boolean;
+                    hidden: boolean;
+                    errorMessage?: string;
+                    instructions?: string;
+                    _draft?: boolean;
+                    conditions?: {
+                      logic: 'and' | 'or';
+                      conditions: {
+                        field: string;
+                        operator:
+                          | 'equals'
+                          | 'notEquals'
+                          | 'greaterThan'
+                          | 'lessThan'
+                          | 'greaterThanOrEquals'
+                          | 'lessThanOrEquals'
+                          | 'contains'
+                          | 'isEmpty'
+                          | 'isNotEmpty'
+                          | 'hasChanged'
+                          | 'hasNotChanged';
+                        value?: string | number;
+                      }[];
+                    };
+                    type: 'email';
+                    placeholder?: string;
+                    defaultValue?: string | string;
+                  }
+                | {
+                    id: string;
+                    name: string;
+                    label: string;
+                    required: boolean;
+                    hidden: boolean;
+                    errorMessage?: string;
+                    instructions?: string;
+                    _draft?: boolean;
+                    conditions?: {
+                      logic: 'and' | 'or';
+                      conditions: {
+                        field: string;
+                        operator:
+                          | 'equals'
+                          | 'notEquals'
+                          | 'greaterThan'
+                          | 'lessThan'
+                          | 'greaterThanOrEquals'
+                          | 'lessThanOrEquals'
+                          | 'contains'
+                          | 'isEmpty'
+                          | 'isNotEmpty'
+                          | 'hasChanged'
+                          | 'hasNotChanged';
+                        value?: string | number;
+                      }[];
+                    };
+                    type: 'number';
+                    placeholder?: string;
+                    defaultValue?: number;
+                    min?: number;
+                    max?: number;
+                    step?: number;
+                  }
+                | {
+                    id: string;
+                    name: string;
+                    label: string;
+                    required: boolean;
+                    hidden: boolean;
+                    errorMessage?: string;
+                    instructions?: string;
+                    _draft?: boolean;
+                    conditions?: {
+                      logic: 'and' | 'or';
+                      conditions: {
+                        field: string;
+                        operator:
+                          | 'equals'
+                          | 'notEquals'
+                          | 'greaterThan'
+                          | 'lessThan'
+                          | 'greaterThanOrEquals'
+                          | 'lessThanOrEquals'
+                          | 'contains'
+                          | 'isEmpty'
+                          | 'isNotEmpty'
+                          | 'hasChanged'
+                          | 'hasNotChanged';
+                        value?: string | number;
+                      }[];
+                    };
+                    type: 'checkbox';
+                    options: {
+                      label: string;
+                      value: string;
+                    }[];
+                    defaultValue?: string[];
+                  }
+                | {
+                    id: string;
+                    name: string;
+                    label: string;
+                    required: boolean;
+                    hidden: boolean;
+                    errorMessage?: string;
+                    instructions?: string;
+                    _draft?: boolean;
+                    conditions?: {
+                      logic: 'and' | 'or';
+                      conditions: {
+                        field: string;
+                        operator:
+                          | 'equals'
+                          | 'notEquals'
+                          | 'greaterThan'
+                          | 'lessThan'
+                          | 'greaterThanOrEquals'
+                          | 'lessThanOrEquals'
+                          | 'contains'
+                          | 'isEmpty'
+                          | 'isNotEmpty'
+                          | 'hasChanged'
+                          | 'hasNotChanged';
+                        value?: string | number;
+                      }[];
+                    };
+                    type: 'radio';
+                    options: {
+                      label: string;
+                      value: string;
+                    }[];
+                    defaultValue?: string;
+                  }
+                | {
+                    id: string;
+                    name: string;
+                    label: string;
+                    required: boolean;
+                    hidden: boolean;
+                    errorMessage?: string;
+                    instructions?: string;
+                    _draft?: boolean;
+                    conditions?: {
+                      logic: 'and' | 'or';
+                      conditions: {
+                        field: string;
+                        operator:
+                          | 'equals'
+                          | 'notEquals'
+                          | 'greaterThan'
+                          | 'lessThan'
+                          | 'greaterThanOrEquals'
+                          | 'lessThanOrEquals'
+                          | 'contains'
+                          | 'isEmpty'
+                          | 'isNotEmpty'
+                          | 'hasChanged'
+                          | 'hasNotChanged';
+                        value?: string | number;
+                      }[];
+                    };
+                    type: 'select';
+                    options: {
+                      label: string;
+                      value: string;
+                    }[];
+                    placeholder?: string;
+                    defaultValue?: string;
+                  }
+                | {
+                    id: string;
+                    name: string;
+                    label: string;
+                    required: boolean;
+                    hidden: boolean;
+                    errorMessage?: string;
+                    instructions?: string;
+                    _draft?: boolean;
+                    conditions?: {
+                      logic: 'and' | 'or';
+                      conditions: {
+                        field: string;
+                        operator:
+                          | 'equals'
+                          | 'notEquals'
+                          | 'greaterThan'
+                          | 'lessThan'
+                          | 'greaterThanOrEquals'
+                          | 'lessThanOrEquals'
+                          | 'contains'
+                          | 'isEmpty'
+                          | 'isNotEmpty'
+                          | 'hasChanged'
+                          | 'hasNotChanged';
+                        value?: string | number;
+                      }[];
+                    };
+                    type: 'date';
+                    placeholder?: string;
+                    defaultValue?: string;
+                    minDate?: string;
+                    maxDate?: string;
+                  }
+                | {
+                    id: string;
+                    name: string;
+                    label: string;
+                    required: boolean;
+                    hidden: boolean;
+                    errorMessage?: string;
+                    instructions?: string;
+                    _draft?: boolean;
+                    conditions?: {
+                      logic: 'and' | 'or';
+                      conditions: {
+                        field: string;
+                        operator:
+                          | 'equals'
+                          | 'notEquals'
+                          | 'greaterThan'
+                          | 'lessThan'
+                          | 'greaterThanOrEquals'
+                          | 'lessThanOrEquals'
+                          | 'contains'
+                          | 'isEmpty'
+                          | 'isNotEmpty'
+                          | 'hasChanged'
+                          | 'hasNotChanged';
+                        value?: string | number;
+                      }[];
+                    };
+                    type: 'file';
+                    allowedFileTypes?: string;
+                    maxFileSize?: number;
+                    maxFiles?: number;
+                    multiple?: boolean;
+                  }
+                | {
+                    id: string;
+                    name: string;
+                    label: string;
+                    required: boolean;
+                    hidden: boolean;
+                    errorMessage?: string;
+                    instructions?: string;
+                    _draft?: boolean;
+                    conditions?: {
+                      logic: 'and' | 'or';
+                      conditions: {
+                        field: string;
+                        operator:
+                          | 'equals'
+                          | 'notEquals'
+                          | 'greaterThan'
+                          | 'lessThan'
+                          | 'greaterThanOrEquals'
+                          | 'lessThanOrEquals'
+                          | 'contains'
+                          | 'isEmpty'
+                          | 'isNotEmpty'
+                          | 'hasChanged'
+                          | 'hasNotChanged';
+                        value?: string | number;
+                      }[];
+                    };
+                    type: 'toggle';
+                    defaultValue?: boolean;
+                  }
+                | {
+                    id: string;
+                    name: string;
+                    label: string;
+                    required: boolean;
+                    hidden: boolean;
+                    errorMessage?: string;
+                    instructions?: string;
+                    _draft?: boolean;
+                    conditions?: {
+                      logic: 'and' | 'or';
+                      conditions: {
+                        field: string;
+                        operator:
+                          | 'equals'
+                          | 'notEquals'
+                          | 'greaterThan'
+                          | 'lessThan'
+                          | 'greaterThanOrEquals'
+                          | 'lessThanOrEquals'
+                          | 'contains'
+                          | 'isEmpty'
+                          | 'isNotEmpty'
+                          | 'hasChanged'
+                          | 'hasNotChanged';
+                        value?: string | number;
+                      }[];
+                    };
+                    type: 'consent';
+                    defaultValue?: boolean;
+                  }
+              )[];
+            }[];
+            minRows?: number;
+            maxRows?: number;
+          }
+      )[];
+    }[];
+  }[];
+  /**
+   * Schema path used for rich text content field (message)
+   */
+  richText?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   updatedAt: string;
   createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "submissions".
+ */
+export interface Submission {
+  id: number;
+  /**
+   * Auto-generated from form title at submission time
+   */
+  title: string;
+  /**
+   * Identifier for the submitter (e.g., email address)
+   */
+  from?: string | null;
+  /**
+   * Reference to parent form (for grouping/queries)
+   */
+  form?: (number | null) | Form;
+  submissionData: Record<string, any> | null;
+  formSnapshot?: Record<string, any> | null;
+  userAgent?: string | null;
+  ipAddress?: string | null;
+  user?: (number | null) | User;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".
  */
 export interface User {
-  id: string;
+  id: number;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -113,35 +1110,96 @@ export interface User {
   hash?: string | null;
   loginAttempts?: number | null;
   lockUntil?: string | null;
+  sessions?:
+    | {
+        id: string;
+        createdAt?: string | null;
+        expiresAt: string;
+      }[]
+    | null;
   password?: string | null;
+  collection: 'users';
+}
+/**
+ * Files uploaded via form submissions
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "form-uploads".
+ */
+export interface FormUpload {
+  id: number;
+  /**
+   * The form this file was uploaded through
+   */
+  form?: (number | null) | Form;
+  /**
+   * The submission this file belongs to
+   */
+  submission?: (number | null) | Submission;
+  /**
+   * The form field name this file was uploaded to
+   */
+  fieldName?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-kv".
+ */
+export interface PayloadKv {
+  id: number;
+  key: string;
+  data:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-locked-documents".
  */
 export interface PayloadLockedDocument {
-  id: string;
+  id: number;
   document?:
     | ({
-        relationTo: 'posts';
-        value: string | Post;
-      } | null)
-    | ({
         relationTo: 'media';
-        value: string | Media;
+        value: number | Media;
       } | null)
     | ({
-        relationTo: 'plugin-collection';
-        value: string | PluginCollection;
+        relationTo: 'forms';
+        value: number | Form;
+      } | null)
+    | ({
+        relationTo: 'submissions';
+        value: number | Submission;
+      } | null)
+    | ({
+        relationTo: 'form-uploads';
+        value: number | FormUpload;
       } | null)
     | ({
         relationTo: 'users';
-        value: string | User;
+        value: number | User;
       } | null);
   globalSlug?: string | null;
   user: {
     relationTo: 'users';
-    value: string | User;
+    value: number | User;
   };
   updatedAt: string;
   createdAt: string;
@@ -151,10 +1209,10 @@ export interface PayloadLockedDocument {
  * via the `definition` "payload-preferences".
  */
 export interface PayloadPreference {
-  id: string;
+  id: number;
   user: {
     relationTo: 'users';
-    value: string | User;
+    value: number | User;
   };
   key?: string | null;
   value?:
@@ -174,20 +1232,11 @@ export interface PayloadPreference {
  * via the `definition` "payload-migrations".
  */
 export interface PayloadMigration {
-  id: string;
+  id: number;
   name?: string | null;
   batch?: number | null;
   updatedAt: string;
   createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "posts_select".
- */
-export interface PostsSelect<T extends boolean = true> {
-  addedByPlugin?: T;
-  updatedAt?: T;
-  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -208,12 +1257,78 @@ export interface MediaSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "plugin-collection_select".
+ * via the `definition` "forms_select".
  */
-export interface PluginCollectionSelect<T extends boolean = true> {
-  id?: T;
+export interface FormsSelect<T extends boolean = true> {
+  title?: T;
+  generateSlug?: T;
+  slug?: T;
+  locked?: T;
+  confirmationType?: T;
+  confirmationMessage?: T;
+  redirectUrl?: T;
+  redirect?: T;
+  notification?:
+    | T
+    | {
+        email?: T;
+        subject?: T;
+        message?: T;
+        conditions?: T;
+        id?: T;
+      };
+  formSchema?: T;
+  submissions?: T;
+  pages?: T;
+  richText?: T;
   updatedAt?: T;
   createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "submissions_select".
+ */
+export interface SubmissionsSelect<T extends boolean = true> {
+  title?: T;
+  from?: T;
+  form?: T;
+  submissionData?: T;
+  formSnapshot?: T;
+  userAgent?: T;
+  ipAddress?: T;
+  user?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "form-uploads_select".
+ */
+export interface FormUploadsSelect<T extends boolean = true> {
+  form?: T;
+  submission?: T;
+  fieldName?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-kv_select".
+ */
+export interface PayloadKvSelect<T extends boolean = true> {
+  key?: T;
+  data?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -229,6 +1344,13 @@ export interface UsersSelect<T extends boolean = true> {
   hash?: T;
   loginAttempts?: T;
   lockUntil?: T;
+  sessions?:
+    | T
+    | {
+        id?: T;
+        createdAt?: T;
+        expiresAt?: T;
+      };
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -261,6 +1383,16 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   batch?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "collections_widget".
+ */
+export interface CollectionsWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'full';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

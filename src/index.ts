@@ -1,113 +1,312 @@
-import type { CollectionSlug, Config } from 'payload'
+import type {
+	CollectionConfig,
+	Config,
+	Field,
+	PayloadRequest,
+	Tab,
+} from 'payload'
 
-import { customEndpointHandler } from './endpoints/customEndpointHandler.js'
+import { buildFormUploadsCollection } from './collections/form-uploads'
+import { buildFormsCollection } from './collections/forms'
+import { buildSubmissionsCollection } from './collections/submissions'
+import { makeSubmissionNotifications } from './notifications/hooks/submissionNotifications'
+import { makeSubmissionExportEndpoint } from './submissions/endpoints/submissionExport'
+import {
+	makeSubmissionImportEndpoint,
+	type OnBatchImportComplete,
+} from './submissions/endpoints/submissionImport'
+import { mergeCollection } from './utils/mergeCollection'
 
-export type SponPayloadFormsConfig = {
-  /**
-   * List of collections to add a custom field
-   */
-  collections?: Partial<Record<CollectionSlug, true>>
-  disabled?: boolean
+export type { FormsCollectionOptions } from './collections/forms'
+export type { SubmissionsCollectionOptions } from './collections/submissions'
+export * from './fieldSchema'
+export { FormFieldReferenceFeature } from './form-builder/components/lexical/FormFieldReference'
+/** Re-export types and utilities the host app may need */
+export type { OnBatchImportComplete } from './submissions/endpoints/submissionImport'
+export { buildFormSchema } from './utils/buildFormSchema'
+export {
+	extractFieldsFromPages,
+	formatSubmissionValue,
+	generateSubmissionsCSV,
+	generateTemplateHeaders,
+	parseCsvRowToSubmissionData,
+} from './utils/csvTemplateUtils'
+export type { FieldDefinition } from './utils/csvTemplateUtils'
+export { getAllFields } from './utils/formTree'
+export type { FormPage, FormRow } from './utils/formTree'
+export { mergePages } from './utils/mergePages'
+export { shouldSendNotification } from './utils/notifications'
+
+import type { DeepPartial } from './types'
+
+/** Resolved collection slugs used throughout the plugin. */
+export interface CollectionSlugs {
+	/** Slug for the forms collection. Defaults to `'forms'`. */
+	forms: string
+	/** Slug for the form-uploads collection. Defaults to `'form-uploads'`. */
+	formUploads: string
+	/** Slug for the submissions collection. Defaults to `'submissions'`. */
+	submissions: string
 }
 
-export const sponPayloadForms =
-  (pluginOptions: SponPayloadFormsConfig) =>
-  (config: Config): Config => {
-    if (!config.collections) {
-      config.collections = []
-    }
+export interface FormsPluginConfig {
+	/**
+	 * Collection config overrides, deep-merged into the plugin defaults.
+	 * Use this to inject access control, extra fields, hooks, etc.
+	 */
+	collections?: {
+		forms?: DeepPartial<CollectionConfig>
+		formUploads?: DeepPartial<CollectionConfig>
+		submissions?: DeepPartial<CollectionConfig>
+	}
 
-    config.collections.push({
-      slug: 'plugin-collection',
-      fields: [
-        {
-          name: 'id',
-          type: 'text',
-        },
-      ],
-    })
+	disabled?: boolean
 
-    if (pluginOptions.collections) {
-      for (const collectionSlug in pluginOptions.collections) {
-        const collection = config.collections.find(
-          (collection) => collection.slug === collectionSlug,
-        )
+	/**
+	 * Access check used by the CSV export endpoint.
+	 * Defaults to allowing all requests (no-op). Override to enforce auth.
+	 */
+	exportAccessCheck?: (req: PayloadRequest) => boolean
 
-        if (collection) {
-          collection.fields.push({
-            name: 'addedByPlugin',
-            type: 'text',
-            admin: {
-              position: 'sidebar',
-            },
-          })
-        }
-      }
-    }
+	features?: {
+		confirmations: boolean
+		fieldPalette: boolean
+		importSchema: boolean
+		multipage: boolean
+		notifications: boolean
+	}
 
-    /**
-     * If the plugin is disabled, we still want to keep added collections/fields so the database schema is consistent which is important for migrations.
-     * If your plugin heavily modifies the database schema, you may want to remove this property.
-     */
-    if (pluginOptions.disabled) {
-      return config
-    }
+	/**
+	 * Access check used by the CSV import endpoint.
+	 * Defaults to allowing all requests (no-op). Override to enforce auth.
+	 */
+	importAccessCheck?: (req: PayloadRequest) => boolean
 
-    if (!config.endpoints) {
-      config.endpoints = []
-    }
+	/**
+	 * Live preview URL factory for the forms collection.
+	 * If omitted, live preview is disabled.
+	 */
+	livePreviewUrl?: (args: {
+		data: Record<string, unknown>
+		locale: { code: string }
+	}) => null | string
 
-    if (!config.admin) {
-      config.admin = {}
-    }
+	/**
+	 * Locale options for the "languages" field.
+	 * Defaults to English only.
+	 */
+	localeOptions?: { label: string; value: string }[]
 
-    if (!config.admin.components) {
-      config.admin.components = {}
-    }
+	/**
+	 * Multitenancy — adds a `team` relationship field to all three collections
+	 * and an index on `forms(team, slug)` when enabled.
+	 */
+	multitenancy?: {
+		enabled: boolean
+		/** Payload field override for the team field. */
+		fieldOverride?: Partial<Field>
+		/** Name of the teams collection. Defaults to "teams". */
+		teamsCollection?: string
+	}
+	/**
+	 * Called once after a successful batch CSV import.
+	 *
+	 * During an import each `payload.create()` carries
+	 * `context: { isBatchImport: true }`, which suppresses per-record hooks
+	 * (direct emails and notification job queuing). Provide this callback to
+	 * fire a single consolidated notification for the whole batch instead.
+	 *
+	 * @example
+	 * ```ts
+	 * // TODO: wire up your own notification handler here
+	 *
+	 * formsPlugin({
+	 *   onBatchImportComplete: async ({ payload, teamId, formId, count }) => {
+	 *     await queueNotificationRules({
+	 *       payload,
+	 *       trigger: 'form.batch_import',
+	 *       teamId,
+	 *       formId,
+	 *       count,
+	 *     })
+	 *   },
+	 * })
+	 * ```
+	 */
+	onBatchImportComplete?: OnBatchImportComplete
 
-    if (!config.admin.components.beforeDashboard) {
-      config.admin.components.beforeDashboard = []
-    }
+	settings?: Field[]
 
-    config.admin.components.beforeDashboard.push(
-      `spon-payload-forms/client#BeforeDashboardClient`,
-    )
-    config.admin.components.beforeDashboard.push(
-      `spon-payload-forms/rsc#BeforeDashboardServer`,
-    )
+	/**
+	 * Override the collection slugs registered by this plugin.
+	 * Useful when the default names conflict with existing collections.
+	 *
+	 * @example
+	 * ```ts
+	 * formsPlugin({ slugs: { forms: 'contact-forms', submissions: 'contact-submissions' } })
+	 * ```
+	 */
+	slugs?: Partial<CollectionSlugs>
 
-    config.endpoints.push({
-      handler: customEndpointHandler,
-      method: 'get',
-      path: '/my-plugin-endpoint',
-    })
+	tabLabels?: {
+		canvas: string
+		settings: string
+	}
 
-    const incomingOnInit = config.onInit
+	tabs?: Tab[]
+}
 
-    config.onInit = async (payload) => {
-      // Ensure we are executing any existing onInit functions before running our own.
-      if (incomingOnInit) {
-        await incomingOnInit(payload)
-      }
+/**
+ * Payload plugin that registers the forms, submissions, and form-uploads
+ * collections with opt-in multitenancy, hooks, and admin UI components.
+ *
+ * @example
+ * ```ts
+ * import { formsPlugin } from '@spon/payload-forms'
+ *
+ * export default buildConfig({
+ *   plugins: [
+ *     formsPlugin({
+ *       multitenancy: { enabled: true },
+ *       localeOptions: [{ label: 'English', value: 'en' }, { label: 'Spanish', value: 'es' }],
+ *       hooks: { registerUser: true },
+ *       collections: {
+ *         forms: { access: { create: isAdminOrMember, read: isAnyone } },
+ *       },
+ *     }),
+ *   ],
+ * })
+ * ```
+ */
+export const formsPlugin =
+	(pluginOptions: FormsPluginConfig = {}) =>
+	(config: Config): Config => {
+		const {
+			collections: collectionOverrides = {},
+			disabled = false,
+			exportAccessCheck = () => true,
+			features = {
+				confirmations: true,
+				fieldPalette: true,
+				importSchema: false,
+				multipage: true,
+				notifications: true,
+			},
+			importAccessCheck = () => true,
+			livePreviewUrl,
+			localeOptions,
+			multitenancy,
+			onBatchImportComplete,
+			settings = [],
+			slugs: slugOverrides,
+			tabLabels = {
+				canvas: 'Canvas',
+				settings: 'Settings',
+			},
+			tabs = [],
+		} = pluginOptions
 
-      const { totalDocs } = await payload.count({
-        collection: 'plugin-collection',
-        where: {
-          id: {
-            equals: 'seeded-by-plugin',
-          },
-        },
-      })
+		const slugs: CollectionSlugs = {
+			forms: slugOverrides?.forms ?? 'forms',
+			formUploads: slugOverrides?.formUploads ?? 'form-uploads',
+			submissions: slugOverrides?.submissions ?? 'submissions',
+		}
 
-      if (totalDocs === 0) {
-        await payload.create({
-          collection: 'plugin-collection',
-          data: {
-            id: 'seeded-by-plugin',
-          },
-        })
-      }
-    }
+		// Build the team field when multitenancy is enabled
 
-    return config
-  }
+		const teamField: Field | undefined = multitenancy?.enabled
+			? ({
+					name: 'team',
+					type: 'relationship',
+					defaultValue: ({ user }: { user: unknown }) =>
+						(user as { activeTeamId?: string } | null)?.activeTeamId ??
+						undefined,
+					index: true,
+					label: 'Team',
+					relationTo: multitenancy.teamsCollection ?? 'teams',
+					required: false,
+					...multitenancy.fieldOverride,
+				} as Field)
+			: undefined
+
+		// --- Hooks ---
+		// submissionNotifications is always-on: sends direct emails based on the
+		// form's built-in "Notifications" tab configuration.
+		const submissionBeforeChange = [makeSubmissionNotifications(slugs)]
+		const submissionAfterChange: never[] = []
+
+		const importEndpoint = makeSubmissionImportEndpoint(
+			importAccessCheck,
+			onBatchImportComplete,
+			slugs,
+		)
+
+		const exportEndpoint = makeSubmissionExportEndpoint(exportAccessCheck, slugs)
+
+		// --- Build collections ---
+		const formsBase = buildFormsCollection({
+			slug: slugs.forms,
+			features,
+			livePreviewUrl,
+			localeOptions,
+			settings,
+			tabLabels,
+			tabs,
+			teamField: teamField
+				? ({ ...teamField, admin: { position: 'sidebar' } } as Field)
+				: undefined,
+		})
+
+		// Add unique index on (team, slug) when multitenancy is on
+		if (multitenancy?.enabled) {
+			formsBase.indexes = [
+				...(formsBase.indexes ?? []),
+				{ fields: ['team', 'slug'], unique: true },
+			]
+		}
+
+		const submissionsBase = buildSubmissionsCollection({
+			slug: slugs.submissions,
+			afterChangeHooks: submissionAfterChange,
+			beforeChangeHooks: submissionBeforeChange,
+			exportEndpoint,
+			formsSlug: slugs.forms,
+			formUploadsSlug: slugs.formUploads,
+			importEndpoint,
+			teamField: teamField
+				? ({ ...teamField, admin: { position: 'sidebar' } } as Field)
+				: undefined,
+		})
+
+		const formUploadsBase = buildFormUploadsCollection({
+			slug: slugs.formUploads,
+			formsSlug: slugs.forms,
+			submissionsSlug: slugs.submissions,
+			teamField: teamField
+				? ({ ...teamField, admin: { position: 'sidebar' } } as Field)
+				: undefined,
+		})
+
+		// Merge in host-app overrides
+		const formsCollection = mergeCollection(
+			formsBase,
+			collectionOverrides.forms,
+		)
+
+		if (!config.collections) {config.collections = []}
+		config.collections.push(formsCollection)
+		config.collections.push(
+			mergeCollection(submissionsBase, collectionOverrides.submissions),
+		)
+		config.collections.push(
+			mergeCollection(formUploadsBase, collectionOverrides.formUploads),
+		)
+
+		/**
+		 * When disabled we still register the collections so the DB schema
+		 * stays consistent (important for migrations).
+		 */
+		if (disabled) {return config}
+
+		return config
+	}

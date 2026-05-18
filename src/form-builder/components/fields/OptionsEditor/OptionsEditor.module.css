@@ -1,0 +1,63 @@
+.colSpan2 {
+  grid-column: span 2 / span 2;
+}
+
+.dragging {
+  opacity: 0.5;
+}
+
+.optionRow {
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.handle {
+  color: var(--theme-elevation-800);
+  cursor: grab;
+}
+
+.handle:active {
+  cursor: grabbing;
+}
+
+.flex1 {
+  flex: 1 1 0%;
+}
+
+.iconButton {
+  background: transparent;
+  cursor: pointer;
+  border: 0;
+  color: var(--theme-elevation-800);
+}
+
+.iconButtonDisabled {
+  background: transparent;
+  cursor: pointer;
+  border: 0;
+  color: var(--theme-elevation-800);
+}
+
+.iconButtonDisabled:disabled {
+  opacity: 0.25;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.list {
+  margin-top: 0.5rem;
+}
+
+.list > * + * {
+  margin-top: 0.5rem;
+}

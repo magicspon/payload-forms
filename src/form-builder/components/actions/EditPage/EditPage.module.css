@@ -1,0 +1,30 @@
+.iconButton {
+  background: transparent;
+  cursor: pointer;
+  border: 0;
+  color: var(--theme-elevation-800);
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.form {
+  margin-top: 1rem;
+}
+
+.form > * + * {
+  margin-top: 1rem;
+}
+
+.actions {
+  gap: 1rem;
+}

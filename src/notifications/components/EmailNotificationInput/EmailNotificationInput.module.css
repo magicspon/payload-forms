@@ -1,0 +1,72 @@
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  border-radius: 0.25rem;
+  padding: 0.125rem 0.5rem;
+  font-size: 0.875rem;
+  background-color: var(--theme-elevation-100);
+}
+
+.chipRemove {
+  margin-left: 0.125rem;
+  opacity: 0.6;
+  line-height: 1;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+
+.chipRemove:hover {
+  opacity: 1;
+}
+
+.inputWrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  align-items: center;
+  min-height: 2.5rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.25rem;
+  border: 1px solid var(--theme-elevation-150);
+  background-color: var(--theme-elevation-0);
+}
+
+.input {
+  flex: 1 1 0%;
+  min-width: 8rem;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: 0.875rem;
+}
+
+.insertButton {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  border-radius: 0.25rem;
+  background-color: var(--theme-elevation-100);
+  flex-shrink: 0;
+  cursor: pointer;
+  border: none;
+}
+
+.insertButton:hover {
+  background-color: var(--theme-elevation-150);
+}
+
+.errorText {
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+.muted {
+  opacity: 0.5;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  margin-left: 0.25rem;
+}

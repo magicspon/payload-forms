@@ -1,0 +1,194 @@
+.chip {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: var(--theme-elevation-50);
+  border: 1px solid;
+  border-radius: 0.25rem;
+  padding: 0.75rem;
+  flex: 1 1 0%;
+}
+
+.chipInactive {
+  border-color: var(--theme-elevation-150);
+}
+
+.chipActive {
+  border-color: var(--theme-elevation-500);
+}
+
+.dragging {
+  opacity: 0.5;
+}
+
+.handle {
+  color: var(--theme-elevation-400);
+  cursor: grab;
+  display: block;
+  position: relative;
+  z-index: 10;
+}
+
+.handle:active {
+  cursor: grabbing;
+}
+
+.chipContent {
+  flex: 1 1 0%;
+}
+
+.chipTitle {
+  font-weight: 500;
+  color: var(--theme-elevation-800);
+  font-size: 0.875rem;
+}
+
+.chipType {
+  font-size: 0.75rem;
+  color: var(--theme-elevation-500);
+}
+
+.iconButton {
+  background: transparent;
+  cursor: pointer;
+  border: 0;
+  color: var(--theme-elevation-800);
+}
+
+.iconButtonZ {
+  background: transparent;
+  cursor: pointer;
+  border: 0;
+  color: var(--theme-elevation-800);
+  position: relative;
+  z-index: 10;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.absoluteInset {
+  position: absolute;
+  inset: 0;
+}
+
+.rowItem {
+  border: 1px solid var(--theme-elevation-150);
+  border-radius: 0.25rem;
+  padding: 0.5rem;
+}
+
+.rowHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.rowHeaderLabel {
+  font-size: 0.75rem;
+  color: var(--theme-elevation-500);
+  font-weight: 500;
+  flex: 1 1 0%;
+}
+
+.rowMoveButton {
+  background: transparent;
+  cursor: pointer;
+  border: 0;
+  color: var(--theme-elevation-600);
+  padding: 0 0.25rem;
+  font-size: 0.75rem;
+}
+
+.rowMoveButton:disabled {
+  opacity: 0.25;
+}
+
+.rowDeleteButton {
+  background: transparent;
+  cursor: pointer;
+  border: 0;
+  color: var(--theme-elevation-800);
+}
+
+.dropZone {
+  min-height: 3rem;
+  border-radius: 0.25rem;
+  border: 1px dashed var(--theme-elevation-200);
+  padding: 0.5rem;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.dropZoneEmpty {
+  color: var(--theme-elevation-400);
+  font-size: 0.875rem;
+}
+
+.chipWrap {
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.addFieldButton {
+  margin-top: 0.5rem;
+  cursor: pointer;
+  border: 0;
+  background: transparent;
+  display: flex;
+  align-items: center;
+}
+
+.addFieldLabel {
+  font-size: 0.875rem;
+  margin-left: 0.25rem;
+}
+
+.subFieldsContainer {
+  gap: 0.5rem;
+}
+
+.subFieldsDropArea {
+  position: relative;
+  border: 1px dashed var(--theme-elevation-200);
+  padding: 0.75rem;
+  min-height: 4rem;
+  border-radius: 0.25rem;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.subFieldsEmpty {
+  color: var(--theme-elevation-400);
+  font-size: 0.875rem;
+}
+
+.addRowButton {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  cursor: pointer;
+  border: 0;
+  background: transparent;
+  font-size: 0.875rem;
+  color: var(--theme-elevation-600);
+}
+
+.divider {
+  border-color: var(--theme-elevation-150);
+}
+
+.twoColGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}

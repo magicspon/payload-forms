@@ -1,0 +1,39 @@
+.tabContainer {
+  position: relative;
+}
+
+.dragging {
+  opacity: 0.5;
+}
+
+.tabInline {
+  gap: 0.25rem;
+  align-items: center;
+  padding: 0.5rem;
+}
+
+.tabInlineActive {
+  box-shadow: 0 0 0 2px var(--theme-elevation-100);
+  border-radius: 0.125rem;
+}
+
+.handle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  cursor: grab;
+  color: var(--theme-elevation-400);
+}
+
+.handle:hover {
+  color: var(--theme-elevation-600);
+}
+
+.handle:active {
+  cursor: grabbing;
+}
+
+.hidden {
+  display: none;
+}

@@ -1,0 +1,9 @@
+.divider {
+  border-color: var(--theme-elevation-150);
+}
+
+.twoColGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}

@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm *)",
+      "Bash(find *)",
+      "Bash(grep *)",
+      "Bash(sed *)",
+      "Bash(node *)",
+      "Bash(git *)",
+      "Bash(mkdir *)",
+      "Bash(ls *)",
+      "Bash(cat *)",
+      "Bash(echo *)",
+      "Bash(rm *)",
+      "Bash(cp *)",
+      "Bash(mv *)",
+      "Read",
+      "Edit",
+      "Write"
+    ],
+    "defaultMode": "acceptEdits"
+  }
+}

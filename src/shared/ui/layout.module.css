@@ -1,0 +1,8 @@
+.stack {
+  display: flex;
+  flex-direction: column;
+}
+
+.inline {
+  display: flex;
+}

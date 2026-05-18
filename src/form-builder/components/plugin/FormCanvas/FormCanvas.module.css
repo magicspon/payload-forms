@@ -1,0 +1,64 @@
+.paletteWrapper {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--theme-elevation-100);
+}
+
+.dragPreview {
+  background-color: var(--theme-elevation-0);
+  border: 1px solid var(--theme-elevation-200);
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.25rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  opacity: 0.9;
+}
+
+.dragPreviewHandle {
+  color: var(--theme-elevation-400);
+}
+
+.dragPreviewTitle {
+  font-weight: 500;
+}
+
+.dragPreviewType {
+  font-size: 0.75rem;
+  color: var(--theme-elevation-500);
+}
+
+.multipage {
+  margin-bottom: 2rem;
+}
+
+.pagesLayout {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.tabsRow {
+  align-items: center;
+}
+
+.tabList {
+  display: flex;
+  flex-shrink: 0;
+  gap: 1rem;
+  align-items: center;
+}
+
+.hidden {
+  display: none;
+}
+
+.mlAuto {
+  margin-left: auto;
+}
+
+.m0 {
+  margin: 0 !important;
+}

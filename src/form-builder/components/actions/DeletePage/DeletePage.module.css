@@ -1,0 +1,6 @@
+.iconButton {
+  background: transparent;
+  cursor: pointer;
+  border: 0;
+  color: var(--theme-elevation-800);
+}

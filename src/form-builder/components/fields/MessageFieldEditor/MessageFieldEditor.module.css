@@ -1,0 +1,4 @@
+.isolateRelative {
+  isolation: isolate;
+  position: relative;
+}

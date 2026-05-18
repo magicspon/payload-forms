@@ -1,0 +1,7 @@
+.divider {
+  border-color: var(--theme-elevation-150);
+}
+
+.colSpan2 {
+  grid-column: span 2 / span 2;
+}

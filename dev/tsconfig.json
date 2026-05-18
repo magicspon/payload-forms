@@ -19,13 +19,13 @@
       "@payload-config": [
         "./payload.config.ts"
       ],
-      "spon-payload-forms": [
+      "@spon/payload-forms": [
         "../src/index.ts"
       ],
-      "spon-payload-forms/client": [
+      "@spon/payload-forms/client": [
         "../src/exports/client.ts"
       ],
-      "spon-payload-forms/rsc": [
+      "@spon/payload-forms/rsc": [
         "../src/exports/rsc.ts"
       ]
     },
