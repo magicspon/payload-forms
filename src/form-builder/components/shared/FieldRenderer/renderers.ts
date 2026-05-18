@@ -1,6 +1,7 @@
 import type { FieldType } from '@/shared/fieldSchema'
 
 import { ArrayFieldEditor } from '@/form-builder/components/fields/ArrayFieldEditor'
+import { GroupFieldEditor } from '@/form-builder/components/fields/GroupFieldEditor'
 import { CheckboxFieldEditor } from '@/form-builder/components/fields/CheckboxFieldEditor'
 import { ConsentFieldEditor } from '@/form-builder/components/fields/ConsentFieldEditor'
 import { DateFieldEditor } from '@/form-builder/components/fields/DateFieldEditor'
@@ -17,6 +18,7 @@ import { ToggleFieldEditor } from '@/form-builder/components/fields/ToggleFieldE
 // satisfies enforces exhaustiveness: TypeScript errors if any FieldType is missing
 export const renderers = {
 	array: ArrayFieldEditor,
+	group: GroupFieldEditor,
 	checkbox: CheckboxFieldEditor,
 	consent: ConsentFieldEditor,
 	date: DateFieldEditor,

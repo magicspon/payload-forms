@@ -9,6 +9,7 @@ import type {
 	EmailField,
 	Field,
 	FileField,
+	GroupField,
 	MessageField,
 	NumberField,
 	RadioField,
@@ -128,6 +129,15 @@ export function FieldRenderer({
 					field={field}
 					onChange={onChange}
 					value={value as string | undefined}
+				/>
+			)
+		case 'group':
+			return (
+				<GroupFieldRenderer
+					field={field}
+					formUploadsSlug={formUploadsSlug}
+					onChange={onChange}
+					value={value as Record<string, unknown> | undefined}
 				/>
 			)
 		default:
@@ -515,6 +525,52 @@ function ArrayFieldRenderer({
 			>
 				Add row
 			</button>
+		</div>
+	)
+}
+
+// ─── Group ────────────────────────────────────────────────────────────────────
+
+function GroupFieldRenderer({
+	field,
+	formUploadsSlug,
+	onChange,
+	value,
+}: {
+	field: GroupField
+	formUploadsSlug: string
+	onChange: (v: unknown) => void
+	value: Record<string, unknown> | undefined
+}) {
+	const subFields: ArrayItemField[] = field.rows.flatMap((row) => row.columns)
+	const current = value ?? {}
+
+	const updateField = useCallback(
+		(fieldName: string, fieldValue: unknown) => {
+			onChange({ ...current, [fieldName]: fieldValue })
+		},
+		[current, onChange],
+	)
+
+	return (
+		<div className="field-type group">
+			<div className="label-wrapper">
+				<label className="field-label">
+					{field.label}
+					{field.required && <span className="required">*</span>}
+				</label>
+			</div>
+			<div className="group__fields">
+				{subFields.map((subField) => (
+					<FieldRenderer
+						field={subField}
+						formUploadsSlug={formUploadsSlug}
+						key={subField.id}
+						onChange={(v) => updateField(subField.name, v)}
+						value={current[subField.name]}
+					/>
+				))}
+			</div>
 		</div>
 	)
 }

@@ -32,21 +32,19 @@ export function TextareaFieldEditorContent() {
 						/>
 					)}
 				</form.Field>
-				<div className={styles.colSpan2}>
-					<form.Field name="defaultValue">
-						{(f) => (
-							<TextareaInput
-								label="Default Value"
-								onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
-									f.handleChange(e.target.value)
-								}
-								path="defaultValue"
-								rows={4}
-								value={f.state.value ?? ''}
-							/>
-						)}
-					</form.Field>
-				</div>
+				<form.Field name="defaultValue">
+					{(f) => (
+						<TextareaInput
+							label="Default Value"
+							onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
+								f.handleChange(e.target.value)
+							}
+							path="defaultValue"
+							rows={4}
+							value={f.state.value ?? ''}
+						/>
+					)}
+				</form.Field>
 				<form.Field name="minLength">
 					{(f) => (
 						<TextInput

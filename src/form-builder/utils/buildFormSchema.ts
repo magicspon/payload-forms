@@ -32,6 +32,19 @@ function fieldToZodSchema(field: Field): null | z.ZodTypeAny {
 			schema = s
 			break
 		}
+		case 'group': {
+			const shape: Record<string, z.ZodTypeAny> = {}
+			for (const row of field.rows ?? []) {
+				for (const subField of row.columns) {
+					const subSchema = fieldToZodSchema(subField)
+					if (subSchema) {
+						shape[camelCase(subField.name)] = subSchema
+					}
+				}
+			}
+			schema = z.object(shape)
+			break
+		}
 		case 'checkbox': {
 			schema = z.array(z.string())
 			break

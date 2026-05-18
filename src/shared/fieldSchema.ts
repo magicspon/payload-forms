@@ -278,6 +278,16 @@ export const arrayFieldSchema = z.object({
 	...arrayFieldSchemaJson.shape,
 })
 
+export const groupFieldSchemaJson = z.object({
+	type: z.literal('group'),
+	rows: z.array(arrayRowSchema),
+})
+
+export const groupFieldSchema = z.object({
+	...baseSchema.shape,
+	...groupFieldSchemaJson.shape,
+})
+
 export const fieldSchema = z.discriminatedUnion('type', [
 	textFieldSchema,
 	textareaFieldSchema,
@@ -292,6 +302,7 @@ export const fieldSchema = z.discriminatedUnion('type', [
 	consentFieldSchema,
 	messageFieldSchema,
 	arrayFieldSchema,
+	groupFieldSchema,
 ])
 
 export type TextField = z.infer<typeof textFieldSchema>
@@ -307,12 +318,14 @@ export type ToggleField = z.infer<typeof toggleFieldSchema>
 export type ConsentField = z.infer<typeof consentFieldSchema>
 export type MessageField = z.infer<typeof messageFieldSchema>
 export type ArrayField = z.infer<typeof arrayFieldSchema>
+export type GroupField = z.infer<typeof groupFieldSchema>
 export type Field = z.infer<typeof fieldSchema>
 export type OptionItem = z.infer<typeof optionSchema>
 export type FieldType = Field['type']
 
 export type AllFields =
 	| ArrayField
+	| GroupField
 	| CheckboxField
 	| ConsentField
 	| DateField
@@ -348,6 +361,7 @@ export type ToggleFieldEditorProps = { field: ToggleField } & EditorBaseProps
 export type ConsentFieldEditorProps = { field: ConsentField } & EditorBaseProps
 export type MessageFieldEditorProps = { field: MessageField } & EditorBaseProps
 export type ArrayFieldEditorProps = { field: ArrayField } & EditorBaseProps
+export type GroupFieldEditorProps = { field: GroupField } & EditorBaseProps
 
 const baseDefaults = {
 	name: '',
@@ -364,6 +378,8 @@ export function createDefaultField(id: string, type: FieldType): Field {
 	switch (type) {
 		case 'array':
 			return { ...baseDefaults, id, type, minRows: 0, rows: [] }
+		case 'group':
+			return { ...baseDefaults, id, type, rows: [] }
 		case 'checkbox':
 			return {
 				...baseDefaults,
@@ -457,6 +473,11 @@ const arrayFieldSchemaForJsonSchema = z.object({
 	...arrayFieldSchemaJson.shape,
 })
 
+const groupFieldSchemaForJsonSchema = z.object({
+	...baseSchema.shape,
+	...groupFieldSchemaJson.shape,
+})
+
 const fieldSchemaForJsonSchema = z.discriminatedUnion('type', [
 	textFieldSchema,
 	textareaFieldSchema,
@@ -471,6 +492,7 @@ const fieldSchemaForJsonSchema = z.discriminatedUnion('type', [
 	consentFieldSchema,
 	messageFieldSchemaForJsonSchema,
 	arrayFieldSchemaForJsonSchema,
+	groupFieldSchemaForJsonSchema,
 ])
 
 const formSchemaForJsonSchema = z.array(

@@ -7,6 +7,7 @@ import {
 } from '@/form-builder/context/EditorFormContext'
 import { camelCase } from '@/shared/utils/camelCase'
 import { CheckboxInput, TextInput, useField } from '@payloadcms/ui'
+import { useEffect, useRef } from 'react'
 
 import { ConditionEditor } from '../ConditionEditor'
 import styles from './SharedFields.module.css'
@@ -26,44 +27,50 @@ export function NameField({ field }: FieldProps) {
 	const form = useFormContext<any>()
 	const { value: locked } = useField<boolean>({ path: 'locked' })
 
-	return (
-		<form.Subscribe
-			selector={(state) => 'label' in state.values && state.values.label}
-		>
-			{(state) => {
-				const fromLabel = typeof state === 'string' ? camelCase(state) : ''
-				const effectiveValue = value.length > 0 ? value : fromLabel
-				const isDuplicate =
-					!!effectiveValue && existingFieldNames.has(effectiveValue)
-				const hasError =
-					(field.state.meta.isTouched && field.state.meta.errors.length > 0) ||
-					isDuplicate
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	const label = (form.values as any).label
+	const fromLabel = typeof label === 'string' ? camelCase(label) : ''
+	const effectiveValue = value.length > 0 ? value : fromLabel
 
-				return (
-					<div>
-						<TextInput
-							description={
-								'Field name is locked — edit in the default locale only'
-							}
-							label="Name"
-							onChange={(e: ChangeEvent<HTMLInputElement>) =>
-								field.handleChange(e.target.value)
-							}
-							path="name"
-							readOnly={locked}
-							required
-							showError={hasError}
-							value={effectiveValue}
-						/>
-						{isDuplicate && (
-							<p className="field-error mt-1">
-								A field with the name "{effectiveValue}" already exists
-							</p>
-						)}
-					</div>
-				)
-			}}
-		</form.Subscribe>
+	// True when the user has explicitly typed into the name field.
+	// Initialised to true if the field already has a saved name so we never
+	// overwrite an existing value on mount.
+	const manuallyEdited = useRef(value.length > 0)
+
+	// Keep form state in sync with the label-derived name until the user
+	// manually edits the name field.
+	useEffect(() => {
+		if (!manuallyEdited.current && fromLabel) {
+			field.handleChange(fromLabel)
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [fromLabel])
+
+	const isDuplicate = !!effectiveValue && existingFieldNames.has(effectiveValue)
+	const hasError =
+		(field.state.meta.isTouched && field.state.meta.errors.length > 0) || isDuplicate
+
+	return (
+		<div>
+			<TextInput
+				description="Field name is locked — edit in the default locale only"
+				label="Name"
+				onChange={(e: ChangeEvent<HTMLInputElement>) => {
+					manuallyEdited.current = true
+					field.handleChange(e.target.value)
+				}}
+				path="name"
+				readOnly={locked}
+				required
+				showError={hasError}
+				value={effectiveValue}
+			/>
+			{isDuplicate && (
+				<p className="field-error mt-1">
+					A field with the name "{effectiveValue}" already exists
+				</p>
+			)}
+		</div>
 	)
 }
 

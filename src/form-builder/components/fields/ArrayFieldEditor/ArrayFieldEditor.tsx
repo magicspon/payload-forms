@@ -1,4 +1,4 @@
-'use client'
+
 
 import type {
 	ArrayField,
@@ -192,7 +192,7 @@ function ArrayRowItem({
 
 			<DndContext
 				collisionDetection={safeClosestCenter}
-				id={`array-row-dnd-${row.id}`}
+				id={`row-dnd-${row.id}`}
 				onDragEnd={handleDragEnd}
 				sensors={sensors}
 			>
@@ -245,12 +245,13 @@ function ArrayRowItem({
 
 // ─── Sub-fields canvas ────────────────────────────────────────────────────────
 
-type SubFieldsManagerProps = {
+export type SubFieldsManagerProps = {
+	label?: string
 	onChange: (rows: ArrayRow[]) => void
 	rows: ArrayRow[]
 }
 
-function SubFieldsManager({ onChange, rows }: SubFieldsManagerProps) {
+export function SubFieldsManager({ label = 'Sub-fields layout', onChange, rows }: SubFieldsManagerProps) {
 	function addRow() {
 		onChange([...rows, { id: nanoid(), columns: [] }])
 	}
@@ -304,7 +305,7 @@ function SubFieldsManager({ onChange, rows }: SubFieldsManagerProps) {
 
 	return (
 		<Stack className={styles.subFieldsContainer}>
-			<p className="field-label">Sub-fields layout</p>
+			<p className="field-label">{label}</p>
 
 			<div className={styles.subFieldsDropArea}>
 				{rows.length === 0 ? (

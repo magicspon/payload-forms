@@ -74,6 +74,12 @@ function _generateTemplateHeaders(
 							headers.push(`${arrayKey}.[${i}].${camelCase(sf)}`)
 						}
 					}
+				} else if (col.type === 'group') {
+					const subFields = collectArraySubFields(col.rows ?? [])
+					const groupKey = camelCase(col.name)
+					for (const sf of subFields) {
+						headers.push(`${groupKey}.${sf}`)
+					}
 				} else {
 					headers.push(camelCase(col.name))
 				}
@@ -109,6 +115,7 @@ type FieldType =
 	| 'consent'
 	| 'date'
 	| 'email'
+	| 'group'
 	| 'number'
 	| 'radio'
 	| 'select'
@@ -118,7 +125,9 @@ type FieldType =
 
 type FieldMeta = {
 	arraySubFields?: string[] // camelCase sub-field names, if array
+	groupSubFields?: string[] // camelCase sub-field names, if group
 	isArray: boolean
+	isGroup: boolean
 	key: string
 	maxRows?: number
 	type: FieldType
@@ -151,6 +160,13 @@ export function parseCsvRowToSubmissionData(
 				instances.push(obj)
 			}
 			result[meta.key] = instances
+		} else if (meta.isGroup) {
+			const obj: Record<string, unknown> = {}
+			for (const sf of meta.groupSubFields ?? []) {
+				const csvKey = `${meta.key}.${sf}`
+				obj[sf] = row[csvKey] ?? ''
+			}
+			result[meta.key] = obj
 		} else {
 			const raw = row[meta.key] ?? ''
 			result[meta.key] = coerce(raw, meta.type)
@@ -181,11 +197,20 @@ function buildFieldMap(
 						type: 'array',
 						arraySubFields: collectArraySubFields(col.rows ?? []),
 						isArray: true,
+						isGroup: false,
 						key,
 						maxRows: col.maxRows,
 					})
+				} else if (col.type === 'group') {
+					map.set(key, {
+						type: 'group',
+						groupSubFields: collectArraySubFields(col.rows ?? []),
+						isArray: false,
+						isGroup: true,
+						key,
+					})
 				} else {
-					map.set(key, { type: col.type as FieldType, isArray: false, key })
+					map.set(key, { type: col.type as FieldType, isArray: false, isGroup: false, key })
 				}
 			}
 		}
