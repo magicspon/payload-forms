@@ -40,12 +40,15 @@
     "generate:types": "pnpm dev:generate-types",
     "lint": "eslint",
     "lint:fix": "eslint ./src --fix",
+    "release": "changeset publish",
+    "typecheck": "tsc --noEmit",
     "test": "pnpm test:unit && pnpm test:e2e",
     "test:e2e": "playwright test",
     "test:integration": "vitest --config vitest.integration.config.ts",
     "test:unit": "vitest"
   },
   "devDependencies": {
+    "@changesets/cli": "^2.31.0",
     "@eslint/eslintrc": "^3.2.0",
     "@payloadcms/db-sqlite": "3.84.1",
     "@payloadcms/eslint-config": "3.28.0",
