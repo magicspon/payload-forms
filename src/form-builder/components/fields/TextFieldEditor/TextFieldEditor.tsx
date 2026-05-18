@@ -7,16 +7,15 @@ import type { TextField, TextFieldEditorProps } from '../../../fieldSchema'
 
 import { textFieldSchema } from '../../../fieldSchema'
 import { EditorTabs } from '../../layout/EditorTabs'
-import { AdvancedFields, GeneralFields } from '../SharedFields'
-import styles from './TextFieldEditor.module.css'
+import { AdvancedFields, Divider, GeneralFields } from '../SharedFields'
 
-function TextFieldEditorContent() {
+export function TextFieldEditorContent() {
 	const form = useFormContext<TextField>()
 
 	return (
 		<>
 			<GeneralFields />
-			<hr className={styles.divider} />
+			<Divider />
 			<AdvancedFields>
 				<form.Field name="minLength">
 					{(f) => (

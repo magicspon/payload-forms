@@ -140,7 +140,7 @@ export function EmailNotificationInput({ path }: TextFieldClientProps) {
 
 	return (
 		<div className="field-type text">
-			<label className="field-label">
+			<label className="field-label" htmlFor="notification-email-input">
 				Email
 				<span className="required">*</span>
 			</label>
@@ -158,6 +158,7 @@ export function EmailNotificationInput({ path }: TextFieldClientProps) {
 				<input
 					aria-invalid={!!inputError}
 					className={styles.input}
+					id="notification-email-input"
 					onBlur={commitInput}
 					onChange={(e) => {
 						setInputValue(e.target.value)

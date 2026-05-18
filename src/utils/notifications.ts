@@ -20,14 +20,14 @@ function evaluateCondition(
 	const conditionValue = condition.value
 
 	if (condition.operator === 'hasChanged') {
-		const prev = String(previousData?.[condition.field] ?? '')
-		const curr = String(submissionData[condition.field] ?? '')
+		const prev = String((previousData?.[condition.field] as bigint | boolean | number | string | undefined) ?? '')
+		const curr = String((submissionData[condition.field] as bigint | boolean | number | string | undefined) ?? '')
 		return prev !== curr
 	}
 
 	if (condition.operator === 'hasNotChanged') {
-		const prev = String(previousData?.[condition.field] ?? '')
-		const curr = String(submissionData[condition.field] ?? '')
+		const prev = String((previousData?.[condition.field] as bigint | boolean | number | string | undefined) ?? '')
+		const curr = String((submissionData[condition.field] as bigint | boolean | number | string | undefined) ?? '')
 		return prev === curr
 	}
 

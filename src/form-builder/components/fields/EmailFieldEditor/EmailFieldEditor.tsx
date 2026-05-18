@@ -3,14 +3,13 @@ import {
 	emailFieldSchema,
 } from '../../../fieldSchema'
 import { EditorTabs } from '../../layout/EditorTabs'
-import { AdvancedFields, GeneralFields } from '../SharedFields'
-import styles from './EmailFieldEditor.module.css'
+import { AdvancedFields, Divider, GeneralFields } from '../SharedFields'
 
 export function EmailFieldEditorContent() {
 	return (
 		<>
 			<GeneralFields />
-			<hr className={styles.divider} />
+			<Divider />
 			<AdvancedFields />
 		</>
 	)

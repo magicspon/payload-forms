@@ -9,8 +9,11 @@ export function FormSubmissionViewButton() {
 
 	if (!formId) {return null}
 
+	const formIdStr =
+		typeof formId === 'object' ? (formId as { id: string }).id : String(formId as bigint | boolean | number | string)
+
 	return (
-		<Button el="link" to={`/admin/collections/forms/${formId}/submissions`}>
+		<Button el="link" to={`/admin/collections/forms/${formIdStr}/submissions`}>
 			View all submissions
 		</Button>
 	)

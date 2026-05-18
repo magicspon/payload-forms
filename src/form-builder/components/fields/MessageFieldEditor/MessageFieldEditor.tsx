@@ -20,9 +20,9 @@ export function MessageFieldEditorContent({
 		<form.Field name="richText">
 			{(f) => (
 				<div className="field-type text">
-					<label className="field-label">
+					<p className="field-label">
 						Message Content <span className="required">*</span>
-					</label>
+					</p>
 					<div className={styles.isolateRelative}>
 						<RichTextEditor onChange={f.handleChange} value={f.state.value} />
 					</div>

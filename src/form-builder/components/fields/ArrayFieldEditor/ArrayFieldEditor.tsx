@@ -20,7 +20,7 @@ import {
 	useSortable,
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { EditIcon, PlusIcon, Popup, PopupList, TextInput, XIcon } from '@payloadcms/ui'
+import { PlusIcon, Popup, PopupList, TextInput, XIcon } from '@payloadcms/ui'
 import cx from 'clsx'
 import * as React from 'react'
 
@@ -34,9 +34,9 @@ import type {
 
 import { arrayFieldSchema, createDefaultField } from '../../../fieldSchema'
 import { EditorTabs } from '../../layout/EditorTabs'
-import { AdvancedFields, GeneralFields } from '../SharedFields'
+import { AdvancedFields, Divider, GeneralFields } from '../SharedFields'
 import styles from './ArrayFieldEditor.module.css'
-import { SubEditorForm } from './SubEditorForm'
+import { SubFieldEditorDrawer } from './SubFieldEditorDrawer'
 
 const ARRAY_ITEM_FIELD_TYPES: { label: string; value: ArrayItemFieldType }[] = [
 	{ label: 'Text', value: 'text' },
@@ -55,13 +55,12 @@ const ARRAY_ITEM_FIELD_TYPES: { label: string; value: ArrayItemFieldType }[] = [
 // ─── Sub-field chip ───────────────────────────────────────────────────────────
 
 type SubFieldChipProps = {
-	isActive: boolean
 	onDelete: () => void
-	onEdit: () => void
+	onUpdate: (updated: ArrayItemField) => void
 	subField: ArrayItemField
 }
 
-function SubFieldChip({ isActive, onDelete, onEdit, subField }: SubFieldChipProps) {
+function SubFieldChip({ onDelete, onUpdate, subField }: SubFieldChipProps) {
 	const {
 		attributes,
 		isDragging,
@@ -79,11 +78,7 @@ function SubFieldChip({ isActive, onDelete, onEdit, subField }: SubFieldChipProp
 
 	return (
 		<div
-			className={cx(
-				styles.chip,
-				isActive ? styles.chipActive : styles.chipInactive,
-				{ [styles.dragging]: isDragging },
-			)}
+			className={cx(styles.chip, styles.chipInactive, { [styles.dragging]: isDragging })}
 			data-testid="field-item"
 			ref={setNodeRef}
 			style={style}
@@ -105,16 +100,7 @@ function SubFieldChip({ isActive, onDelete, onEdit, subField }: SubFieldChipProp
 				<div className={styles.chipType}>{subField.type}</div>
 			</div>
 
-			<button
-				className={styles.iconButton}
-				data-testid="field-item-edit-button"
-				onClick={onEdit}
-				type="button"
-			>
-				<span className={styles.srOnly}>Edit</span>
-				<EditIcon />
-				<div className={styles.absoluteInset} />
-			</button>
+			<SubFieldEditorDrawer onChange={onUpdate} subField={subField} />
 
 			<button
 				className={styles.iconButtonZ}
@@ -141,8 +127,6 @@ type ArrayRowItemProps = {
 	onUpdateField: (rowId: string, fieldId: string, updated: ArrayItemField) => void
 	row: ArrayRow
 	rowIndex: number
-	selectedSubFieldId: null | string
-	setSelectedSubFieldId: (id: null | string) => void
 	totalRows: number
 }
 
@@ -156,8 +140,6 @@ function ArrayRowItem({
 	onUpdateField,
 	row,
 	rowIndex,
-	selectedSubFieldId,
-	setSelectedSubFieldId,
 	totalRows,
 }: ArrayRowItemProps) {
 	const sensors = useSensors(
@@ -173,8 +155,6 @@ function ArrayRowItem({
 		if (oldIndex < 0 || newIndex < 0) {return}
 		onReorderFields(row.id, arrayMove(row.columns, oldIndex, newIndex))
 	}
-
-	const selectedSubField = row.columns.find((sf) => sf.id === selectedSubFieldId) ?? null
 
 	return (
 		<div className={styles.rowItem}>
@@ -227,19 +207,9 @@ function ArrayRowItem({
 							<Inline className={styles.chipWrap}>
 								{row.columns.map((subField) => (
 									<SubFieldChip
-										isActive={selectedSubFieldId === subField.id}
 										key={subField.id}
-										onDelete={() => {
-											onRemoveField(row.id, subField.id)
-											if (selectedSubFieldId === subField.id) {
-												setSelectedSubFieldId(null)
-											}
-										}}
-										onEdit={() =>
-											setSelectedSubFieldId(
-												selectedSubFieldId === subField.id ? null : subField.id,
-											)
-										}
+										onDelete={() => onRemoveField(row.id, subField.id)}
+										onUpdate={(updated) => onUpdateField(row.id, updated.id, updated)}
 										subField={subField}
 									/>
 								))}
@@ -248,14 +218,6 @@ function ArrayRowItem({
 					</div>
 				</SortableContext>
 			</DndContext>
-
-			{selectedSubField && (
-				<SubEditorForm
-					onChange={(updated) => onUpdateField(row.id, updated.id, updated)}
-					onClose={() => setSelectedSubFieldId(null)}
-					subField={selectedSubField}
-				/>
-			)}
 
 			<Popup
 				button={
@@ -287,16 +249,9 @@ function ArrayRowItem({
 type SubFieldsManagerProps = {
 	onChange: (rows: ArrayRow[]) => void
 	rows: ArrayRow[]
-	selectedSubFieldId: null | string
-	setSelectedSubFieldId: (id: null | string) => void
 }
 
-function SubFieldsManager({
-	onChange,
-	rows,
-	selectedSubFieldId,
-	setSelectedSubFieldId,
-}: SubFieldsManagerProps) {
+function SubFieldsManager({ onChange, rows }: SubFieldsManagerProps) {
 	function addRow() {
 		onChange([...rows, { id: nanoid(), columns: [] }])
 	}
@@ -308,7 +263,6 @@ function SubFieldsManager({
 				row.id === rowId ? { ...row, columns: [...row.columns, newField] } : row,
 			),
 		)
-		setSelectedSubFieldId(newField.id)
 	}
 
 	function reorderFields(rowId: string, newColumns: ArrayItemField[]) {
@@ -351,7 +305,7 @@ function SubFieldsManager({
 
 	return (
 		<Stack className={styles.subFieldsContainer}>
-			<label className="field-label">Sub-fields layout</label>
+			<p className="field-label">Sub-fields layout</p>
 
 			<div className={styles.subFieldsDropArea}>
 				{rows.length === 0 ? (
@@ -369,8 +323,6 @@ function SubFieldsManager({
 							onUpdateField={updateField}
 							row={row}
 							rowIndex={i}
-							selectedSubFieldId={selectedSubFieldId}
-							setSelectedSubFieldId={setSelectedSubFieldId}
 							totalRows={rows.length}
 						/>
 					))
@@ -394,7 +346,6 @@ function SubFieldsManager({
 
 function ArrayFieldEditorContent() {
 	const form = useFormContext<ArrayField>()
-	const [selectedSubFieldId, setSelectedSubFieldId] = React.useState<null | string>(null)
 
 	return (
 		<>
@@ -404,13 +355,11 @@ function ArrayFieldEditorContent() {
 						<SubFieldsManager
 							onChange={(rows) => f.handleChange(rows)}
 							rows={(f.state.value ?? [])}
-							selectedSubFieldId={selectedSubFieldId}
-							setSelectedSubFieldId={setSelectedSubFieldId}
 						/>
 					)}
 				</form.Field>
 			</GeneralFields>
-			<hr className={styles.divider} />
+			<Divider />
 			<AdvancedFields exclude={['placeholder', 'defaultValue', 'errorMessage', 'hidden']}>
 				<div className={styles.twoColGrid}>
 					<form.Field name="minRows">

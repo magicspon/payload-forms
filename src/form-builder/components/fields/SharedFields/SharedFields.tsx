@@ -244,3 +244,8 @@ export function GeneralFields({
 		</div>
 	)
 }
+
+
+export function Divider() {
+	return <hr className={styles.divider} />
+}

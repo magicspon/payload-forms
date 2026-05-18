@@ -2,14 +2,13 @@ import type { ToggleFieldEditorProps } from '../../../fieldSchema'
 
 import { toggleFieldSchema } from '../../../fieldSchema'
 import { EditorTabs } from '../../layout/EditorTabs'
-import { AdvancedFields, GeneralFields } from '../SharedFields'
-import styles from './ToggleFieldEditor.module.css'
+import { AdvancedFields, Divider, GeneralFields } from '../SharedFields'
 
 export function ToggleFieldEditorContent() {
 	return (
 		<>
 			<GeneralFields />
-			<hr className={styles.divider} />
+			<Divider />
 			<AdvancedFields />
 		</>
 	)

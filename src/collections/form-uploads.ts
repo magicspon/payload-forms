@@ -1,4 +1,4 @@
-import type { CollectionConfig, CollectionSlug, Field } from 'payload'
+import type { CollectionConfig, Field } from 'payload'
 
 /** Build the form-uploads CollectionConfig. */
 export function buildFormUploadsCollection(opts: {

@@ -163,6 +163,7 @@ function ConditionRow({
 					className={styles.removeButton}
 					data-testid="condition-remove-button"
 					onClick={() => onRemove(index)}
+					type="button"
 				>
 					<XIcon />
 					<span className={styles.srOnly}>Remove condition</span>
@@ -239,7 +240,7 @@ export function ConditionEditor({
 	return (
 		<div className={styles.container}>
 			<div className={styles.header}>
-				<label className={styles.headerLabel}>Conditional Visibility</label>
+				<p className={styles.headerLabel}>Conditional Visibility</p>
 				{conditionsList.length > 1 && (
 					<Button margin={false} onClick={toggleLogic} size="small">
 						{logic === 'and' ? 'Match ALL' : 'Match ANY'}

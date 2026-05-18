@@ -338,7 +338,7 @@ function CheckboxGroupRenderer({
 	onChange: (v: unknown) => void
 	value: string[] | undefined
 }) {
-	const selected = value ?? []
+	const selected = useMemo(() => value ?? [], [value])
 
 	const toggle = useCallback(
 		(optValue: string) => {
@@ -449,7 +449,7 @@ function ArrayFieldRenderer({
 	value: Record<string, unknown>[] | undefined
 }) {
 	const subFields: ArrayItemField[] = field.rows.flatMap((row) => row.columns)
-	const rows = value ?? []
+	const rows = useMemo(() => value ?? [], [value])
 
 	const addRow = useCallback(() => {
 		const empty: Record<string, unknown> = {}

@@ -1,5 +1,5 @@
 import { useFormPages } from '@/form-builder/hooks/useFormPages'
-import { Button, ConfirmationModal, toast, useDrawerSlug, useModal, XIcon } from '@payloadcms/ui'
+import { ConfirmationModal, toast, useDrawerSlug, useModal, XIcon } from '@payloadcms/ui'
 import * as React from 'react'
 
 import { removeField } from '../../../utils/formTree'

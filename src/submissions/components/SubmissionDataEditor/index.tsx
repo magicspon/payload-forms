@@ -1,7 +1,6 @@
 import type { UIFieldServerProps } from 'payload'
-// import { extractID } from 'payload/shared'
-import type { MessageField } from '../../../fieldSchema'
-import type { Field } from '../../../fieldSchema'
+
+import type { Field, MessageField } from '../../../fieldSchema'
 import type { FormPage } from '../../../utils/formTree'
 
 import { getAllFields } from '../../../utils/formTree'

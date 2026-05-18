@@ -4,7 +4,6 @@ import {
 	createDefaultField,
 	fieldSchema,
 	formSchema,
-	type OptionItem,
 } from './fieldSchema'
 
 describe('optionSchema label is a plain string', () => {

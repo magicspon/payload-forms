@@ -7,8 +7,7 @@ import type { SelectField, SelectFieldEditorProps } from '../../../fieldSchema'
 import { selectFieldSchema } from '../../../fieldSchema'
 import { EditorTabs } from '../../layout/EditorTabs'
 import { OptionsEditor } from '../OptionsEditor'
-import { AdvancedFields, GeneralFields } from '../SharedFields'
-import styles from './SelectFieldEditor.module.css'
+import { AdvancedFields, Divider, GeneralFields } from '../SharedFields'
 
 export function SelectFieldEditorContent() {
 	const form = useFormContext<SelectField>()
@@ -25,7 +24,7 @@ export function SelectFieldEditorContent() {
 					)}
 				</form.Field>
 			</GeneralFields>
-			<hr className={styles.divider} />
+			<Divider />
 			<AdvancedFields exclude={['defaultValue']}>
 				<form.Field name="defaultValue">
 					{(f) => (

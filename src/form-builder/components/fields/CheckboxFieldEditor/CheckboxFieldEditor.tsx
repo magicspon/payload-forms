@@ -9,10 +9,9 @@ import type {
 import { checkboxFieldSchema } from '../../../fieldSchema'
 import { EditorTabs } from '../../layout/EditorTabs'
 import { OptionsEditor } from '../OptionsEditor'
-import { AdvancedFields, GeneralFields } from '../SharedFields'
-import styles from './CheckboxFieldEditor.module.css'
+import { AdvancedFields, Divider, GeneralFields } from '../SharedFields'
 
-function CheckboxFieldEditorContent() {
+export function CheckboxFieldEditorContent() {
 	const form = useFormContext<CheckboxField>()
 
 	return (
@@ -27,7 +26,7 @@ function CheckboxFieldEditorContent() {
 					)}
 				</form.Field>
 			</GeneralFields>
-			<hr className={styles.divider} />
+			<Divider />
 			<AdvancedFields exclude={['defaultValue']}>
 				<form.Field name="defaultValue">
 					{(f) => (

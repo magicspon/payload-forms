@@ -9,8 +9,7 @@ import { EditorTabs } from '../../layout/EditorTabs'
 import '@/form-builder/hooks/useSaveEditor'
 
 import { OptionsEditor } from '../OptionsEditor'
-import { AdvancedFields, GeneralFields } from '../SharedFields'
-import styles from './RadioFieldEditor.module.css'
+import { AdvancedFields, Divider, GeneralFields } from '../SharedFields'
 
 export function RadioFieldEditorContent() {
 	const form = useFormContext<RadioField>()
@@ -27,7 +26,7 @@ export function RadioFieldEditorContent() {
 					)}
 				</form.Field>
 			</GeneralFields>
-			<hr className={styles.divider} />
+			<Divider />
 			<AdvancedFields exclude={['defaultValue']}>
 				<form.Field name="defaultValue">
 					{(f) => (

@@ -69,7 +69,7 @@ export function SubmissionDataEditorClient({
 		}
 	}, [formId, prevFormId, setValue])
 
-	const data = value ?? {}
+	const data = useMemo(() => value ?? {}, [value])
 
 	const handleChange = useCallback(
 		(fieldName: string, fieldValue: unknown) => {

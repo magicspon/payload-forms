@@ -2,7 +2,6 @@ import type {
 	CollectionAfterChangeHook,
 	CollectionBeforeChangeHook,
 	CollectionConfig,
-	CollectionSlug,
 	Endpoint,
 	Field,
 } from 'payload'
@@ -78,7 +77,7 @@ export function buildSubmissionsCollection(
 					list: {
 						actions: [
 							'@spon/payload-forms/client#FormSubmissionListViewButton',
-							'@spon/payload-forms/rsc#FormImportButton',
+							// '@spon/payload-forms/rsc#FormImportButton',
 						],
 					},
 				},

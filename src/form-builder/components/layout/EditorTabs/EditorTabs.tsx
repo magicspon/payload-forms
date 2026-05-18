@@ -12,7 +12,7 @@ import { Button } from '@payloadcms/ui'
 
 import type { AllFields } from '../../../fieldSchema'
 
-import { ConditionsField } from '../../fields/SharedFields'
+import { ConditionsField, Divider } from '../../fields/SharedFields'
 import styles from './EditorTabs.module.css'
 
 type EditorTabsProps<U extends AllFields> = {
@@ -45,7 +45,7 @@ export function EditorTabs<U extends AllFields>({
 
 					{!NO_CONDITIONS_TYPES.includes(field.type) && (
 						<>
-							<hr className={styles.divider} />
+							<Divider />
 							<h3 className={styles.sectionTitle}>
 								Conditions
 							</h3>

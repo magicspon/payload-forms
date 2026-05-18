@@ -272,7 +272,7 @@ export function NotificationRuleConditionEditor({
 	return (
 		<div className={styles.container}>
 			<div className={styles.header}>
-				<label className={styles.headerLabel}>Send Conditions</label>
+				<p className={styles.headerLabel}>Send Conditions</p>
 				{conditionsList.length > 1 && (
 					<Button
 						margin={false}

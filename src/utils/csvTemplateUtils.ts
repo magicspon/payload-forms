@@ -284,7 +284,7 @@ export function formatSubmissionValue(
 				}
 				return value.join(', ')
 			}
-			return String(value)
+			return String(value as boolean | number | string)
 		case 'consent':
 		case 'toggle':
 			return value === true ? 'Yes' : value === false ? 'No' : ''
@@ -297,12 +297,12 @@ export function formatSubmissionValue(
 					return value
 				}
 			}
-			return String(value)
+			return String(value as boolean | number | string)
 
 		case 'email':
 		case 'text':
 		case 'textarea':
-			return String(value)
+			return String(value as string)
 
 		case 'file':
 			if (Array.isArray(value)) {
@@ -310,10 +310,10 @@ export function formatSubmissionValue(
 					.map((f: { name?: string }) => f?.name ?? 'File')
 					.join(', ')
 			}
-			return String(value)
+			return String(value as string)
 
 		case 'number':
-			return typeof value === 'number' ? String(value) : String(value)
+			return String(value as number)
 
 		case 'radio':
 		case 'select': {
@@ -321,13 +321,13 @@ export function formatSubmissionValue(
 				const opt = options.find((o) => o.value === value)
 				if (opt) {return opt.label}
 			}
-			return String(value)
+			return String(value as string)
 		}
 
 		default:
 			if (Array.isArray(value)) {return value.join(', ')}
 			if (typeof value === 'object') {return JSON.stringify(value)}
-			return String(value)
+			return String(value as bigint | boolean | number | string)
 	}
 }
 

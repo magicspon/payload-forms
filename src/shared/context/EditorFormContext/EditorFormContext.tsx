@@ -12,8 +12,8 @@ export type FieldMeta = { errors: string[]; isTouched: boolean }
 
  
 export type AnyFieldApi = {
-  handleChange: (value: any) => void
-  state: { meta: FieldMeta; value: any }
+  handleChange: (value: unknown) => void
+  state: { meta: FieldMeta; value: unknown }
 }
 
 type TypedFieldApi<T, K extends keyof T> = {
@@ -39,7 +39,9 @@ type EditorFormCtxValue = {
   values: Record<string, unknown>
 }
 
-export const EditorFormCtx = React.createContext<EditorFormCtxValue | null>(null)
+export const EditorFormContext = React.createContext<EditorFormCtxValue | null>(null)
+/** @deprecated use EditorFormContext */
+export const EditorFormCtx = EditorFormContext
 
 function useEditorFormCtx() {
   const ctx = React.use(EditorFormCtx)

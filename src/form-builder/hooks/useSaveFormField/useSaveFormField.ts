@@ -33,7 +33,6 @@ export function useSaveFormField() {
 				// Surface the actual error message so the user has actionable information
 				const message =
 					error instanceof Error ? error.message : 'Unknown error'
-				console.error('[useSaveFormField]', error)
 				toast.error(`Failed to save field: ${message}`)
 			}
 		},

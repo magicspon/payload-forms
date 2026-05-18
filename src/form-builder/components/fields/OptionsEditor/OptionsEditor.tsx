@@ -103,7 +103,7 @@ export function OptionsEditor({ onChange, options }: TOptionsEditorProps) {
 
 	return (
 		<div className={styles.colSpan2}>
-			<label className="field-label">Options</label>
+			<p className="field-label">Options</p>
 			<DndContext
 				collisionDetection={safeClosestCenter}
 				id={dndId}

@@ -7,7 +7,7 @@ import type { NumberField, NumberFieldEditorProps } from '../../../fieldSchema'
 
 import { numberFieldSchema } from '../../../fieldSchema'
 import { EditorTabs } from '../../layout/EditorTabs'
-import { AdvancedFields, GeneralFields } from '../SharedFields'
+import { AdvancedFields, Divider, GeneralFields } from '../SharedFields'
 import styles from './NumberFieldEditor.module.css'
 
 export function NumberFieldEditorContent() {
@@ -16,7 +16,7 @@ export function NumberFieldEditorContent() {
 	return (
 		<>
 			<GeneralFields />
-			<hr className={styles.divider} />
+			<Divider />
 			<div className={styles.twoColGrid}>
 				<AdvancedFields>
 					<form.Field name="min">

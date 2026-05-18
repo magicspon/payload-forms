@@ -10,7 +10,7 @@ import type {
 
 import { textareaFieldSchema } from '../../../fieldSchema'
 import { EditorTabs } from '../../layout/EditorTabs'
-import { AdvancedFields, GeneralFields } from '../SharedFields'
+import { AdvancedFields, Divider, GeneralFields } from '../SharedFields'
 import styles from './TextareaFieldEditor.module.css'
 
 export function TextareaFieldEditorContent() {
@@ -19,7 +19,7 @@ export function TextareaFieldEditorContent() {
 	return (
 		<>
 			<GeneralFields />
-			<hr className={styles.divider} />
+			<Divider />
 			<AdvancedFields exclude={['defaultValue']}>
 				<form.Field name="rows">
 					{(f) => (

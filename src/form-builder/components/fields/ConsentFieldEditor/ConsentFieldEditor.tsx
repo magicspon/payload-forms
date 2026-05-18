@@ -8,8 +8,7 @@ import type {
 
 import { consentFieldSchema } from '../../../fieldSchema'
 import { EditorTabs } from '../../layout/EditorTabs'
-import { AdvancedFields, GeneralFields } from '../SharedFields'
-import styles from './ConsentFieldEditor.module.css'
+import { AdvancedFields, Divider, GeneralFields } from '../SharedFields'
 
 export function ConsentFieldEditorPanel() {
 	const form = useFormContext<ConsentField>()
@@ -17,7 +16,7 @@ export function ConsentFieldEditorPanel() {
 	return (
 		<>
 			<GeneralFields />
-			<hr className={styles.divider} />
+			<Divider />
 			<AdvancedFields exclude={['defaultValue']}>
 				<form.Field name="defaultValue">
 					{(f) => (

@@ -109,10 +109,6 @@ export function buildFormsCollection(
 		})
 	}
 
-	if (teamField) {
-		settingsFields.push(teamField)
-	}
-
 	settingsFields.push(...settings)
 
 	const tabs: Tab[] = [
@@ -135,10 +131,6 @@ export function buildFormsCollection(
 				},
 			],
 			label: tabLabels?.canvas ?? 'Canvas',
-		},
-		{
-			fields: settingsFields,
-			label: tabLabels?.settings ?? 'Settings',
 		},
 		...(opts?.tabs ?? []),
 	]
@@ -346,7 +338,7 @@ export function buildFormsCollection(
 				description: 'Schema path used for rich text content field (message)',
 				hidden: true,
 			},
-			editor: basicEditor as unknown as RichTextField['editor'],
+			editor: basicEditor
 		})
 	}
 

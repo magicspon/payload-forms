@@ -59,7 +59,7 @@ type ActiveDragItem =
 	| { fieldType: string; kind: 'new-field'; label: string }
 	| { kind: 'existing-row'; label: string; pageId: string; rowId: string }
 
-function FormCanvasInner({ children, palette }: { children: React.ReactNode; palette?: React.ReactNode }) {
+function FormCanvasInner({ children }: { children: React.ReactNode; }) {
 	const handleFieldDrop = useFieldDrop()
 	const handleRowReorder = useRowReorder()
 	const dndId = React.useId()
@@ -212,11 +212,11 @@ function FormCanvasInner({ children, palette }: { children: React.ReactNode; pal
 			onDragStart={handleDragStart}
 			sensors={sensors}
 		>
-			{palette && (
+			{/*{palette ? (
 				<div className={styles.paletteWrapper}>
 					{palette}
 				</div>
-			)}
+			) : null}*/}
 			<DndIndicatorProvider value={indicatorValue}>
 				{children}
 			</DndIndicatorProvider>
@@ -309,6 +309,7 @@ function Multipage() {
 										title={page.title ?? ''}
 									>
 										<Button
+											key="btn"
 											aria-selected={page.id === activeTab}
 											buttonStyle={page.id === activeTab ? 'primary' : 'subtle'}
 											className={styles.m0}
@@ -320,6 +321,7 @@ function Multipage() {
 
 										{!locked && pages.length > 1 && page.id === activeTab && (
 											<DeletePage
+												key="delete"
 												onDelete={() => {
 													setActiveTab(pages?.[0]?.id)
 												}}
@@ -327,7 +329,7 @@ function Multipage() {
 											/>
 										)}
 										{page.id === activeTab && !locked && (
-											<EditPage pageId={page.id} />
+											<EditPage key="edit" pageId={page.id} />
 										)}
 									</TabItem>
 								))}
@@ -386,6 +388,10 @@ export function FormCanvas({ fieldPalette = false, multipage = true }: { fieldPa
 		<FormFieldsProvider>
 			<FormCanvasInner palette={fieldPalette ? <FieldPalette /> : undefined}>
 				{multipage ? <Multipage /> : <SinglePage />}
+
+				{fieldPalette && (
+					<FieldPalette />
+				)}
 			</FormCanvasInner>
 		</FormFieldsProvider>
 	)
