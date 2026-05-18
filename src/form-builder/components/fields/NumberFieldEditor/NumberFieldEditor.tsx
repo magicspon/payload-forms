@@ -1,13 +1,12 @@
+import type { NumberField, NumberFieldEditorProps } from '@/shared/fieldSchema'
 import type { ChangeEvent } from 'react'
 
-import { useFormContext } from '@/shared/context/EditorFormContext'
+import { AdvancedFields, Divider, GeneralFields } from '@/form-builder/components/shared/SharedFields'
+import { useFormContext } from '@/form-builder/context/EditorFormContext'
+import { numberFieldSchema } from '@/shared/fieldSchema'
 import { TextInput } from '@payloadcms/ui'
 
-import type { NumberField, NumberFieldEditorProps } from '../../../fieldSchema'
-
-import { numberFieldSchema } from '../../../fieldSchema'
-import { EditorTabs } from '../../layout/EditorTabs'
-import { AdvancedFields, Divider, GeneralFields } from '../SharedFields'
+import { EditorTabs } from '../../canvas/EditorTabs'
 import styles from './NumberFieldEditor.module.css'
 
 export function NumberFieldEditorContent() {

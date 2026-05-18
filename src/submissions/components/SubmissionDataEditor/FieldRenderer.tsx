@@ -1,18 +1,5 @@
 'use client'
 
-import type React from 'react'
-
-import { nanoid } from '@/shared/utils/nanoid'
-import {
-	CheckboxInput,
-	DatePicker,
-	SelectInput,
-	TextareaInput,
-	TextInput,
-	UploadInput,
-} from '@payloadcms/ui'
-import { useCallback, useMemo, useRef, useState } from 'react'
-
 import type {
 	ArrayField,
 	ArrayItemField,
@@ -29,7 +16,19 @@ import type {
 	TextareaField,
 	TextField,
 	ToggleField,
-} from '../../../fieldSchema'
+} from '@/shared/fieldSchema'
+import type React from 'react'
+
+import { nanoid } from '@/shared/utils/nanoid'
+import {
+	CheckboxInput,
+	DatePicker,
+	SelectInput,
+	TextareaInput,
+	TextInput,
+	UploadInput,
+} from '@payloadcms/ui'
+import { useCallback, useMemo, useRef, useState } from 'react'
 
 type NonMessageField = Exclude<Field, MessageField>
 

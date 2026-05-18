@@ -1,8 +1,9 @@
-import type { ToggleFieldEditorProps } from '../../../fieldSchema'
+import type { ToggleFieldEditorProps } from '@/shared/fieldSchema'
 
-import { toggleFieldSchema } from '../../../fieldSchema'
-import { EditorTabs } from '../../layout/EditorTabs'
-import { AdvancedFields, Divider, GeneralFields } from '../SharedFields'
+import { AdvancedFields, Divider, GeneralFields } from '@/form-builder/components/shared/SharedFields'
+import { toggleFieldSchema } from '@/shared/fieldSchema'
+
+import { EditorTabs } from '../../canvas/EditorTabs'
 
 export function ToggleFieldEditorContent() {
 	return (

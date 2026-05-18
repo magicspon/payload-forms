@@ -3,17 +3,17 @@
 import type { JSONFieldClientProps } from 'payload'
 import type { ChangeEvent } from 'react'
 
-import { Stack } from '@/shared/ui/layout'
-import { Button, PlusIcon, SelectInput, TextInput, useField, XIcon  } from '@payloadcms/ui'
-
+import { type FormPage, getAllFields } from '@/form-builder/utils/formTree'
 import {
 	type Condition,
 	type ConditionOperator,
 	conditionOperators,
 	type Field,
 	type FieldConditions,
-} from '../../../fieldSchema'
-import { type FormPage, getAllFields } from '../../../utils/formTree'
+} from '@/shared/fieldSchema'
+import { Stack } from '@/shared/layout'
+import { Button, PlusIcon, SelectInput, TextInput, useField, XIcon  } from '@payloadcms/ui'
+
 import styles from './NotificationConditionEditor.module.css'
 
 type NotificationConditionEditorProps = JSONFieldClientProps

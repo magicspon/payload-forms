@@ -1,10 +1,5 @@
-import { camelCase } from '@/shared/utils/camelCase'
-import { nanoid } from '@/shared/utils/nanoid'
-import * as React from 'react'
+import type { Field, FieldType } from '@/shared/fieldSchema'
 
-import type { Field, FieldType } from '../fieldSchema'
-
-import { createDefaultField } from '../fieldSchema'
 import {
 	appendFieldToRow,
 	appendRowToPage,
@@ -16,7 +11,11 @@ import {
 	removeRow as removeRowFn,
 	replaceField,
 	updatePage as updatePageFn,
-} from '../utils/formTree'
+} from '@/form-builder/utils/formTree'
+import { createDefaultField } from '@/shared/fieldSchema'
+import { camelCase } from '@/shared/utils/camelCase'
+import { nanoid } from '@/shared/utils/nanoid'
+import * as React from 'react'
 
 type Action =
 	| { field: Field; type: 'UPDATE_FIELD' }

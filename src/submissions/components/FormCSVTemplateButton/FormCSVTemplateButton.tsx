@@ -1,9 +1,8 @@
 'use client'
 
+import { generateTemplateHeaders } from '@/submissions/utils/csvTemplateUtils'
 import { useDocumentInfo  } from '@payloadcms/ui'
 import * as React from 'react'
-
-import { generateTemplateHeaders } from '../../../utils/csvTemplateUtils'
 
 function downloadCSV(csv: string, filename: string): void {
 	const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })

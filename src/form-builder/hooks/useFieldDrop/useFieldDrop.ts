@@ -1,12 +1,4 @@
-import { useFormFields } from '@/shared/context/FormFieldsContext'
-import { nanoid } from '@/shared/utils/nanoid'
-import * as React from 'react'
-
-import {
-	createDefaultField,
-	type Field,
-	type FieldType,
-} from '../../../fieldSchema'
+import { useFormFields } from '@/form-builder/context/FormFieldsContext'
 import {
 	appendFieldToRow,
 	appendRowToPage,
@@ -14,8 +6,16 @@ import {
 	insertFieldAfter,
 	insertFieldBefore,
 	removeField,
-} from '../../../utils/formTree'
-import { findField } from '../../utils/formTree'
+} from '@/form-builder/utils/formTree'
+import { findField } from '@/form-builder/utils/formTree'
+import {
+	createDefaultField,
+	type Field,
+	type FieldType,
+} from '@/shared/fieldSchema'
+import { nanoid } from '@/shared/utils/nanoid'
+import * as React from 'react'
+
 import { useFormPages } from '../useFormPages'
 
 type BaseDropParams = {

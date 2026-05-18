@@ -1,7 +1,7 @@
 'use client'
 
 import { useFormPages } from '@/form-builder/hooks/useFormPages'
-import { Inline } from '@/shared/ui/layout'
+import { Inline } from '@/shared/layout'
 import { Button, Drawer, DrawerToggler, EditIcon, useDrawerSlug, useModal  } from '@payloadcms/ui'
 import * as React from 'react'
 

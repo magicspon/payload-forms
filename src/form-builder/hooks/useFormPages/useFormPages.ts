@@ -1,8 +1,7 @@
+import { buildFormSchema } from '@/form-builder/utils/buildFormSchema'
+import { type FormPage, getAllFields } from '@/form-builder/utils/formTree'
 import { useField } from '@payloadcms/ui'
 import * as React from 'react'
-
-import { buildFormSchema } from '../../../utils/buildFormSchema'
-import { type FormPage, getAllFields } from '../../../utils/formTree'
 
 export function useFormPages() {
 	const { setValue: setPages, value: pages = [] } = useField<FormPage[]>({

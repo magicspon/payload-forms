@@ -1,11 +1,11 @@
-import { useFormContext } from '@/shared/context/EditorFormContext'
+import type { DateField, DateFieldEditorProps } from '@/shared/fieldSchema'
+
+import { AdvancedFields, Divider, GeneralFields } from '@/form-builder/components/shared/SharedFields'
+import { useFormContext } from '@/form-builder/context/EditorFormContext'
+import { dateFieldSchema } from '@/shared/fieldSchema'
 import { DatePicker } from '@payloadcms/ui'
 
-import type { DateField, DateFieldEditorProps } from '../../../fieldSchema'
-
-import { dateFieldSchema } from '../../../fieldSchema'
-import { EditorTabs } from '../../layout/EditorTabs'
-import { AdvancedFields, Divider, GeneralFields } from '../SharedFields'
+import { EditorTabs } from '../../canvas/EditorTabs'
 
 export function DateFieldEditorContent() {
 	const form = useFormContext<DateField>()

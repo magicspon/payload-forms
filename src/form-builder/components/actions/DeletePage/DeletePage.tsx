@@ -1,8 +1,8 @@
 import { useFormPages } from '@/form-builder/hooks/useFormPages'
+import { removePage } from '@/form-builder/utils/formTree'
 import { ConfirmationModal, useDrawerSlug, useModal, XIcon } from '@payloadcms/ui'
 import * as React from 'react'
 
-import { removePage } from '../../../utils/formTree'
 import styles from './DeletePage.module.css'
 
 type TDeletePageProps = {

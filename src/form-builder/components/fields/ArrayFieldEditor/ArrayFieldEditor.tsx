@@ -1,10 +1,19 @@
 'use client'
 
+import type {
+	ArrayField,
+	ArrayFieldEditorProps,
+	ArrayItemField,
+	ArrayItemFieldType,
+	ArrayRow,
+} from '@/shared/fieldSchema'
 import type { ChangeEvent } from 'react'
 
+import { AdvancedFields, Divider, GeneralFields } from '@/form-builder/components/shared/SharedFields'
+import { useFormContext } from '@/form-builder/context/EditorFormContext'
 import { safeClosestCenter } from '@/form-builder/utils/safeClosestCenter'
-import { useFormContext } from '@/shared/context/EditorFormContext'
-import { Inline, Stack  } from '@/shared/ui/layout'
+import { arrayFieldSchema, createDefaultField } from '@/shared/fieldSchema'
+import { Inline, Stack  } from '@/shared/layout'
 import { nanoid } from '@/shared/utils/nanoid'
 import {
 	DndContext,
@@ -24,17 +33,7 @@ import { PlusIcon, Popup, PopupList, TextInput, XIcon } from '@payloadcms/ui'
 import cx from 'clsx'
 import * as React from 'react'
 
-import type {
-	ArrayField,
-	ArrayFieldEditorProps,
-	ArrayItemField,
-	ArrayItemFieldType,
-	ArrayRow,
-} from '../../../fieldSchema'
-
-import { arrayFieldSchema, createDefaultField } from '../../../fieldSchema'
-import { EditorTabs } from '../../layout/EditorTabs'
-import { AdvancedFields, Divider, GeneralFields } from '../SharedFields'
+import { EditorTabs } from '../../canvas/EditorTabs'
 import styles from './ArrayFieldEditor.module.css'
 import { SubFieldEditorDrawer } from './SubFieldEditorDrawer'
 

@@ -1,12 +1,12 @@
 'use client'
 
+import type { FormPage } from '@/form-builder/utils/formTree'
+import type { Field, MessageField } from '@/shared/fieldSchema'
+
+import { getAllFields } from '@/form-builder/utils/formTree'
 import { useField, usePayloadAPI } from '@payloadcms/ui'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
-import type { Field, MessageField } from '../../../fieldSchema'
-import type { FormPage } from '../../../utils/formTree'
-
-import { getAllFields } from '../../../utils/formTree'
 import styles from './client.module.css'
 import { FieldRenderer } from './FieldRenderer'
 

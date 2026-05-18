@@ -1,16 +1,15 @@
-import type { ChangeEvent } from 'react'
-
-import { useFormContext } from '@/shared/context/EditorFormContext'
-import { TextareaInput, TextInput } from '@payloadcms/ui'
-
 import type {
 	TextareaField,
 	TextareaFieldEditorProps,
-} from '../../../fieldSchema'
+} from '@/shared/fieldSchema'
+import type { ChangeEvent } from 'react'
 
-import { textareaFieldSchema } from '../../../fieldSchema'
-import { EditorTabs } from '../../layout/EditorTabs'
-import { AdvancedFields, Divider, GeneralFields } from '../SharedFields'
+import { AdvancedFields, Divider, GeneralFields } from '@/form-builder/components/shared/SharedFields'
+import { useFormContext } from '@/form-builder/context/EditorFormContext'
+import { textareaFieldSchema } from '@/shared/fieldSchema'
+import { TextareaInput, TextInput } from '@payloadcms/ui'
+
+import { EditorTabs } from '../../canvas/EditorTabs'
 import styles from './TextareaFieldEditor.module.css'
 
 export function TextareaFieldEditorContent() {

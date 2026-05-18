@@ -1,6 +1,7 @@
 import type { JSONSchema4 } from 'json-schema'
 import type { CollectionConfig, Field, RichTextField, Tab } from 'payload'
 
+import { formJSONSchema } from '@/shared/fieldSchema'
 import { nanoid } from '@/shared/utils/nanoid'
 import {
 	BoldFeature,
@@ -13,7 +14,6 @@ import {
 } from '@payloadcms/richtext-lexical'
 import { APIError, slugField } from 'payload'
 
-import { formJSONSchema } from '../fieldSchema'
 import { FormFieldReferenceFeature } from '../form-builder/components/lexical/FormFieldReference'
 
 const basicEditor = lexicalEditor({
@@ -66,7 +66,7 @@ export interface FormsCollectionOptions {
 
 	tabs?: Tab[]
 
-	/** teamField to include in the Settings tab, or undefined to omit. */
+	/** teamField to include in the sidebar, or undefined to omit. */
 	teamField?: Field
 }
 
@@ -86,12 +86,12 @@ export function buildFormsCollection(
 		livePreviewUrl,
 		localeOptions,
 		settings = [],
-		teamField,
 
 		tabLabels = {
 			canvas: 'Canvas',
 			settings: 'Settings',
 		},
+		teamField,
 	} = opts
 
 	const settingsFields: Field[] = []
@@ -328,6 +328,8 @@ export function buildFormsCollection(
 			typescriptSchema: [() => formJSONSchema as JSONSchema4],
 		},
 	]
+
+	if (teamField) {fields.push(teamField)}
 
 	if (features?.confirmations || features?.notifications) {
 		fields.push({

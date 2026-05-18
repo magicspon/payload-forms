@@ -1,15 +1,13 @@
-import { useFormContext } from '@/shared/context/EditorFormContext'
+import type { RadioField, RadioFieldEditorProps } from '@/shared/fieldSchema'
+
+import { OptionsEditor } from '@/form-builder/components/shared/OptionsEditor'
+import { AdvancedFields, Divider, GeneralFields } from '@/form-builder/components/shared/SharedFields'
+import { useFormContext } from '@/form-builder/context/EditorFormContext'
+import { radioFieldSchema } from '@/shared/fieldSchema'
+import '@/form-builder/hooks/useSaveEditor'
 import { SelectInput } from '@payloadcms/ui'
 
-import type { RadioField, RadioFieldEditorProps } from '../../../fieldSchema'
-
-import { radioFieldSchema } from '../../../fieldSchema'
-import { EditorTabs } from '../../layout/EditorTabs'
-
-import '@/form-builder/hooks/useSaveEditor'
-
-import { OptionsEditor } from '../OptionsEditor'
-import { AdvancedFields, Divider, GeneralFields } from '../SharedFields'
+import { EditorTabs } from '../../canvas/EditorTabs'
 
 export function RadioFieldEditorContent() {
 	const form = useFormContext<RadioField>()

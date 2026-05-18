@@ -1,6 +1,6 @@
+import { MAX_FILE_SIZE_BYTES } from '@/submissions/utils/fileUpload'
 import { describe, expect, it, vi } from 'vitest'
 
-import { MAX_FILE_SIZE_BYTES } from '../../utils/fileUpload'
 import { makeSubmissionEndpoint } from './submission'
 
 const defaultSlugs = {

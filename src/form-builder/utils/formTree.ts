@@ -1,6 +1,6 @@
-import { nanoid } from '@/shared/utils/nanoid'
+import type { Field } from '@/shared/fieldSchema'
 
-import type { Field } from '../fieldSchema'
+import { nanoid } from '@/shared/utils/nanoid'
 
 export type FormRow = {
 	columns: Field[]

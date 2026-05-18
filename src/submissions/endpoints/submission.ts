@@ -3,16 +3,15 @@ import type { Endpoint, PayloadRequest } from 'payload'
 
 import { attemptAsync } from '@/shared/utils/attemptAsync'
 import { replaceDataPlaceholders } from '@/shared/utils/replaceDataPlaceholders'
-import { z } from 'zod'
-
-import type { CollectionSlugs } from '../..'
-
-import { errorResponse } from '../../utils/errorResponse'
+import { errorResponse } from '@/submissions/utils/errorResponse'
 import {
 	MAX_FILE_SIZE_BYTES,
 	prepareFileForUpload,
 	SUBMISSION_SCALAR_KEYS,
-} from '../../utils/fileUpload'
+} from '@/submissions/utils/fileUpload'
+import { z } from 'zod'
+
+import type { CollectionSlugs } from '../..'
 
 // In test environments (TEST_ENV=true) skip the timing check
 const MIN_SUBMISSION_TIME_MS = process.env.TEST_ENV === 'true' ? 0 : 2000

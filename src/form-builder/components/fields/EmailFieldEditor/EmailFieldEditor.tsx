@@ -1,9 +1,10 @@
+import { AdvancedFields, Divider, GeneralFields } from '@/form-builder/components/shared/SharedFields'
 import {
 	type EmailFieldEditorProps,
 	emailFieldSchema,
-} from '../../../fieldSchema'
-import { EditorTabs } from '../../layout/EditorTabs'
-import { AdvancedFields, Divider, GeneralFields } from '../SharedFields'
+} from '@/shared/fieldSchema'
+
+import { EditorTabs } from '../../canvas/EditorTabs'
 
 export function EmailFieldEditorContent() {
 	return (

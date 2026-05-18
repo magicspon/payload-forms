@@ -1,7 +1,7 @@
+import type { Field } from '@/shared/fieldSchema'
+
 import { camelCase } from '@/shared/utils/camelCase'
 import { z } from 'zod'
-
-import type { Field } from '../fieldSchema'
 
 type BuildFormSchemaInput = {
 	fields: Field[]

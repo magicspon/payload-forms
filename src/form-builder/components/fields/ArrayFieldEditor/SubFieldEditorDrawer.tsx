@@ -1,26 +1,15 @@
 'use client'
 
+import type { ArrayItemField, ArrayItemFieldType } from '@/shared/fieldSchema'
 import type { ComponentType } from 'react'
 import type { ZodType } from 'zod'
 
+import { Divider } from '@/form-builder/components/shared/SharedFields'
 import {
 	EditorFormCtxProvider,
 	EditorSettingsProvider,
 	useEditorForm,
-} from '@/shared/context/EditorFormContext'
-import { Inline } from '@/shared/ui/layout'
-import {
-	Button,
-	Drawer,
-	DrawerToggler,
-	EditIcon,
-	useDrawerSlug,
-	useModal,
-} from '@payloadcms/ui'
-import * as React from 'react'
-
-import type { ArrayItemField, ArrayItemFieldType } from '../../../fieldSchema'
-
+} from '@/form-builder/context/EditorFormContext'
 import {
 	checkboxFieldSchema,
 	consentFieldSchema,
@@ -33,7 +22,18 @@ import {
 	textareaFieldSchema,
 	textFieldSchema,
 	toggleFieldSchema,
-} from '../../../fieldSchema'
+} from '@/shared/fieldSchema'
+import { Inline } from '@/shared/layout'
+import {
+	Button,
+	Drawer,
+	DrawerToggler,
+	EditIcon,
+	useDrawerSlug,
+	useModal,
+} from '@payloadcms/ui'
+import * as React from 'react'
+
 import { CheckboxFieldEditorContent } from '../CheckboxFieldEditor/CheckboxFieldEditor'
 import { ConsentFieldEditorPanel } from '../ConsentFieldEditor/ConsentFieldEditor'
 import { DateFieldEditorContent } from '../DateFieldEditor/DateFieldEditor'
@@ -42,7 +42,6 @@ import { FileFieldEditorContent } from '../FileFieldEditor/FileFieldEditor'
 import { NumberFieldEditorContent } from '../NumberFieldEditor/NumberFieldEditor'
 import { RadioFieldEditorContent } from '../RadioFieldEditor/RadioFieldEditor'
 import { SelectFieldEditorContent } from '../SelectFieldEditor/SelectFieldEditor'
-import { Divider } from '../SharedFields'
 import { TextareaFieldEditorContent } from '../TextareaFieldEditor/TextareaFieldEditor'
 import { TextFieldEditorContent } from '../TextFieldEditor/TextFieldEditor'
 import { ToggleFieldEditorContent } from '../ToggleFieldEditor/ToggleFieldEditor'
@@ -86,7 +85,7 @@ function SubFieldEditorContent({
 	drawerSlug,
 	onChange,
 	subField,
-}: Props & { drawerSlug: string }) {
+}: { drawerSlug: string } & Props) {
 	const { closeModal } = useModal()
 	const ContentComponent = contentComponents[subField.type]
 	const schema = fieldSchemas[subField.type]

@@ -1,13 +1,13 @@
-import { useFormContext } from '@/shared/context/EditorFormContext'
-import * as React from 'react'
-
 import type {
 	MessageField,
 	MessageFieldEditorProps,
-} from '../../../fieldSchema'
+} from '@/shared/fieldSchema'
 
-import { messageFieldSchema } from '../../../fieldSchema'
-import { EditorTabs } from '../../layout/EditorTabs'
+import { useFormContext } from '@/form-builder/context/EditorFormContext'
+import { messageFieldSchema } from '@/shared/fieldSchema'
+import * as React from 'react'
+
+import { EditorTabs } from '../../canvas/EditorTabs'
 import styles from './MessageFieldEditor.module.css'
 import { RichTextEditor } from './RichTextEditor'
 

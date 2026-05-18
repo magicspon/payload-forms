@@ -1,8 +1,8 @@
 import { useFormPages } from '@/form-builder/hooks/useFormPages'
+import { removeRow } from '@/form-builder/utils/formTree'
 import { ConfirmationModal, useDrawerSlug, useModal, XIcon } from '@payloadcms/ui'
 import * as React from 'react'
 
-import { removeRow } from '../../../utils/formTree'
 import styles from './DeleteRow.module.css'
 
 type TDeleteRowProps = {

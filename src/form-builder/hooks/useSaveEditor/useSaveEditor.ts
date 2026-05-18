@@ -1,12 +1,11 @@
+import type { AllFields, Field } from '@/shared/fieldSchema'
 import type { ZodType } from 'zod'
 
-import { useEditorForm } from '@/shared/context/EditorFormContext'
+import { useEditorForm } from '@/form-builder/context/EditorFormContext'
+import { type FormPage, getAllFields } from '@/form-builder/utils/formTree'
 import { useField } from '@payloadcms/ui'
 import { useMemo } from 'react'
 
-import type { AllFields, Field } from '../../../fieldSchema'
-
-import { type FormPage, getAllFields } from '../../../utils/formTree'
 import { useSaveFormField } from '../useSaveFormField'
 
 export function useSaveEditor<U extends AllFields>({

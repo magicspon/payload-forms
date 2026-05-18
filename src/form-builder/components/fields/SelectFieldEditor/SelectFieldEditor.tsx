@@ -1,13 +1,13 @@
-import { useFormContext } from '@/shared/context/EditorFormContext'
+import type { SelectField, SelectFieldEditorProps } from '@/shared/fieldSchema'
+
+import { OptionsEditor } from '@/form-builder/components/shared/OptionsEditor'
+import { AdvancedFields, Divider, GeneralFields } from '@/form-builder/components/shared/SharedFields'
+import { useFormContext } from '@/form-builder/context/EditorFormContext'
+import { selectFieldSchema } from '@/shared/fieldSchema'
 import { SelectInput } from '@payloadcms/ui'
 import * as React from 'react'
 
-import type { SelectField, SelectFieldEditorProps } from '../../../fieldSchema'
-
-import { selectFieldSchema } from '../../../fieldSchema'
-import { EditorTabs } from '../../layout/EditorTabs'
-import { OptionsEditor } from '../OptionsEditor'
-import { AdvancedFields, Divider, GeneralFields } from '../SharedFields'
+import { EditorTabs } from '../../canvas/EditorTabs'
 
 export function SelectFieldEditorContent() {
 	const form = useFormContext<SelectField>()

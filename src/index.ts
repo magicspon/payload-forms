@@ -6,6 +6,8 @@ import type {
 	Tab,
 } from 'payload'
 
+import { mergeCollection } from '@/shared/utils/mergeCollection'
+
 import { buildFormUploadsCollection } from './collections/form-uploads'
 import { buildFormsCollection } from './collections/forms'
 import { buildSubmissionsCollection } from './collections/submissions'
@@ -15,27 +17,26 @@ import {
 	makeSubmissionImportEndpoint,
 	type OnBatchImportComplete,
 } from './submissions/endpoints/submissionImport'
-import { mergeCollection } from './utils/mergeCollection'
 
 export type { FormsCollectionOptions } from './collections/forms'
 export type { SubmissionsCollectionOptions } from './collections/submissions'
-export * from './fieldSchema'
 export { FormFieldReferenceFeature } from './form-builder/components/lexical/FormFieldReference'
 /** Re-export types and utilities the host app may need */
 export type { OnBatchImportComplete } from './submissions/endpoints/submissionImport'
-export { buildFormSchema } from './utils/buildFormSchema'
+export { buildFormSchema } from '@/form-builder/utils/buildFormSchema'
+export { getAllFields } from '@/form-builder/utils/formTree'
+export type { FormPage, FormRow } from '@/form-builder/utils/formTree'
+export { shouldSendNotification } from '@/notifications/utils/notifications'
+export * from '@/shared/fieldSchema'
+export { mergePages } from '@/shared/utils/mergePages'
 export {
 	extractFieldsFromPages,
 	formatSubmissionValue,
 	generateSubmissionsCSV,
 	generateTemplateHeaders,
 	parseCsvRowToSubmissionData,
-} from './utils/csvTemplateUtils'
-export type { FieldDefinition } from './utils/csvTemplateUtils'
-export { getAllFields } from './utils/formTree'
-export type { FormPage, FormRow } from './utils/formTree'
-export { mergePages } from './utils/mergePages'
-export { shouldSendNotification } from './utils/notifications'
+} from '@/submissions/utils/csvTemplateUtils'
+export type { FieldDefinition } from '@/submissions/utils/csvTemplateUtils'
 
 import type { DeepPartial } from './types'
 
