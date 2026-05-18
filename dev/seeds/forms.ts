@@ -185,7 +185,7 @@ async function createKitchenSinkForm(payload: Payload) {
 		collection: 'forms',
 		where: { title: { equals: 'All Fields Demo' } },
 	})
-	if (totalDocs > 0) return
+	if (totalDocs > 0) {return}
 
 	await createForm(payload, {
 		title: 'All Fields Demo',

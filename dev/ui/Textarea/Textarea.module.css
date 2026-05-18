@@ -1,0 +1,61 @@
+@layer components {
+	.textarea {
+		--_border-width: var(--border-width, 1px);
+		--_border-color: var(--border-color, var(--color-input));
+		--_border-radius: var(--border-radius, var(--radius-lg));
+		--_bg-color: var(--bg-color, transparent);
+		--_text-size: var(--text-size, var(--text-base));
+		--_line-height: var(--line-height, var(--text-base--line-height));
+		--_placeholder-color: var(
+			--placeholder-color,
+			var(--color-muted-foreground)
+		);
+		--_scale: var(--scaling, 1);
+		--_height: var(--input-height, calc(var(--spacing) * 10));
+
+		border: var(--_border-width) solid var(--_border-color);
+		border-radius: var(--_border-radius);
+		background-color: var(--_bg-color);
+		padding-inline: calc(var(--spacing) * 2.5 * var(--_scale));
+		padding-block: calc(var(--spacing) * 2 * var(--_scale));
+		font-size: calc(var(--_text-size) * var(--_scale));
+		line-height: var(--_line-height);
+		transition:
+			color 150ms,
+			background-color 150ms,
+			border-color 150ms;
+		display: flex;
+		field-sizing: content;
+		min-height: calc(var(--_height) * var(--_scale));
+		width: 100%;
+		outline: none;
+
+		&::placeholder {
+			color: var(--_placeholder-color);
+		}
+
+		&:focus-visible {
+			--border-color: var(--color-ring);
+
+			box-shadow: 0 0 0 3px
+				color-mix(in oklch, var(--color-ring) 50%, transparent);
+		}
+
+		&[aria-invalid='true'] {
+			--border-color: var(--color-destructive);
+
+			box-shadow: 0 0 0 3px
+				color-mix(in oklch, var(--color-destructive) 20%, transparent);
+		}
+
+		&:disabled {
+			background-color: color-mix(
+				in oklch,
+				var(--color-input) 50%,
+				transparent
+			);
+			cursor: not-allowed;
+			opacity: 0.5;
+		}
+	}
+}

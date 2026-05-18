@@ -39,7 +39,7 @@ describe('Plugin integration tests', () => {
       data: {
         title: 'Test Form',
         slug: 'test-form-int',
-        pages: [{ title: 'Page 1', rows: [] }],
+        pages: [{ id: crypto.randomUUID(), title: 'Page 1', rows: [] }],
       },
     })
     expect(form.title).toBe('Test Form')

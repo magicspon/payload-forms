@@ -1,6 +1,8 @@
 import type { JSONSchema4 } from 'json-schema'
 import type { CollectionConfig, Field, RichTextField, Tab } from 'payload'
 
+import { buildFormSchema } from '@/form-builder/utils/buildFormSchema'
+import { type FormPage, getAllFields } from '@/form-builder/utils/formTree'
 import { formJSONSchema } from '@/shared/fieldSchema'
 import { nanoid } from '@/shared/utils/nanoid'
 import {
@@ -375,6 +377,22 @@ export function buildFormsCollection(
 		},
 		fields,
 		hooks: {
+			beforeChange: [
+				({ data, req }) => {
+					if (Array.isArray(data?.pages)) {
+						try {
+							const fields = getAllFields(data.pages as FormPage[])
+							data.formSchema = buildFormSchema({ fields })
+						} catch (err) {
+							req.payload.logger.warn(
+								{ err, formId: data?.id },
+								'beforeChange: failed to generate formSchema — skipping',
+							)
+						}
+					}
+					return data
+				},
+			],
 			// (FR-039) Guard against saving a form with no pages.
 			beforeValidate: [
 				({ data }) => {

@@ -1,0 +1,59 @@
+@layer components {
+	.checkbox {
+		--_size: var(--size, calc(var(--spacing) * 4));
+		--_border-width: var(--border-width, 1px);
+		--_border-color: var(--border-color, var(--color-input));
+		--_border-radius: var(--border-radius, 4px);
+		--_bg-color: var(--bg-color, transparent);
+		--_checked-bg-color: var(--checked-bg-color, var(--color-primary));
+		--_checked-border-color: var(--checked-border-color, var(--color-primary));
+
+		position: relative;
+		display: flex;
+		width: var(--_size);
+		height: var(--_size);
+		flex-shrink: 0;
+		appearance: none;
+		border-radius: var(--_border-radius);
+		border: var(--_border-width) solid var(--_border-color);
+		background-color: var(--_bg-color);
+		background-repeat: no-repeat;
+		background-position: center;
+		cursor: pointer;
+		transition:
+			background-color 150ms,
+			border-color 150ms,
+			box-shadow 150ms;
+		outline: none;
+
+		&:focus-visible {
+			--border-color: var(--color-ring);
+
+			box-shadow: 0 0 0 3px
+				color-mix(in oklch, var(--color-ring) 50%, transparent);
+		}
+
+		&:disabled {
+			cursor: not-allowed;
+			opacity: 0.5;
+		}
+
+		&[aria-invalid='true'] {
+			--border-color: var(--color-destructive);
+
+			box-shadow: 0 0 0 3px
+				color-mix(in oklch, var(--color-destructive) 20%, transparent);
+		}
+
+		&:checked {
+			background-color: var(--_checked-bg-color);
+			border-color: var(--_checked-border-color);
+			/* lucide Check icon, stroke=white */
+			background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E");
+		}
+
+		:global([data-slot='field']:has([disabled])) & {
+			opacity: 0.5;
+		}
+	}
+}

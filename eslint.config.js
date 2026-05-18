@@ -27,9 +27,18 @@ export default [
   ...payloadEsLintConfig,
   {
     plugins: { 'jsx-a11y': jsxA11y },
-    rules: {
-      'no-restricted-exports': 'off',
-      'perfectionist/sort-objects': 'off',
+		rules: {
+			'curly': 'off',
+			'no-restricted-exports': 'off',
+			'perfectionist/sort-object-types': 'off',
+      'perfectionist/sort-union-types': 'off',
+			'perfectionist/sort-objects': 'off',
+			'perfectionist/sort-jsx-props': 'off',
+			'perfectionist/sort-imports': 'off',
+			'perfectionist/sort-interfaces': 'off',
+			'perfectionist/sort-intersection-types': 'off',
+			'perfectionist/sort-switch-case': 'off',
+      'perfectionist/sort-named-imports': 'off',
       'jsx-a11y/control-has-associated-label': [
         'warn',
         {
