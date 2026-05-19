@@ -118,6 +118,7 @@ export function OptionsEditor({ onChange, options }: TOptionsEditorProps) {
 									<label htmlFor={`option-label-${index}`}>
 										<span className={styles.srOnly}>Label</span>
 										<input
+											aria-label="Option label"
 											className="field-type__input"
 											id={`option-label-${index}`}
 											onChange={(e) => updateOption(index, 'label', e.target.value)}
@@ -131,6 +132,7 @@ export function OptionsEditor({ onChange, options }: TOptionsEditorProps) {
 									<label htmlFor={`option-value-${index}`}>
 										<span className={styles.srOnly}>Value</span>
 										<input
+											aria-label="Option value"
 											className="field-type__input"
 											id={`option-value-${index}`}
 											onChange={(e) => updateOption(index, 'value', e.target.value)}

@@ -61,8 +61,7 @@ const contentComponents: Record<ArrayItemFieldType, ComponentType> = {
 	toggle: ToggleFieldEditorContent,
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const fieldSchemas: Record<ArrayItemFieldType, ZodType<any>> = {
+const fieldSchemas: Record<ArrayItemFieldType, ZodType<ArrayItemField>> = {
 	checkbox: checkboxFieldSchema,
 	consent: consentFieldSchema,
 	date: dateFieldSchema,
@@ -93,8 +92,9 @@ function SubFieldEditorContent({
 	const { contextValue, form } = useEditorForm({
 		defaultValues: subField,
 		onSubmit: (values) => {
-			onChange(values as ArrayItemField)
+			onChange(values)
 			closeModal(drawerSlug)
+			return Promise.resolve()
 		},
 		schema,
 	})

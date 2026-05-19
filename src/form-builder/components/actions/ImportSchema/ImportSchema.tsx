@@ -467,6 +467,7 @@ export function ImportSchema() {
 
 					<label className="import-schema__radio">
 						<input
+							aria-label="Add to new page"
 							checked={insertMode === 'new-page'}
 							name="insertMode"
 							onChange={() => setInsertMode('new-page')}

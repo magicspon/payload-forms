@@ -215,6 +215,7 @@ function NumberFieldRenderer({
 				</label>
 			</div>
 			<input
+				aria-label={field.label}
 				className="field-base"
 				id={`field-${field.name}`}
 				max={field.max}
@@ -319,6 +320,7 @@ function RadioFieldRenderer({
 				{field.options.map((option) => (
 					<li className="radio-group__list-item" key={option.value}>
 						<input
+							aria-label={option.label}
 							checked={value === option.value}
 							id={`${field.name}-${option.value}`}
 							name={groupName.current}
@@ -543,7 +545,7 @@ function GroupFieldRenderer({
 	value: Record<string, unknown> | undefined
 }) {
 	const subFields: ArrayItemField[] = field.rows.flatMap((row) => row.columns)
-	const current = value ?? {}
+	const current = useMemo(() => value ?? {}, [value])
 
 	const updateField = useCallback(
 		(fieldName: string, fieldValue: unknown) => {

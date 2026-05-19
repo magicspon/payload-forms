@@ -87,10 +87,8 @@ function reducer(state: State, action: Action): State {
 		case 'UPDATE_FIELD': {
 			// Mirror useSaveFormField: strip _draft, auto-generate name from label
 			const saved = { ...action.field, _draft: false } as Field
-			if ('label' in saved && !(saved as { name?: string }).name) {
-				;(saved as { name: string }).name = camelCase(
-					(saved as { label: string }).label,
-				)
+			if ('label' in saved && !saved.name) {
+				saved.name = camelCase(saved.label)
 			}
 			return {
 				...state,
@@ -156,7 +154,7 @@ export function useFormBuilder(initialPages: FormPage[]): UseFormBuilderReturn {
 		return new Set(
 			allFields
 				.filter((f) => f.id !== state.selectedFieldId && f.type !== 'message')
-				.map((f) => ('name' in f ? (f as { name: string }).name : ''))
+				.map((f) => ('name' in f ? f.name : ''))
 				.filter(Boolean),
 		)
 	}, [state.pages, state.selectedFieldId])

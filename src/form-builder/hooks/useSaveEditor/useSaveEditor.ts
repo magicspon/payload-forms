@@ -1,4 +1,4 @@
-import type { AllFields, Field } from '@/shared/fieldSchema'
+import type { AllFields, Field, MessageField } from '@/shared/fieldSchema'
 import type { ZodType } from 'zod'
 
 import { useEditorForm } from '@/form-builder/context/EditorFormContext'
@@ -23,15 +23,15 @@ export function useSaveEditor<U extends AllFields>({
 		const allFields = getAllFields(pages)
 		return new Set(
 			allFields
-				.filter((f) => f.id !== field.id && f.type !== 'message')
-				.map((f) => (f as { name: string }).name),
+				.filter((f): f is Exclude<Field, MessageField> => f.id !== field.id && f.type !== 'message')
+				.map((f) => f.name),
 		)
 	}, [pages, field.id])
 
 	const { contextValue, form } = useEditorForm({
 		defaultValues: field,
 		onSubmit: (value) => {
-			saveField(value as Field)
+			saveField(value)
 			return Promise.resolve()
 		},
 		schema: onChangeValidator,

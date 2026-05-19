@@ -22,13 +22,12 @@ type ConditionsFieldProps = {
 
 export function NameField({ field }: FieldProps) {
 	const { existingFieldNames } = useEditorSettings()
-	const value = (field.state.value as string) ?? ''
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	const form = useFormContext<any>()
+	const value = typeof field.state.value === 'string' ? field.state.value : ''
+	const form = useFormContext<{ label?: string; name: string }>()
 	const { value: locked } = useField<boolean>({ path: 'locked' })
 
-	const label = (form.values as Record<string, unknown>).label
-	const fromLabel = typeof label === 'string' ? camelCase(label) : ''
+	const fromLabel = camelCase(form.values.label ?? '')
+
 	const effectiveValue = value.length > 0 ? value : fromLabel
 
 	// True when the user has explicitly typed into the name field.
@@ -89,7 +88,7 @@ export function LabelField({ field }: FieldProps) {
 			showError={
 				field.state.meta.isTouched && field.state.meta.errors.length > 0
 			}
-			value={(field.state.value as string) ?? ''}
+			value={typeof field.state.value === 'string' ? field.state.value : ''}
 		/>
 	)
 }
@@ -97,7 +96,7 @@ export function LabelField({ field }: FieldProps) {
 export function RequiredField({ field }: FieldProps) {
 	return (
 		<CheckboxInput
-			checked={field.state.value as boolean}
+			checked={!!field.state.value}
 			label="Required"
 			onToggle={(e) => field.handleChange(e.target.checked)}
 		/>
@@ -129,7 +128,7 @@ export function ErrorMessageField({ field }: FieldProps) {
 				field.handleChange(e.target.value)
 			}
 			path="errorMessage"
-			value={(field.state.value as string) ?? ''}
+			value={typeof field.state.value === 'string' ? field.state.value : ''}
 		/>
 	)
 }
@@ -143,7 +142,7 @@ export function InstructionsField({ field }: FieldProps) {
 				field.handleChange(e.target.value)
 			}
 			path="instructions"
-			value={(field.state.value as string) ?? ''}
+			value={typeof field.state.value === 'string' ? field.state.value : ''}
 		/>
 	)
 }
@@ -157,7 +156,7 @@ export function PlaceholderField({ field }: FieldProps) {
 				field.handleChange(e.target.value)
 			}
 			path="placeholder"
-			value={(field.state.value as string) ?? ''}
+			value={typeof field.state.value === 'string' ? field.state.value : ''}
 		/>
 	)
 }
@@ -171,7 +170,7 @@ export function DefaultValueField({ field }: FieldProps) {
 				field.handleChange(e.target.value)
 			}
 			path="defaultValue"
-			value={(field.state.value as string) ?? ''}
+			value={typeof field.state.value === 'string' ? field.state.value : ''}
 		/>
 	)
 }
@@ -190,8 +189,7 @@ export function AdvancedFields({
 	children?: React.ReactNode
 	exclude?: string[]
 }) {
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	const form = useFormContext<any>()
+	const form = useFormContext<{ defaultValue?: unknown; errorMessage?: string; hidden: boolean; instructions?: string; name: string; placeholder?: string }>()
 
 	return (
 		<div className={styles.grid}>
@@ -237,8 +235,7 @@ export function GeneralFields({
 	children?: React.ReactNode
 	exclude?: string[]
 }) {
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	const form = useFormContext<any>()
+	const form = useFormContext<{ label: string; required: boolean }>()
 
 	return (
 		<div className={styles.grid}>

@@ -11,12 +11,12 @@ export type FieldMeta = { errors: string[]; isTouched: boolean }
 
  
 export type AnyFieldApi = {
-  handleChange: (value: unknown) => void
+  handleChange(value: unknown): void
   state: { meta: FieldMeta; value: unknown }
 }
 
 type TypedFieldApi<T, K extends keyof T> = {
-  handleChange: (value: T[K]) => void
+  handleChange(value: T[K]): void
   state: { meta: FieldMeta; value: T[K] }
 }
 
@@ -112,7 +112,7 @@ export const EditorFormCtxProvider = EditorFormCtx.Provider
 
 // ── useFormContext ────────────────────────────────────────────────────────────
 
-export function useFormContext<T extends AllFields = AllFields>(): EditorFormInstance<T> {
+export function useFormContext<T extends object = AllFields>(): EditorFormInstance<T> {
   const ctx = useEditorFormCtx()
   return {
     Field: FieldImpl as EditorFormInstance<T>['Field'],
@@ -138,9 +138,9 @@ export function useEditorForm<T extends object>({
   const [isSubmitting, setIsSubmitting] = React.useState(false)
 
   const fieldErrors = React.useMemo(() => {
-    if (!schema) {return {} as Record<string, string[]>}
+    if (!schema) {return {}}
     const result = schema.safeParse(values)
-    if (result.success) {return {} as Record<string, string[]>}
+    if (result.success) {return {}}
     const errs: Record<string, string[]> = {}
     for (const issue of result.error.issues) {
       const key = String(issue.path[0] ?? '')

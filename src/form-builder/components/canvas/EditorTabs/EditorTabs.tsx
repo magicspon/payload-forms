@@ -65,16 +65,12 @@ export function EditorTabs<U extends AllFields>({
 							Cancel
 						</Button>
 						<form.Subscribe
-							selector={(state) => [
-								state.canSubmit,
-								state.isSubmitting,
-								state.values,
-							]}
+							selector={(state) => [state.canSubmit, state.isSubmitting, state.values] as const}
 						>
 							{([canSubmit, isSubmitting, values]) => {
-								const typedValues = values as { label?: string; name?: string }
-								const effectiveName =
-									typedValues.name || camelCase(typedValues.label ?? '')
+								const label = 'label' in values ? (values as { label?: string }).label : undefined
+								const name = 'name' in values ? (values as { name?: string }).name : undefined
+								const effectiveName = name || camelCase(label ?? '')
 								const hasDuplicateName =
 									!!effectiveName && existingFieldNames.has(effectiveName)
 

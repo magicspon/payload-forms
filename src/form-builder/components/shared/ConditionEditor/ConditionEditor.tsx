@@ -1,4 +1,5 @@
 import type { AnyFieldApi } from '@/form-builder/context/EditorFormContext'
+import type { ReactSelectOption } from '@payloadcms/ui'
 import type { ChangeEvent } from 'react'
 
 import { type FormPage, getAllFields } from '@/form-builder/utils/formTree'
@@ -80,7 +81,7 @@ function ConditionRow({
 				label={index === 0 ? 'Field' : undefined}
 				name={`condition-field-${index}`}
 				onChange={(option) => {
-					const value = option ? (option as { value: string }).value : ''
+					const value = !Array.isArray(option) && option ? String((option as ReactSelectOption).value) : ''
 					onUpdate(index, { ...condition, field: value, value: undefined })
 				}}
 				options={availableFields
@@ -98,10 +99,8 @@ function ConditionRow({
 				label={index === 0 ? 'Condition' : undefined}
 				name={`condition-operator-${index}`}
 				onChange={(option) => {
-					const value = option
-						? ((option as { value: string }).value as ConditionOperator)
-						: 'equals'
-					onUpdate(index, { ...condition, operator: value })
+					const raw = !Array.isArray(option) && option ? String((option as ReactSelectOption).value) : 'equals'
+					onUpdate(index, { ...condition, operator: raw as ConditionOperator })
 				}}
 				options={operators.map((op) => ({
 					label: op.label,
@@ -118,7 +117,7 @@ function ConditionRow({
 						label={index === 0 ? 'Value' : undefined}
 						name={`condition-value-${index}`}
 						onChange={(option) => {
-							const value = option ? (option as { value: string }).value : ''
+							const value = !Array.isArray(option) && option ? String((option as ReactSelectOption).value) : ''
 							onUpdate(index, { ...condition, value })
 						}}
 						options={fieldOptions.map((opt) => ({

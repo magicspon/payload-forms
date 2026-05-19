@@ -24,7 +24,7 @@ export function MessageFieldEditorContent({
 						Message Content <span className="required">*</span>
 					</p>
 					<div className={styles.isolateRelative}>
-						<RichTextEditor onChange={f.handleChange} value={f.state.value} />
+						<RichTextEditor onChange={(v) => f.handleChange(v)} value={f.state.value} />
 					</div>
 					{f.state.meta.isTouched && f.state.meta.errors.length > 0 && (
 						<p className="field-error">{f.state.meta.errors.join(', ')}</p>

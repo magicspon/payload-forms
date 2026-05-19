@@ -157,6 +157,7 @@ export function EmailNotificationInput({ path }: TextFieldClientProps) {
 			<div className={styles.inputWrapper}>
 				<input
 					aria-invalid={!!inputError}
+					aria-label="Email"
 					className={styles.input}
 					id="notification-email-input"
 					onBlur={commitInput}
