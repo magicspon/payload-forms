@@ -1,6 +1,5 @@
 // @ts-check
 
-import jsxA11y from 'eslint-plugin-jsx-a11y'
 import payloadEsLintConfig from '@payloadcms/eslint-config'
 
 export const defaultESLintIgnores = [
@@ -26,8 +25,7 @@ export const defaultESLintIgnores = [
 export default [
   ...payloadEsLintConfig,
   {
-    plugins: { 'jsx-a11y': jsxA11y },
-		rules: {
+    rules: {
 			'curly': 'off',
 			'no-restricted-exports': 'off',
 			'perfectionist/sort-object-types': 'off',
@@ -39,30 +37,6 @@ export default [
 			'perfectionist/sort-intersection-types': 'off',
 			'perfectionist/sort-switch-case': 'off',
       'perfectionist/sort-named-imports': 'off',
-      'jsx-a11y/control-has-associated-label': [
-        'warn',
-        {
-          labelAttributes: ['label'],
-          controlComponents: [],
-          ignoreElements: ['audio', 'canvas', 'embed', 'input', 'textarea', 'tr', 'video'],
-          ignoreRoles: [
-            'grid',
-            'listbox',
-            'menu',
-            'menubar',
-            'menuitem',
-            'menuitemcheckbox',
-            'menuitemradio',
-            'option',
-            'none',
-            'presentation',
-            'progressbar',
-            'radio',
-            'radiogroup',
-          ],
-          depth: 3,
-        },
-      ],
     },
   },
   {

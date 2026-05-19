@@ -7,7 +7,6 @@ import { numberFieldSchema } from '@/shared/fieldSchema'
 import { TextInput } from '@payloadcms/ui'
 
 import { EditorTabs } from '../../canvas/EditorTabs'
-import styles from './NumberFieldEditor.module.css'
 
 export function NumberFieldEditorContent() {
 	const form = useFormContext<NumberField>()

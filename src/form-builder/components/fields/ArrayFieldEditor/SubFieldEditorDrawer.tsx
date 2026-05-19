@@ -92,7 +92,7 @@ function SubFieldEditorContent({
 
 	const { contextValue, form } = useEditorForm({
 		defaultValues: subField,
-		onSubmit: async (values) => {
+		onSubmit: (values) => {
 			onChange(values as ArrayItemField)
 			closeModal(drawerSlug)
 		},

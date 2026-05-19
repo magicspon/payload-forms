@@ -275,6 +275,7 @@ export function ImportSchema() {
 				</p>
 				<input
 					accept=".csv"
+					aria-label="Upload CSV file"
 					onChange={handleFileChange}
 					ref={fileInputRef}
 					style={{ display: 'none' }}
@@ -340,7 +341,7 @@ export function ImportSchema() {
 
 									{/* ── Options editor (checkbox / radio / select) ── */}
 									{isOptionsType(m.fieldType) && (
-										<tr>
+										<tr aria-label="Field options">
 											<td className="import-schema__options-cell" colSpan={3}>
 												<div className="import-schema__options">
 													<p className="import-schema__options-label">
@@ -426,6 +427,7 @@ export function ImportSchema() {
 
 					<label className="import-schema__radio">
 						<input
+							aria-label="Replace all fields"
 							checked={insertMode === 'replace'}
 							name="insertMode"
 							onChange={() => setInsertMode('replace')}
@@ -437,6 +439,7 @@ export function ImportSchema() {
 
 					<label className="import-schema__radio">
 						<input
+							aria-label="Append to existing page"
 							checked={insertMode === 'append'}
 							name="insertMode"
 							onChange={() => {

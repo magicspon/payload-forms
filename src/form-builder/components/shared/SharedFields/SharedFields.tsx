@@ -27,8 +27,7 @@ export function NameField({ field }: FieldProps) {
 	const form = useFormContext<any>()
 	const { value: locked } = useField<boolean>({ path: 'locked' })
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	const label = (form.values as any).label
+	const label = (form.values as Record<string, unknown>).label
 	const fromLabel = typeof label === 'string' ? camelCase(label) : ''
 	const effectiveValue = value.length > 0 ? value : fromLabel
 

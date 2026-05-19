@@ -55,6 +55,7 @@ export function EditPage({ pageId }: TEditorPageProps) {
 							Page Title
 						</label>
 						<input
+							aria-label="Page title"
 							className="field-type__input"
 							id="page-title"
 							onChange={(e) => setTitle(e.target.value)}
@@ -68,6 +69,7 @@ export function EditPage({ pageId }: TEditorPageProps) {
 							Back Button Label
 						</label>
 						<input
+							aria-label="Back button label"
 							className="field-type__input"
 							id="page-back-button"
 							onChange={(e) => setBackButton(e.target.value)}
@@ -81,6 +83,7 @@ export function EditPage({ pageId }: TEditorPageProps) {
 							Next Button Label
 						</label>
 						<input
+							aria-label="Next button label"
 							className="field-type__input"
 							id="page-next-button"
 							onChange={(e) => setNextButton(e.target.value)}

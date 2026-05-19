@@ -10,7 +10,6 @@ import { textareaFieldSchema } from '@/shared/fieldSchema'
 import { TextareaInput, TextInput } from '@payloadcms/ui'
 
 import { EditorTabs } from '../../canvas/EditorTabs'
-import styles from './TextareaFieldEditor.module.css'
 
 export function TextareaFieldEditorContent() {
 	const form = useFormContext<TextareaField>()
