@@ -30,6 +30,7 @@
     ]
   },
   "include": [
+	  "./tsdown.config.ts",
     "./src/**/*.ts",
     "./src/**/*.tsx",
     "./dev/next-env.d.ts",
