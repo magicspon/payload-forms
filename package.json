@@ -1,6 +1,6 @@
 {
   "name": "@spon/payload-forms",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Payload CMS plugin — visual form builder with drag-drop editor, submissions, notifications, and optional multitenancy",
   "license": "MIT",
   "type": "module",
@@ -29,11 +29,11 @@
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "repository": {
-	  "url": "https://github.com/magicspon/payload-forms"
+    "url": "https://github.com/magicspon/payload-forms"
   },
   "author": {
-	 	"name": "Dave Stockley",
-		"email": "magicspon@gmail.com"
+    "name": "Dave Stockley",
+    "email": "magicspon@gmail.com"
   },
   "files": [
     "dist"
