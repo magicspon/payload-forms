@@ -5,6 +5,7 @@ import { describe, expect, it, vi } from 'vitest'
 
 // Stub all editor components to avoid pulling in UI/DnD dependencies in a unit test
 vi.mock('@/form-builder/components/fields/ArrayFieldEditor', () => ({ ArrayFieldEditor: vi.fn() }))
+vi.mock('@/form-builder/components/fields/GroupFieldEditor', () => ({ GroupFieldEditor: vi.fn() }))
 vi.mock('@/form-builder/components/fields/CheckboxFieldEditor', () => ({ CheckboxFieldEditor: vi.fn() }))
 vi.mock('@/form-builder/components/fields/ConsentFieldEditor', () => ({ ConsentFieldEditor: vi.fn() }))
 vi.mock('@/form-builder/components/fields/DateFieldEditor', () => ({ DateFieldEditor: vi.fn() }))

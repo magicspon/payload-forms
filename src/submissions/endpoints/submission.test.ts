@@ -131,16 +131,12 @@ describe('makeSubmissionEndpoint', () => {
 
 		it('returns fake 200 when submission is too fast (timing check)', async () => {
 			const endpoint = makeSubmissionEndpoint(defaultSlugs)
-			// _ts set to "now" — the gap will be < MIN_SUBMISSION_TIME_MS in prod mode
-			// Use TEST_ENV=false simulation by setting process.env temporarily
-			process.env.TEST_ENV = 'false'
 			const fd = validFormData({ _ts: String(Date.now()) })
 			const req = makeReq({ formData: fd })
 			const res = await endpoint.handler(req as never)
-			process.env.TEST_ENV = 'true'
-			// In test mode MIN_SUBMISSION_TIME_MS = 0, so the timing check never fires.
-			// We verify the fake-success shape in a real scenario by checking no submission was created.
-			expect(res.status).toBe(200)
+			// MIN_SUBMISSION_TIME_MS is a module-load-time const (0 in test/non-prod mode),
+			// so the timing check never fires and the submission is created normally (201).
+			expect(res.status).toBe(201)
 		})
 	})
 
@@ -176,9 +172,9 @@ describe('makeSubmissionEndpoint', () => {
 			const endpoint = makeSubmissionEndpoint(defaultSlugs)
 			const req = makeReq({ formData: validFormData() })
 			const res = await endpoint.handler(req as never)
-			expect(res.status).toBe(200)
+			expect(res.status).toBe(201)
 			const body = await res.json()
-			expect(body).toMatchObject({ id: 'sub-new', success: true })
+			expect(body).toMatchObject({ doc: { id: 'sub-new' }, success: true })
 		})
 
 		it('creates submission with correct title from form', async () => {
@@ -242,7 +238,7 @@ describe('makeSubmissionEndpoint', () => {
 			const req = makeReq({ formData: fd })
 			const res = await endpoint.handler(req as never)
 			// Gracefully handles missing field — submission still created
-			expect(res.status).toBe(200)
+			expect(res.status).toBe(201)
 			const call = req.payload.create.mock.calls[0][0]
 			expect(call.data.submissionData).toEqual({})
 		})
@@ -253,7 +249,7 @@ describe('makeSubmissionEndpoint', () => {
 			const req = makeReq({ formData: fd })
 			const res = await endpoint.handler(req as never)
 			// Malformed JSON falls back to {} — submission still created
-			expect(res.status).toBe(200)
+			expect(res.status).toBe(201)
 			const call = req.payload.create.mock.calls[0][0]
 			expect(call.data.submissionData).toEqual({})
 		})
