@@ -17,6 +17,7 @@ interface FormProps {
 
 export function Form({ data, onSubmit, defaultValues, className, showHidden }: FormProps) {
 	const baseUrl = typeof window !== 'undefined' ? window.location.origin : ''
+	const mountTime = React.useRef(String(Date.now()))
 
 	const handleSubmit = React.useCallback(
 		async (values: FormValues, { _hp }: { _hp?: string }) => {
@@ -27,7 +28,7 @@ export function Form({ data, onSubmit, defaultValues, className, showHidden }: F
 				value: values as Record<string, unknown>,
 				id: String(data.id),
 				_hp: _hp ?? '',
-				_ts: String(Date.now()),
+				_ts: mountTime.current,
 			})
 			await fetch(`${baseUrl}/api/submit`, {
 				method: 'POST',

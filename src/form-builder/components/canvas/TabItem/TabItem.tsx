@@ -40,7 +40,6 @@ export function TabItem({ id, children, count, disabled, tab }: TabItemProps) {
 			data-testid="tab-item"
 			ref={setNodeRef}
 			style={style}
-			{...attributes}
 		>
 			<Inline
 				className={cx(styles.tabInline, { [styles.tabInlineActive]: id === tab })}
@@ -50,6 +49,7 @@ export function TabItem({ id, children, count, disabled, tab }: TabItemProps) {
 					data-testid="handle"
 					ref={setActivatorNodeRef}
 					{...listeners}
+					{...attributes}
 				>
 					⋮⋮
 				</div>

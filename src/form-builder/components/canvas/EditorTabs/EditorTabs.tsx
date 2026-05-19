@@ -59,7 +59,7 @@ export function EditorTabs<U extends AllFields>({
 					<Inline className={styles.actions}>
 						<Button
 							buttonStyle="secondary"
-							data-testid="cancel-button"
+							extraButtonProps={{ 'data-testid': 'cancel-button' }}
 							onClick={() => setSelectedField(null)}
 						>
 							Cancel
@@ -80,7 +80,7 @@ export function EditorTabs<U extends AllFields>({
 
 								return (
 									<Button
-										data-testid="save-button"
+										extraButtonProps={{ 'data-testid': 'save-button' }}
 										disabled={!canSubmit || !!isSubmitting || hasDuplicateName}
 										onClick={submitHandle}
 										type="button"

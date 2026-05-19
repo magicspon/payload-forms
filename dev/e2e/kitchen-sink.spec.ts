@@ -6,13 +6,13 @@ async function advanceFromPage1(page: Page) {
   await page.getByLabel('Last Name').fill('Smith')
   await page.getByLabel('Email Address').fill('jane@example.com')
   await page.getByRole('button', { name: /continue/i }).click()
-  await expect(page.getByLabel('Country')).toBeVisible()
+  await expect(page.getByLabel('Country')).toBeVisible({ timeout: 10000 })
 }
 
 // Navigate page 2 → page 3 (no required fields on page 2)
 async function advanceFromPage2(page: Page) {
   await page.getByRole('button', { name: /continue/i }).click()
-  await expect(page.getByLabel('Street Address')).toBeVisible()
+  await expect(page.getByLabel('Street Address')).toBeVisible({ timeout: 10000 })
 }
 
 test.describe('All Fields Demo — page 1', () => {

@@ -13,7 +13,7 @@ async function gotoCreate(page: Page) {
  */
 async function addFieldToRow(page: Page, fieldType: string, rowIndex = 0) {
   await page.getByTestId('add-new-field').nth(rowIndex).click()
-  await page.locator(`#field-type-${fieldType}`).click()
+  await page.locator(`#field-type-${fieldType}`).first().click()
   await expect(page.getByTestId('field-item').first()).toBeVisible()
   // Adding a field via the popup always opens the editor drawer.
   // Close it so further canvas interactions aren't blocked by the overlay.
@@ -34,10 +34,11 @@ async function saveFieldEditor(page: Page) {
   await expect(page.getByTestId('save-button')).not.toBeVisible()
 }
 
-/** Publish the form and wait for the redirect to the edit URL. */
+/** Publish the form and wait for the redirect to the edit URL and save to complete. */
 async function publishForm(page: Page) {
   await page.getByRole('button', { name: /publish/i }).click()
   await page.waitForURL(/\/admin\/collections\/forms\/[^/]+$/)
+  await page.waitForLoadState('networkidle')
 }
 
 // ─── Canvas — basic rendering ─────────────────────────────────────────────────
@@ -206,7 +207,7 @@ test.describe('Form builder — row operations', () => {
     await page.getByTestId('add-row-button').click()
     // Add email to the new (second) row — drawer opens; count assertion works regardless
     await page.getByTestId('add-new-field').last().click()
-    await page.locator('#field-type-email').click()
+    await page.locator('#field-type-email').last().click()
 
     await expect(page.getByTestId('field-item')).toHaveCount(2)
     await expect(page.getByTestId('form-row')).toHaveCount(2)
@@ -278,13 +279,16 @@ test.describe('Form builder — publish and render', () => {
     // Add a new row with a consent field — drawer opens automatically; fill it inline
     await page.getByTestId('add-row-button').click()
     await page.getByTestId('add-new-field').last().click()
-    await page.locator('#field-type-consent').click()
+    await page.locator('#field-type-consent').last().click()
     await expect(page.getByTestId('save-button')).toBeVisible()
     await page.getByLabel('Label').fill('I agree to the terms')
     await saveFieldEditor(page)
 
     // Publish the form
     await publishForm(page)
+
+    // Wait for the slug to be auto-populated (slugField generates on save)
+    await expect(page.getByLabel('Slug')).not.toHaveValue('', { timeout: 10000 })
 
     // Read the auto-generated slug from the sidebar
     const slug = await page.getByLabel('Slug').inputValue()

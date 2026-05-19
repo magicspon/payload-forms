@@ -11,8 +11,9 @@ const createForm = (
 		payload.create as unknown as (opts: {
 			collection: string
 			data: unknown
+			draft: boolean
 		}) => Promise<unknown>
-	)({ collection: 'forms', data })
+	)({ collection: 'forms', data, draft: false })
 
 const uid = () => crypto.randomUUID()
 

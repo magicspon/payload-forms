@@ -38,6 +38,7 @@ function evaluateCondition(
 				fieldValue === undefined ||
 				fieldValue === null ||
 				fieldValue === '' ||
+				fieldValue === false ||
 				(Array.isArray(fieldValue) && fieldValue.length === 0)
 			)
 
@@ -46,6 +47,7 @@ function evaluateCondition(
 				fieldValue !== undefined &&
 				fieldValue !== null &&
 				fieldValue !== '' &&
+				fieldValue !== false &&
 				!(Array.isArray(fieldValue) && fieldValue.length === 0)
 			)
 

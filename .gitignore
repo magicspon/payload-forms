@@ -19,7 +19,7 @@
 # production
 /build
 /dist
-
+/.playwright-mcp
 # misc
 .DS_Store
 *.pem

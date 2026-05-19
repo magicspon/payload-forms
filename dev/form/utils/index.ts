@@ -8,6 +8,7 @@ import type {
 	NamedFieldProps,
 } from '@spon/payload-forms/form'
 import type { FormField, FormPage, FormValues } from '../types'
+import { evaluateConditions } from '../hooks/useConditionalFields/evaluateConditions'
 
 export function createZodSchema(
 	formSchema: FormData['formSchema'],
@@ -71,7 +72,8 @@ export function getDefaultValues(pages?: FormPage[]): FormValues {
 								if (dv) hasDefaults = true
 							} else if (
 								'defaultValue' in subField &&
-								subField.defaultValue !== undefined
+								subField.defaultValue !== undefined &&
+								subField.defaultValue !== ''
 							) {
 								itemDefaults[subField.name] = subField.defaultValue as
 									| string
@@ -108,13 +110,7 @@ export function getDefaultValues(pages?: FormPage[]): FormValues {
 export function isVisible(field: FormField, values: FormValues): boolean {
 	if (field.type === 'message') return true
 	if (field.hidden === true) return false
-	if (!field.conditions) return true
-	const { logic, conditions } = field.conditions
-	const results = conditions.map(({ field: f, operator, value }: { field: string; operator: string; value?: string | number }) => {
-		const fieldValue = values[f]
-		return operator === 'equals' ? fieldValue === value : fieldValue !== value
-	})
-	return logic === 'and' ? results.every(Boolean) : results.some(Boolean)
+	return evaluateConditions(field.conditions, values)
 }
 
 export function extractMessage(error: unknown): string {
@@ -173,7 +169,8 @@ export function makeValidator(
 
 	// Custom required message takes priority for empty values so that
 	// field.errorMessage is shown instead of a generic Zod string.
-	const requiredMsg = field.errorMessage ?? 'This field is required'
+	// Use || so an empty string errorMessage falls through to the default.
+	const requiredMsg = field.errorMessage || 'This field is required'
 
 	// TanStack Form passes `{ value: unknown }` — cast internally.
 	return ({ value }: { value: unknown }) => {

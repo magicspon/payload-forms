@@ -17,7 +17,7 @@ import {
 export default function TextField(
 	props: TextFieldProps | EmailFieldProps | NumberFieldProps,
 ) {
-	const field = useFieldContext<string>()
+	const field = useFieldContext<string | number>()
 	const errors = useStore(field.store, (state) => state.meta.errors)
 	const inputType =
 		props.type === 'email'
@@ -41,13 +41,13 @@ export default function TextField(
 				step={'step' in props ? props.step : undefined}
 				minLength={'minLength' in props ? props.minLength : undefined}
 				maxLength={'maxLength' in props ? props.maxLength : undefined}
-				value={field.state.value as string}
+				value={field.state.value as string | number}
 				onChange={(e) =>
 					props.type === 'number'
 						? field.handleChange(
 								Number.isNaN(e.target.valueAsNumber)
 									? ''
-									: e.target.valueAsNumber.toString(),
+									: e.target.valueAsNumber,
 							)
 						: field.handleChange(e.target.value)
 				}
