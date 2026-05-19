@@ -1,25 +1,15 @@
-import { expect, test } from '@playwright/test'
-import path from 'node:path'
-import { loginAsAdmin } from './helpers/auth'
+import path from 'path'
+import { fileURLToPath } from 'url'
+import { test as setup } from '@playwright/test'
 
-export const ADMIN_AUTH_FILE = path.resolve(
-	import.meta.dirname,
-	'../.auth/admin.json',
-)
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
+const ADMIN_AUTH_FILE = path.resolve(__dirname, '../.auth/admin.json')
 
-test.describe('Admin user — dashboard access', () => {
-	test('site admin can log in and view the dashboard', async ({ page }) => {
-		await loginAsAdmin(page)
-
-		// After login, Payload redirects to /admin
-		await expect(page).toHaveURL(/\/admin($|\/)(?!login)/, { timeout: 10_000 })
-
-		// The Payload dashboard renders a heading or nav that confirms we're in
-		await page.waitForURL((url) => !url.pathname.includes('/login'), {
-			waitUntil: 'networkidle',
-		})
-
-		// Persist the authenticated session for all downstream browser projects
-		await page.context().storageState({ path: ADMIN_AUTH_FILE })
-	})
+setup('authenticate as admin', async ({ page }) => {
+  await page.goto('/admin/login')
+  await page.locator('input[name="email"]').fill('dev@payloadcms.com')
+  await page.locator('input[name="password"]').fill('test')
+  await page.getByRole('button', { name: /login/i }).click()
+  await page.waitForURL(/\/admin($|\/)(?!login)/)
+  await page.context().storageState({ path: ADMIN_AUTH_FILE })
 })

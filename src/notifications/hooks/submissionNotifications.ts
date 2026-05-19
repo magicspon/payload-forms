@@ -1,6 +1,8 @@
+import type { FieldConditions } from '@/shared/fieldSchema'
 import type { Team, TeamMember, User } from '@/shared/types'
 import type { CollectionBeforeChangeHook } from 'payload'
 
+import { shouldSendNotification } from '@/notifications/utils/notifications'
 import { attemptAsync } from '@/shared/utils/attemptAsync'
 import { replaceTemplatePlaceholders } from '@/shared/utils/replaceDataPlaceholders'
 import { convertLexicalToHTML } from '@payloadcms/richtext-lexical/html'
@@ -8,9 +10,6 @@ import { convertLexicalToPlaintext } from '@payloadcms/richtext-lexical/plaintex
 import { z } from 'zod'
 
 import type { CollectionSlugs } from '../..'
-import type { FieldConditions } from '../../fieldSchema'
-
-import { shouldSendNotification } from '../../utils/notifications'
 
 /** Matches a bare `{{token}}` entry — strict so partial tokens aren't resolved. */
 const TOKEN_RE = /^\{\{\s*(\w+)\s*\}\}$/

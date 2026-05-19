@@ -1,18 +1,17 @@
-import { useFormContext } from '@/shared/context/EditorFormContext'
-import { SelectInput } from '@payloadcms/ui'
-
 import type {
 	CheckboxField,
 	CheckboxFieldEditorProps,
-} from '../../../fieldSchema'
+} from '@/shared/fieldSchema'
 
-import { checkboxFieldSchema } from '../../../fieldSchema'
-import { EditorTabs } from '../../layout/EditorTabs'
-import { OptionsEditor } from '../OptionsEditor'
-import { AdvancedFields, GeneralFields } from '../SharedFields'
-import styles from './CheckboxFieldEditor.module.css'
+import { OptionsEditor } from '@/form-builder/components/shared/OptionsEditor'
+import { AdvancedFields, Divider, GeneralFields } from '@/form-builder/components/shared/SharedFields'
+import { useFormContext } from '@/form-builder/context/EditorFormContext'
+import { checkboxFieldSchema } from '@/shared/fieldSchema'
+import { SelectInput } from '@payloadcms/ui'
 
-function CheckboxFieldEditorContent() {
+import { EditorTabs } from '../../canvas/EditorTabs'
+
+export function CheckboxFieldEditorContent() {
 	const form = useFormContext<CheckboxField>()
 
 	return (
@@ -27,7 +26,7 @@ function CheckboxFieldEditorContent() {
 					)}
 				</form.Field>
 			</GeneralFields>
-			<hr className={styles.divider} />
+			<Divider />
 			<AdvancedFields exclude={['defaultValue']}>
 				<form.Field name="defaultValue">
 					{(f) => (

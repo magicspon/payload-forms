@@ -3,7 +3,15 @@
 import type { JSONFieldClientProps } from 'payload'
 import type { ChangeEvent } from 'react'
 
-import { Stack } from '@/shared/ui/layout'
+import { type FormPage, getAllFields } from '@/form-builder/utils/formTree'
+import {
+	type Condition,
+	type ConditionOperator,
+	conditionOperators,
+	type Field,
+	type FieldConditions,
+} from '@/shared/fieldSchema'
+import { Stack } from '@/shared/layout'
 import {
 	Button,
 	PlusIcon,
@@ -14,14 +22,6 @@ import {
 } from '@payloadcms/ui'
 import { useEffect, useState } from 'react'
 
-import {
-	type Condition,
-	type ConditionOperator,
-	conditionOperators,
-	type Field,
-	type FieldConditions,
-} from '../../../fieldSchema'
-import { type FormPage, getAllFields } from '../../../utils/formTree'
 import styles from './NotificationRuleConditionEditor.module.css'
 
 type NotificationRuleConditionEditorProps = JSONFieldClientProps
@@ -272,7 +272,7 @@ export function NotificationRuleConditionEditor({
 	return (
 		<div className={styles.container}>
 			<div className={styles.header}>
-				<label className={styles.headerLabel}>Send Conditions</label>
+				<p className={styles.headerLabel}>Send Conditions</p>
 				{conditionsList.length > 1 && (
 					<Button
 						margin={false}

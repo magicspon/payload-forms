@@ -133,9 +133,10 @@ describe('makeSubmissionImportEndpoint', () => {
 
 		const endpoint = makeSubmissionImportEndpoint(
 			() => true,
-			async (args) => {
+			(args) => {
 				batchCallCount++
 				batchArgs = args as Record<string, unknown>
+				return Promise.resolve()
 			},
 			{ forms: 'forms', formUploads: 'form-uploads', submissions: 'submissions' },
 		)

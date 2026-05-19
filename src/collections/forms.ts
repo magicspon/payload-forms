@@ -1,6 +1,9 @@
 import type { JSONSchema4 } from 'json-schema'
 import type { CollectionConfig, Field, RichTextField, Tab } from 'payload'
 
+import { buildFormSchema } from '@/form-builder/utils/buildFormSchema'
+import { type FormPage, getAllFields } from '@/form-builder/utils/formTree'
+import { formJSONSchema } from '@/shared/fieldSchema'
 import { nanoid } from '@/shared/utils/nanoid'
 import {
 	BoldFeature,
@@ -13,8 +16,10 @@ import {
 } from '@payloadcms/richtext-lexical'
 import { APIError, slugField } from 'payload'
 
-import { formJSONSchema } from '../fieldSchema'
 import { FormFieldReferenceFeature } from '../form-builder/components/lexical/FormFieldReference'
+
+
+
 
 const basicEditor = lexicalEditor({
 	features: [
@@ -66,7 +71,7 @@ export interface FormsCollectionOptions {
 
 	tabs?: Tab[]
 
-	/** teamField to include in the Settings tab, or undefined to omit. */
+	/** teamField to include in the sidebar, or undefined to omit. */
 	teamField?: Field
 }
 
@@ -86,12 +91,12 @@ export function buildFormsCollection(
 		livePreviewUrl,
 		localeOptions,
 		settings = [],
-		teamField,
 
 		tabLabels = {
 			canvas: 'Canvas',
 			settings: 'Settings',
 		},
+		teamField,
 	} = opts
 
 	const settingsFields: Field[] = []
@@ -107,10 +112,6 @@ export function buildFormsCollection(
 			options: localeOptions,
 			required: true,
 		})
-	}
-
-	if (teamField) {
-		settingsFields.push(teamField)
 	}
 
 	settingsFields.push(...settings)
@@ -135,10 +136,6 @@ export function buildFormsCollection(
 				},
 			],
 			label: tabLabels?.canvas ?? 'Canvas',
-		},
-		{
-			fields: settingsFields,
-			label: tabLabels?.settings ?? 'Settings',
 		},
 		...(opts?.tabs ?? []),
 	]
@@ -337,6 +334,8 @@ export function buildFormsCollection(
 		},
 	]
 
+	if (teamField) {fields.push(teamField)}
+
 	if (features?.confirmations || features?.notifications) {
 		fields.push({
 			name: 'richText',
@@ -346,7 +345,7 @@ export function buildFormsCollection(
 				description: 'Schema path used for rich text content field (message)',
 				hidden: true,
 			},
-			editor: basicEditor as unknown as RichTextField['editor'],
+			editor: basicEditor
 		})
 	}
 
@@ -378,6 +377,22 @@ export function buildFormsCollection(
 		},
 		fields,
 		hooks: {
+			beforeChange: [
+				({ data, req }) => {
+					if (Array.isArray(data?.pages)) {
+						try {
+							const fields = getAllFields(data.pages as FormPage[])
+							data.formSchema = buildFormSchema({ fields })
+						} catch (err) {
+							req.payload.logger.warn(
+								{ err, formId: data?.id },
+								'beforeChange: failed to generate formSchema — skipping',
+							)
+						}
+					}
+					return data
+				},
+			],
 			// (FR-039) Guard against saving a form with no pages.
 			beforeValidate: [
 				({ data }) => {

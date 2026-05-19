@@ -1,12 +1,11 @@
-import { useFormContext } from '@/shared/context/EditorFormContext'
+import type { DateField, DateFieldEditorProps } from '@/shared/fieldSchema'
+
+import { AdvancedFields, Divider, GeneralFields } from '@/form-builder/components/shared/SharedFields'
+import { useFormContext } from '@/form-builder/context/EditorFormContext'
+import { dateFieldSchema } from '@/shared/fieldSchema'
 import { DatePicker } from '@payloadcms/ui'
 
-import type { DateField, DateFieldEditorProps } from '../../../fieldSchema'
-
-import { dateFieldSchema } from '../../../fieldSchema'
-import { EditorTabs } from '../../layout/EditorTabs'
-import { AdvancedFields, GeneralFields } from '../SharedFields'
-import styles from './DateFieldEditor.module.css'
+import { EditorTabs } from '../../canvas/EditorTabs'
 
 export function DateFieldEditorContent() {
 	const form = useFormContext<DateField>()
@@ -14,12 +13,12 @@ export function DateFieldEditorContent() {
 	return (
 		<>
 			<GeneralFields />
-			<hr className={styles.divider} />
+			<Divider />
 			<AdvancedFields exclude={['defaultValue']}>
 				<form.Field name="defaultValue">
 					{(f) => (
 						<div className="field-type date">
-							<label className="field-label">Default Value</label>
+							<p className="field-label">Default Value</p>
 							<DatePicker
 								onChange={(date: Date) => {
 									f.handleChange(date ? date.toISOString().split('T')[0] : '')
@@ -34,7 +33,7 @@ export function DateFieldEditorContent() {
 				<form.Field name="minDate">
 					{(f) => (
 						<div className="field-type date">
-							<label className="field-label">Min Date</label>
+							<p className="field-label">Min Date</p>
 							<DatePicker
 								onChange={(date: Date) => {
 									f.handleChange(date ? date.toISOString().split('T')[0] : '')
@@ -49,7 +48,7 @@ export function DateFieldEditorContent() {
 				<form.Field name="maxDate">
 					{(f) => (
 						<div className="field-type date">
-							<label className="field-label">Max Date</label>
+							<p className="field-label">Max Date</p>
 							<DatePicker
 								onChange={(date: Date) => {
 									f.handleChange(date ? date.toISOString().split('T')[0] : '')

@@ -1,0 +1,21 @@
+.grid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.divider {
+  border-color: var(--theme-elevation-150);
+}
+
+.sectionTitle {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--theme-elevation-600);
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+  grid-column: -1/1;
+}
+
+.actions {
+  gap: 0.5rem;
+}

@@ -1,11 +1,10 @@
 import type { Endpoint, PayloadRequest, Where } from 'payload'
 
 import { attemptAsync } from '@/shared/utils/attemptAsync'
+import { generateSubmissionsCSV } from '@/submissions/utils/csvTemplateUtils'
+import { errorResponse } from '@/submissions/utils/errorResponse'
 
 import type { CollectionSlugs } from '../..'
-
-import { generateSubmissionsCSV } from '../../utils/csvTemplateUtils'
-import { errorResponse } from '../../utils/errorResponse'
 
 /**
  * GET /api/submissions/export-csv?formId=<id>[&ids=<id1>,<id2>]

@@ -1,8 +1,7 @@
+import type { SerializedEditorState } from '@/shared/fieldSchema'
 import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
 
 import { RenderLexical } from '@payloadcms/richtext-lexical/client'
-
-import type { SerializedEditorState } from '../../../fieldSchema'
 
 export type RichTextEditorProps = {
 	onChange: (value: SerializedEditorState) => void

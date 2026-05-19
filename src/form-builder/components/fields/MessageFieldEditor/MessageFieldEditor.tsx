@@ -1,13 +1,13 @@
-import { useFormContext } from '@/shared/context/EditorFormContext'
-import * as React from 'react'
-
 import type {
 	MessageField,
 	MessageFieldEditorProps,
-} from '../../../fieldSchema'
+} from '@/shared/fieldSchema'
 
-import { messageFieldSchema } from '../../../fieldSchema'
-import { EditorTabs } from '../../layout/EditorTabs'
+import { useFormContext } from '@/form-builder/context/EditorFormContext'
+import { messageFieldSchema } from '@/shared/fieldSchema'
+import * as React from 'react'
+
+import { EditorTabs } from '../../canvas/EditorTabs'
 import styles from './MessageFieldEditor.module.css'
 import { RichTextEditor } from './RichTextEditor'
 
@@ -20,11 +20,11 @@ export function MessageFieldEditorContent({
 		<form.Field name="richText">
 			{(f) => (
 				<div className="field-type text">
-					<label className="field-label">
+					<p className="field-label">
 						Message Content <span className="required">*</span>
-					</label>
+					</p>
 					<div className={styles.isolateRelative}>
-						<RichTextEditor onChange={f.handleChange} value={f.state.value} />
+						<RichTextEditor onChange={(v) => f.handleChange(v)} value={f.state.value} />
 					</div>
 					{f.state.meta.isTouched && f.state.meta.errors.length > 0 && (
 						<p className="field-error">{f.state.meta.errors.join(', ')}</p>

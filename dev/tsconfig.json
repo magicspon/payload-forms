@@ -1,6 +1,9 @@
 {
   "extends": "../tsconfig.json",
-  "exclude": [],
+  "exclude": [
+    "**/*.stories.tsx",
+    "**/*.stories.ts"
+  ],
   "include": [
     "**/*.js",
     "**/*.jsx",
@@ -27,6 +30,21 @@
       ],
       "@spon/payload-forms/rsc": [
         "../src/exports/rsc.ts"
+      ],
+      "@spon/payload-forms/form": [
+        "../src/exports/form.ts"
+      ],
+      "@forms/*": [
+        "./form/*"
+      ],
+      "@ui/primitives/*": [
+        "./ui/*"
+      ],
+      "@ui/utils/cn": [
+        "./ui/utils/cn"
+      ],
+      "@/*": [
+        "../src/*"
       ]
     },
     "noEmit": true,

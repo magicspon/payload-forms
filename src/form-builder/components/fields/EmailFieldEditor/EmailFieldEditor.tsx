@@ -1,16 +1,16 @@
+import { AdvancedFields, Divider, GeneralFields } from '@/form-builder/components/shared/SharedFields'
 import {
 	type EmailFieldEditorProps,
 	emailFieldSchema,
-} from '../../../fieldSchema'
-import { EditorTabs } from '../../layout/EditorTabs'
-import { AdvancedFields, GeneralFields } from '../SharedFields'
-import styles from './EmailFieldEditor.module.css'
+} from '@/shared/fieldSchema'
+
+import { EditorTabs } from '../../canvas/EditorTabs'
 
 export function EmailFieldEditorContent() {
 	return (
 		<>
 			<GeneralFields />
-			<hr className={styles.divider} />
+			<Divider />
 			<AdvancedFields />
 		</>
 	)

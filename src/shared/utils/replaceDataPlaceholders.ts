@@ -24,7 +24,7 @@ export function replaceTemplatePlaceholders(
 			if (Array.isArray(value)) {
 				return value.join(', ')
 			}
-			return String(value)
+			return String(value as bigint | boolean | number | string)
 		})
 }
 
@@ -48,14 +48,14 @@ export function replaceDataPlaceholders(
 			if (isObjectArray(value)) {return value[0]}
 			if (typeof value === 'object') {return value}
 			if (Array.isArray(value)) {return (value as unknown[]).join(', ')}
-			return String(value)
+			return String(value as bigint | boolean | number | string)
 		}
 		// Mixed string — all replacements must produce strings
 		return str.replace(/\{\{\s*(\w+)\s*\}\}/g, (_, fieldName) => {
 			const value = submissionData[fieldName]
 			if (value === undefined || value === null) {return ''}
 			if (Array.isArray(value)) {return (value as unknown[]).join(', ')}
-			return String(value)
+			return String(value as bigint | boolean | number | string)
 		})
 	}
 

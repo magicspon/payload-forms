@@ -1,15 +1,14 @@
-import { useFormContext } from '@/shared/context/EditorFormContext'
-import { CheckboxInput } from '@payloadcms/ui'
-
 import type {
 	ConsentField,
 	ConsentFieldEditorProps,
-} from '../../../fieldSchema'
+} from '@/shared/fieldSchema'
 
-import { consentFieldSchema } from '../../../fieldSchema'
-import { EditorTabs } from '../../layout/EditorTabs'
-import { AdvancedFields, GeneralFields } from '../SharedFields'
-import styles from './ConsentFieldEditor.module.css'
+import { AdvancedFields, Divider, GeneralFields } from '@/form-builder/components/shared/SharedFields'
+import { useFormContext } from '@/form-builder/context/EditorFormContext'
+import { consentFieldSchema } from '@/shared/fieldSchema'
+import { CheckboxInput } from '@payloadcms/ui'
+
+import { EditorTabs } from '../../canvas/EditorTabs'
 
 export function ConsentFieldEditorPanel() {
 	const form = useFormContext<ConsentField>()
@@ -17,7 +16,7 @@ export function ConsentFieldEditorPanel() {
 	return (
 		<>
 			<GeneralFields />
-			<hr className={styles.divider} />
+			<Divider />
 			<AdvancedFields exclude={['defaultValue']}>
 				<form.Field name="defaultValue">
 					{(f) => (

@@ -19,6 +19,11 @@
       "import": "./src/exports/rsc.ts",
       "types": "./src/exports/rsc.ts",
       "default": "./src/exports/rsc.ts"
+    },
+    "./form": {
+      "import": "./src/exports/form.ts",
+      "types": "./src/exports/form.ts",
+      "default": "./src/exports/form.ts"
     }
   },
   "main": "./src/index.ts",
@@ -38,14 +43,17 @@
     "dev:payload": "cross-env PAYLOAD_CONFIG_PATH=./dev/payload.config.ts payload",
     "generate:importmap": "pnpm dev:generate-importmap",
     "generate:types": "pnpm dev:generate-types",
-    "lint": "eslint",
+    "lint": "eslint ./src",
     "lint:fix": "eslint ./src --fix",
+    "release": "changeset publish",
+    "typecheck": "tsc --noEmit",
     "test": "pnpm test:unit && pnpm test:e2e",
     "test:e2e": "playwright test",
     "test:integration": "vitest --config vitest.integration.config.ts",
     "test:unit": "vitest"
   },
   "devDependencies": {
+    "@changesets/cli": "^2.31.0",
     "@eslint/eslintrc": "^3.2.0",
     "@payloadcms/db-sqlite": "3.84.1",
     "@payloadcms/eslint-config": "3.28.0",
@@ -64,6 +72,7 @@
     "cross-env": "^7.0.3",
     "eslint": "^9.23.0",
     "eslint-config-next": "16.2.6",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
     "graphql": "^16.8.1",
     "next": "16.2.6",
     "open": "^10.1.0",
@@ -88,7 +97,7 @@
   },
   "engines": {
     "node": "^18.20.2 || >=20.9.0",
-    "pnpm": "^9 || ^10"
+    "pnpm": "^9 || ^10 || ^11"
   },
   "publishConfig": {
     "exports": {
@@ -106,6 +115,11 @@
         "import": "./dist/exports/rsc.js",
         "types": "./dist/exports/rsc.d.ts",
         "default": "./dist/exports/rsc.js"
+      },
+      "./form": {
+        "import": "./dist/exports/form.js",
+        "types": "./dist/exports/form.d.ts",
+        "default": "./dist/exports/form.js"
       }
     },
     "main": "./dist/index.js",
@@ -123,8 +137,13 @@
     "@dnd-kit/core": "6.3.1",
     "@dnd-kit/sortable": "10.0.0",
     "@dnd-kit/utilities": "3.2.2",
+    "@tailwindcss/postcss": "^4.3.0",
+    "@tanstack/react-form": "^1.32.0",
+    "@tanstack/store": "^0.11.0",
+    "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "papaparse": "^5.5.3",
+    "tailwindcss": "^4.3.0",
     "zod": "^4.4.3"
   }
 }

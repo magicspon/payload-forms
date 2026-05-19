@@ -1,12 +1,11 @@
+import type { AllFields, Field, MessageField } from '@/shared/fieldSchema'
 import type { ZodType } from 'zod'
 
-import { useEditorForm } from '@/shared/context/EditorFormContext'
+import { useEditorForm } from '@/form-builder/context/EditorFormContext'
+import { type FormPage, getAllFields } from '@/form-builder/utils/formTree'
 import { useField } from '@payloadcms/ui'
 import { useMemo } from 'react'
 
-import type { AllFields, Field } from '../../../fieldSchema'
-
-import { type FormPage, getAllFields } from '../../../utils/formTree'
 import { useSaveFormField } from '../useSaveFormField'
 
 export function useSaveEditor<U extends AllFields>({
@@ -24,15 +23,15 @@ export function useSaveEditor<U extends AllFields>({
 		const allFields = getAllFields(pages)
 		return new Set(
 			allFields
-				.filter((f) => f.id !== field.id && f.type !== 'message')
-				.map((f) => (f as { name: string }).name),
+				.filter((f): f is Exclude<Field, MessageField> => f.id !== field.id && f.type !== 'message')
+				.map((f) => f.name),
 		)
 	}, [pages, field.id])
 
 	const { contextValue, form } = useEditorForm({
 		defaultValues: field,
 		onSubmit: (value) => {
-			saveField(value as Field)
+			saveField(value)
 			return Promise.resolve()
 		},
 		schema: onChangeValidator,

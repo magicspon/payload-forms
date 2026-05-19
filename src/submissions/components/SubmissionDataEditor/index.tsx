@@ -1,10 +1,9 @@
+import type { FormPage } from '@/form-builder/utils/formTree'
+import type { Field, MessageField } from '@/shared/fieldSchema'
 import type { UIFieldServerProps } from 'payload'
-// import { extractID } from 'payload/shared'
-import type { MessageField } from '../../../fieldSchema'
-import type { Field } from '../../../fieldSchema'
-import type { FormPage } from '../../../utils/formTree'
 
-import { getAllFields } from '../../../utils/formTree'
+import { getAllFields } from '@/form-builder/utils/formTree'
+
 import { SubmissionDataEditorClient } from './client'
 
 type NonMessageField = Exclude<Field, MessageField>

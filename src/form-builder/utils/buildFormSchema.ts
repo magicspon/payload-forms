@@ -1,7 +1,7 @@
+import type { Field } from '@/shared/fieldSchema'
+
 import { camelCase } from '@/shared/utils/camelCase'
 import { z } from 'zod'
-
-import type { Field } from '../fieldSchema'
 
 type BuildFormSchemaInput = {
 	fields: Field[]
@@ -30,6 +30,19 @@ function fieldToZodSchema(field: Field): null | z.ZodTypeAny {
 			if (field.minRows) {s = s.min(field.minRows)}
 			if (field.maxRows) {s = s.max(field.maxRows)}
 			schema = s
+			break
+		}
+		case 'group': {
+			const shape: Record<string, z.ZodTypeAny> = {}
+			for (const row of field.rows ?? []) {
+				for (const subField of row.columns) {
+					const subSchema = fieldToZodSchema(subField)
+					if (subSchema) {
+						shape[camelCase(subField.name)] = subSchema
+					}
+				}
+			}
+			schema = z.object(shape)
 			break
 		}
 		case 'checkbox': {

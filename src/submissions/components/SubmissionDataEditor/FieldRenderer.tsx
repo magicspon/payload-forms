@@ -1,5 +1,23 @@
 'use client'
 
+import type {
+	ArrayField,
+	ArrayItemField,
+	CheckboxField,
+	ConsentField,
+	DateField,
+	EmailField,
+	Field,
+	FileField,
+	GroupField,
+	MessageField,
+	NumberField,
+	RadioField,
+	SelectField,
+	TextareaField,
+	TextField,
+	ToggleField,
+} from '@/shared/fieldSchema'
 import type React from 'react'
 
 import { nanoid } from '@/shared/utils/nanoid'
@@ -12,24 +30,6 @@ import {
 	UploadInput,
 } from '@payloadcms/ui'
 import { useCallback, useMemo, useRef, useState } from 'react'
-
-import type {
-	ArrayField,
-	ArrayItemField,
-	CheckboxField,
-	ConsentField,
-	DateField,
-	EmailField,
-	Field,
-	FileField,
-	MessageField,
-	NumberField,
-	RadioField,
-	SelectField,
-	TextareaField,
-	TextField,
-	ToggleField,
-} from '../../../fieldSchema'
 
 type NonMessageField = Exclude<Field, MessageField>
 
@@ -131,6 +131,15 @@ export function FieldRenderer({
 					value={value as string | undefined}
 				/>
 			)
+		case 'group':
+			return (
+				<GroupFieldRenderer
+					field={field}
+					formUploadsSlug={formUploadsSlug}
+					onChange={onChange}
+					value={value as Record<string, unknown> | undefined}
+				/>
+			)
 		default:
 			return null
 	}
@@ -206,6 +215,7 @@ function NumberFieldRenderer({
 				</label>
 			</div>
 			<input
+				aria-label={field.label}
 				className="field-base"
 				id={`field-${field.name}`}
 				max={field.max}
@@ -310,6 +320,7 @@ function RadioFieldRenderer({
 				{field.options.map((option) => (
 					<li className="radio-group__list-item" key={option.value}>
 						<input
+							aria-label={option.label}
 							checked={value === option.value}
 							id={`${field.name}-${option.value}`}
 							name={groupName.current}
@@ -338,7 +349,7 @@ function CheckboxGroupRenderer({
 	onChange: (v: unknown) => void
 	value: string[] | undefined
 }) {
-	const selected = value ?? []
+	const selected = useMemo(() => value ?? [], [value])
 
 	const toggle = useCallback(
 		(optValue: string) => {
@@ -449,7 +460,7 @@ function ArrayFieldRenderer({
 	value: Record<string, unknown>[] | undefined
 }) {
 	const subFields: ArrayItemField[] = field.rows.flatMap((row) => row.columns)
-	const rows = value ?? []
+	const rows = useMemo(() => value ?? [], [value])
 
 	const addRow = useCallback(() => {
 		const empty: Record<string, unknown> = {}
@@ -516,6 +527,52 @@ function ArrayFieldRenderer({
 			>
 				Add row
 			</button>
+		</div>
+	)
+}
+
+// ─── Group ────────────────────────────────────────────────────────────────────
+
+function GroupFieldRenderer({
+	field,
+	formUploadsSlug,
+	onChange,
+	value,
+}: {
+	field: GroupField
+	formUploadsSlug: string
+	onChange: (v: unknown) => void
+	value: Record<string, unknown> | undefined
+}) {
+	const subFields: ArrayItemField[] = field.rows.flatMap((row) => row.columns)
+	const current = useMemo(() => value ?? {}, [value])
+
+	const updateField = useCallback(
+		(fieldName: string, fieldValue: unknown) => {
+			onChange({ ...current, [fieldName]: fieldValue })
+		},
+		[current, onChange],
+	)
+
+	return (
+		<div className="field-type group">
+			<div className="label-wrapper">
+				<label className="field-label">
+					{field.label}
+					{field.required && <span className="required">*</span>}
+				</label>
+			</div>
+			<div className="group__fields">
+				{subFields.map((subField) => (
+					<FieldRenderer
+						field={subField}
+						formUploadsSlug={formUploadsSlug}
+						key={subField.id}
+						onChange={(v) => updateField(subField.name, v)}
+						value={current[subField.name]}
+					/>
+				))}
+			</div>
 		</div>
 	)
 }

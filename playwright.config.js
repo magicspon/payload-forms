@@ -41,5 +41,8 @@ export default defineConfig({
     reuseExistingServer: true,
     url: 'http://localhost:3000/admin',
     timeout: 60_000,
+    env: {
+      TEST_ENV: 'true',
+    },
   },
 })

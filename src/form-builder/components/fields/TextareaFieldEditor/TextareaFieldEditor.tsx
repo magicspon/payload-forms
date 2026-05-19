@@ -1,17 +1,15 @@
-import type { ChangeEvent } from 'react'
-
-import { useFormContext } from '@/shared/context/EditorFormContext'
-import { TextareaInput, TextInput } from '@payloadcms/ui'
-
 import type {
 	TextareaField,
 	TextareaFieldEditorProps,
-} from '../../../fieldSchema'
+} from '@/shared/fieldSchema'
+import type { ChangeEvent } from 'react'
 
-import { textareaFieldSchema } from '../../../fieldSchema'
-import { EditorTabs } from '../../layout/EditorTabs'
-import { AdvancedFields, GeneralFields } from '../SharedFields'
-import styles from './TextareaFieldEditor.module.css'
+import { AdvancedFields, Divider, GeneralFields } from '@/form-builder/components/shared/SharedFields'
+import { useFormContext } from '@/form-builder/context/EditorFormContext'
+import { textareaFieldSchema } from '@/shared/fieldSchema'
+import { TextareaInput, TextInput } from '@payloadcms/ui'
+
+import { EditorTabs } from '../../canvas/EditorTabs'
 
 export function TextareaFieldEditorContent() {
 	const form = useFormContext<TextareaField>()
@@ -19,7 +17,7 @@ export function TextareaFieldEditorContent() {
 	return (
 		<>
 			<GeneralFields />
-			<hr className={styles.divider} />
+			<Divider />
 			<AdvancedFields exclude={['defaultValue']}>
 				<form.Field name="rows">
 					{(f) => (
@@ -33,21 +31,19 @@ export function TextareaFieldEditorContent() {
 						/>
 					)}
 				</form.Field>
-				<div className={styles.colSpan2}>
-					<form.Field name="defaultValue">
-						{(f) => (
-							<TextareaInput
-								label="Default Value"
-								onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
-									f.handleChange(e.target.value)
-								}
-								path="defaultValue"
-								rows={4}
-								value={f.state.value ?? ''}
-							/>
-						)}
-					</form.Field>
-				</div>
+				<form.Field name="defaultValue">
+					{(f) => (
+						<TextareaInput
+							label="Default Value"
+							onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
+								f.handleChange(e.target.value)
+							}
+							path="defaultValue"
+							rows={4}
+							value={f.state.value ?? ''}
+						/>
+					)}
+				</form.Field>
 				<form.Field name="minLength">
 					{(f) => (
 						<TextInput

@@ -19,7 +19,7 @@
 # production
 /build
 /dist
-
+/.playwright-mcp
 # misc
 .DS_Store
 *.pem
@@ -48,3 +48,4 @@ next-env.d.ts
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+/dev/.auth/

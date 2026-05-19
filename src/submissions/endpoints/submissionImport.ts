@@ -1,12 +1,11 @@
 import type { Endpoint, Payload, PayloadRequest } from 'payload'
 
 import { attemptAsync } from '@/shared/utils/attemptAsync'
+import { parseCsvRowToSubmissionData } from '@/submissions/utils/csvTemplateUtils'
+import { errorResponse } from '@/submissions/utils/errorResponse'
 import { z } from 'zod'
 
 import type { CollectionSlugs } from '../..'
-
-import { parseCsvRowToSubmissionData } from '../../utils/csvTemplateUtils'
-import { errorResponse } from '../../utils/errorResponse'
 
 /**
  * Called once after all rows in a batch import have been created successfully.

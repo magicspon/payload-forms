@@ -1,0 +1,21 @@
+@layer components {
+	.label {
+		display: flex;
+		align-items: center;
+		gap: calc(var(--spacing) * 2);
+		font-size: var(--text-sm);
+		line-height: 1; /* leading-none */
+		font-weight: 500;
+		user-select: none;
+
+		[data-disabled='true'] & {
+			opacity: 0.5;
+			pointer-events: none;
+		}
+
+		:global(:disabled) ~ & {
+			opacity: 0.5;
+			cursor: not-allowed;
+		}
+	}
+}

@@ -3,19 +3,19 @@ import type { Endpoint, PayloadRequest } from 'payload'
 
 import { attemptAsync } from '@/shared/utils/attemptAsync'
 import { replaceDataPlaceholders } from '@/shared/utils/replaceDataPlaceholders'
-import { z } from 'zod'
-
-import type { CollectionSlugs } from '../..'
-
-import { errorResponse } from '../../utils/errorResponse'
+import { errorResponse } from '@/submissions/utils/errorResponse'
 import {
 	MAX_FILE_SIZE_BYTES,
 	prepareFileForUpload,
 	SUBMISSION_SCALAR_KEYS,
-} from '../../utils/fileUpload'
+} from '@/submissions/utils/fileUpload'
+import { z } from 'zod'
 
-// In test environments (TEST_ENV=true) skip the timing check
-const MIN_SUBMISSION_TIME_MS = process.env.TEST_ENV === 'true' ? 0 : 2000
+import type { CollectionSlugs } from '../..'
+
+// Skip timing check in test or non-production environments
+const MIN_SUBMISSION_TIME_MS =
+	process.env.TEST_ENV === 'true' || process.env.NODE_ENV !== 'production' ? 0 : 2000
 
 /**
  * Loose schema for the `from` field — must be a non-empty string that looks
@@ -208,21 +208,26 @@ export function makeSubmissionEndpoint(slugs: CollectionSlugs): Endpoint {
 				finalSubmissionData[fieldName] = uploaded
 			}
 
+			// Coerce the string URL param to the correct ID type for the relationship validator.
+			// Payload's isValidID requires typeof === 'number' when defaultIDType is 'number' (SQLite).
+			const parsedFormId = Number.isNaN(Number(formId)) ? formId : Number(formId)
+
 			const [createErr, submission] = await attemptAsync(() =>
 				payload.create({
 					collection: slugs.submissions as 'submissions',
 					data: {
-						form: formId,
+						form: parsedFormId,
 						from,
 						submissionData: finalSubmissionData,
 						title: form.title,
 						userAgent,
 						// (NFR-012) IP stored for fraud investigation only; purge after 90 days
-						_status: 'published',
 						ipAddress,
 						team: form.team,
 					},
+					// draft: false publishes immediately on draft-enabled collections
 					draft: false,
+					overrideAccess: true,
 				}),
 			)
 
@@ -258,7 +263,7 @@ export function makeSubmissionEndpoint(slugs: CollectionSlugs): Endpoint {
 					? replaceDataPlaceholders(finalSubmissionData)(form.confirmationMessage)
 					: null
 
-			return Response.json({ id: submission.id, message, success: true })
+			return Response.json({ doc: submission, message, success: true }, { status: 201 })
 		},
 		method: 'post',
 		path: '/:id',

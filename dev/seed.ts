@@ -1,6 +1,7 @@
 import type { Payload } from 'payload'
 
 import { devUser } from './helpers/credentials'
+import { seedForms } from './seeds/forms'
 
 export const seed = async (payload: Payload) => {
   const { totalDocs } = await payload.count({
@@ -18,4 +19,6 @@ export const seed = async (payload: Payload) => {
       data: devUser,
     })
   }
+
+  await seedForms(payload)
 }

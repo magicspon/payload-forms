@@ -1,18 +1,16 @@
-import type { ChangeEvent } from 'react'
-
-import { useFormContext } from '@/shared/context/EditorFormContext'
-import { TextInput } from '@payloadcms/ui'
-
 import type {
 	FileField,
-	FileFieldEditorProps} from '../../../fieldSchema';
+	FileFieldEditorProps} from '@/shared/fieldSchema';
+import type { ChangeEvent } from 'react'
 
+import { AdvancedFields, Divider, GeneralFields } from '@/form-builder/components/shared/SharedFields'
+import { useFormContext } from '@/form-builder/context/EditorFormContext'
 import {
 	fileFieldSchema,
-} from '../../../fieldSchema'
-import { EditorTabs } from '../../layout/EditorTabs'
-import { AdvancedFields, GeneralFields } from '../SharedFields'
-import styles from './FileFieldEditor.module.css'
+} from '@/shared/fieldSchema'
+import { TextInput } from '@payloadcms/ui'
+
+import { EditorTabs } from '../../canvas/EditorTabs'
 
 export function FileFieldEditorContent() {
 	const form = useFormContext<FileField>()
@@ -20,7 +18,7 @@ export function FileFieldEditorContent() {
 	return (
 		<>
 			<GeneralFields />
-			<hr className={styles.divider} />
+			<Divider />
 			<AdvancedFields>
 				<form.Field name="allowedFileTypes">
 					{(f) => (

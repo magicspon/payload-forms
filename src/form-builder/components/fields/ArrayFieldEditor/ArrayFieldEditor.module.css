@@ -183,9 +183,6 @@
   color: var(--theme-elevation-600);
 }
 
-.divider {
-  border-color: var(--theme-elevation-150);
-}
 
 .twoColGrid {
   display: grid;
