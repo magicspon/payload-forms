@@ -3,7 +3,6 @@ import type {
   CollectionAfterReadHook,
   CollectionBeforeChangeHook,
   CollectionConfig,
-  CollectionSlug,
   Endpoint,
   Field,
 } from 'payload'
@@ -170,7 +169,7 @@ export function buildSubmissionsCollection(
           description: 'Reference to parent form (for grouping/queries)',
           readOnly: false,
         },
-        relationTo: formsSlug as CollectionSlug,
+        relationTo: formsSlug,
       },
       {
         type: 'tabs',
