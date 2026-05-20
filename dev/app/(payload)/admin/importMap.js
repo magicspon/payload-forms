@@ -13,9 +13,9 @@ import { HeadingFeatureClient as HeadingFeatureClient_e70f5e05f09f93e00b997edb1e
 import { EmailNotificationInput as EmailNotificationInput_c8089dfdd61aab495c2e271159c58c14 } from '@spon/payload-forms/client'
 import { NotificationConditionEditor as NotificationConditionEditor_c8089dfdd61aab495c2e271159c58c14 } from '@spon/payload-forms/client'
 import { FormCSVTemplateButton as FormCSVTemplateButton_c8089dfdd61aab495c2e271159c58c14 } from '@spon/payload-forms/client'
+import { SubmissionsView as SubmissionsView_8728a1875e90f641ef97e4755c7bd358 } from '@spon/payload-forms/rsc'
 import { SubmissionDataEditor as SubmissionDataEditor_8728a1875e90f641ef97e4755c7bd358 } from '@spon/payload-forms/rsc'
 import { FormSubmissionViewButton as FormSubmissionViewButton_c8089dfdd61aab495c2e271159c58c14 } from '@spon/payload-forms/client'
-import { FormSubmissionListViewButton as FormSubmissionListViewButton_c8089dfdd61aab495c2e271159c58c14 } from '@spon/payload-forms/client'
 import { FormImportButton as FormImportButton_8728a1875e90f641ef97e4755c7bd358 } from '@spon/payload-forms/rsc'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 
@@ -36,9 +36,9 @@ export const importMap = {
   "@spon/payload-forms/client#EmailNotificationInput": EmailNotificationInput_c8089dfdd61aab495c2e271159c58c14,
   "@spon/payload-forms/client#NotificationConditionEditor": NotificationConditionEditor_c8089dfdd61aab495c2e271159c58c14,
   "@spon/payload-forms/client#FormCSVTemplateButton": FormCSVTemplateButton_c8089dfdd61aab495c2e271159c58c14,
+  "@spon/payload-forms/rsc#SubmissionsView": SubmissionsView_8728a1875e90f641ef97e4755c7bd358,
   "@spon/payload-forms/rsc#SubmissionDataEditor": SubmissionDataEditor_8728a1875e90f641ef97e4755c7bd358,
   "@spon/payload-forms/client#FormSubmissionViewButton": FormSubmissionViewButton_c8089dfdd61aab495c2e271159c58c14,
-  "@spon/payload-forms/client#FormSubmissionListViewButton": FormSubmissionListViewButton_c8089dfdd61aab495c2e271159c58c14,
   "@spon/payload-forms/rsc#FormImportButton": FormImportButton_8728a1875e90f641ef97e4755c7bd358,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1
 }

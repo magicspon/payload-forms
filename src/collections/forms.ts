@@ -64,6 +64,9 @@ export interface FormsCollectionOptions {
 	/** Collection slug. Defaults to `'forms'`. */
 	slug?: string
 
+	/** Submissions collection slug — used for the inline submissions view. Defaults to `'submissions'`. */
+	submissionsSlug?: string
+
 	tabLabels?: {
 		canvas: string
 		settings: string
@@ -79,6 +82,7 @@ export function buildFormsCollection(
 ): CollectionConfig {
 	const {
 		slug = 'forms',
+		submissionsSlug = 'submissions',
 		features = {
 			confirmations: true,
 			fieldPalette: true,
@@ -267,20 +271,6 @@ export function buildFormsCollection(
 		label: 'Schema',
 	})
 
-	tabs.push({
-		admin: {
-			hidden: true,
-		},
-		fields: [
-			{
-				name: 'submissions',
-				type: 'join',
-				collection: 'submissions',
-				on: 'form',
-			},
-		],
-		label: 'Submissions',
-	})
 
 	const fields: Field[] = [
 		{
@@ -353,7 +343,21 @@ export function buildFormsCollection(
 					editMenuItems: [
 						'@spon/payload-forms/client#FormCSVTemplateButton',
 					],
-
+				},
+				views: {
+					edit: {
+						submissions: {
+							Component: {
+								path: '@spon/payload-forms/rsc#SubmissionsView',
+								serverProps: { submissionsSlug },
+							},
+							path: '/submissions',
+							tab: {
+								href: '/submissions',
+								label: 'Submissions',
+							},
+						},
+					},
 				},
 			},
 			defaultColumns: ['title', 'slug'],

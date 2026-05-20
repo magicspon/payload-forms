@@ -70,7 +70,6 @@ export function buildSubmissionsCollection(
 				views: {
 					list: {
 						actions: [
-							'@spon/payload-forms/client#FormSubmissionListViewButton',
 							{
 								path: '@spon/payload-forms/rsc#FormImportButton',
 								serverProps: { formsSlug },

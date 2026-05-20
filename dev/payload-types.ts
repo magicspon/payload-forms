@@ -77,11 +77,7 @@ export interface Config {
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
   };
-  collectionsJoins: {
-    forms: {
-      submissions: 'submissions';
-    };
-  };
+  collectionsJoins: {};
   collectionsSelect: {
     media: MediaSelect<false> | MediaSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
@@ -211,11 +207,6 @@ export interface Form {
       }[]
     | null;
   formSchema?: Record<string, unknown> | null;
-  submissions?: {
-    docs?: (number | Submission)[];
-    hasNextPage?: boolean;
-    totalDocs?: number;
-  };
   pages?: {
     id: string;
     backButton?: string;
@@ -321,7 +312,7 @@ export interface Form {
               logic: 'and' | 'or';
             };
             type: 'email';
-            defaultValue?: string | string;
+            defaultValue?: string;
             placeholder?: string;
           }
         | {
@@ -765,7 +756,7 @@ export interface Form {
                       logic: 'and' | 'or';
                     };
                     type: 'email';
-                    defaultValue?: string | string;
+                    defaultValue?: string;
                     placeholder?: string;
                   }
                 | {
@@ -1172,7 +1163,7 @@ export interface Form {
                       logic: 'and' | 'or';
                     };
                     type: 'email';
-                    defaultValue?: string | string;
+                    defaultValue?: string;
                     placeholder?: string;
                   }
                 | {
@@ -1684,7 +1675,6 @@ export interface FormsSelect<T extends boolean = true> {
         id?: T;
       };
   formSchema?: T;
-  submissions?: T;
   pages?: T;
   richText?: T;
   updatedAt?: T;

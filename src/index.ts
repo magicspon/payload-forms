@@ -218,6 +218,7 @@ export const formsPlugin =
 		// --- Build collections ---
 		const formsBase = buildFormsCollection({
 			slug: slugs.forms,
+			submissionsSlug: slugs.submissions,
 			features,
 			livePreviewUrl,
 			localeOptions,

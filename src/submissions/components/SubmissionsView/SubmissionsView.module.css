@@ -1,0 +1,78 @@
+.heading {
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin: 0 0 1.5rem;
+  color: var(--theme-text);
+}
+
+.tableWrapper {
+  overflow-x: auto;
+  border: 1px solid var(--theme-elevation-150);
+  border-radius: 4px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.thead {
+  background: var(--theme-elevation-50);
+}
+
+.th {
+  text-align: left;
+  padding: 0.625rem 1rem;
+  border-bottom: 1px solid var(--theme-elevation-150);
+  font-weight: 600;
+  color: var(--theme-text);
+  white-space: nowrap;
+}
+
+.tr {
+  cursor: pointer;
+  border-bottom: 1px solid var(--theme-elevation-100);
+}
+
+.tr:last-child {
+  border-bottom: none;
+}
+
+.tr:hover {
+  background: var(--theme-elevation-50);
+}
+
+.td {
+  padding: 0.625rem 1rem;
+  color: var(--theme-text);
+  max-width: 240px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.125rem 0.5rem;
+  border-radius: 9999px;
+  background: var(--theme-elevation-100);
+  font-size: 0.75rem;
+  color: var(--theme-text);
+  white-space: nowrap;
+}
+
+.empty {
+  padding: 3rem;
+  text-align: center;
+  color: var(--theme-elevation-400);
+  font-size: 0.875rem;
+}
+
+.pagination {
+  margin-top: 1.5rem;
+  display: flex;
+  justify-content: center;
+}
