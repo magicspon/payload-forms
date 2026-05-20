@@ -8,11 +8,11 @@ export const fieldTypes = [
   { label: 'Select', value: 'select' },
   { label: 'Date', value: 'date' },
   { label: 'File', value: 'file' },
-  { label: 'Message', value: 'message' },
   { label: 'Toggle', value: 'toggle' },
   { label: 'Consent', value: 'consent' },
-  { label: 'Array', value: 'array' },
   { label: 'Group', value: 'group' },
+  { label: 'Repeater', value: 'array' },
+  { label: 'Message', value: 'message' },
 ] as const
 
 export type FieldTypeValue = (typeof fieldTypes)[number]['value']

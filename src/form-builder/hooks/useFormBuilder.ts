@@ -82,8 +82,7 @@ function reducer(state: State, action: Action): State {
     case 'SELECT_FIELD':
       return { ...state, selectedFieldId: action.fieldId }
     case 'UPDATE_FIELD': {
-      // Mirror useSaveFormField: strip _draft, auto-generate name from label
-      const saved = { ...action.field, _draft: false } as Field
+      const saved = { ...action.field } as Field
       if ('label' in saved && !saved.name) {
         saved.name = camelCase(saved.label)
       }

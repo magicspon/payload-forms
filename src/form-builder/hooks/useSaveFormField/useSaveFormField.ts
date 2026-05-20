@@ -16,8 +16,7 @@ export function useSaveFormField() {
   const saveField = React.useCallback(
     (field: Field) => {
       try {
-        // Remove _draft flag when saving
-        const savedField = { ...field, _draft: false } as Field
+        const savedField = { ...field } as Field
 
         if ('label' in savedField && !savedField.name) {
           savedField.name = camelCase(savedField.label)

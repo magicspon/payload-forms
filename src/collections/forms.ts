@@ -3,7 +3,7 @@ import type { CollectionConfig, Field, RichTextField, Tab } from 'payload'
 
 import { buildFormSchema } from '@/form-builder/utils/buildFormSchema'
 import { type FormPage, getAllFields } from '@/form-builder/utils/formTree'
-import { formJSONSchema } from '@/shared/fieldSchema'
+import { type Field as FormField, formJSONSchema } from '@/shared/fieldSchema'
 import { nanoid } from '@/shared/utils/nanoid'
 import {
   BoldFeature,
@@ -278,13 +278,19 @@ export function buildFormsCollection(opts: FormsCollectionOptions = {}): Collect
         ]
       : []),
     {
-      name: 'title',
-      type: 'text',
-      required: true,
+      type: 'row',
+      fields: [
+        {
+          name: 'title',
+          type: 'text',
+          required: true,
+        },
+        slugField({
+          fieldToUse: 'title',
+          position: 'main',
+        }),
+      ],
     },
-    slugField({
-      fieldToUse: 'title',
-    }),
     {
       name: 'locked',
       type: 'checkbox',
@@ -379,17 +385,38 @@ export function buildFormsCollection(opts: FormsCollectionOptions = {}): Collect
     hooks: {
       beforeChange: [
         ({ data, req }) => {
-          if (Array.isArray(data?.pages)) {
-            try {
-              const fields = getAllFields(data.pages as FormPage[])
-              data.formSchema = buildFormSchema({ fields })
-            } catch (err) {
-              req.payload.logger.warn(
-                { err, formId: data?.id },
-                'beforeChange: failed to generate formSchema — skipping',
-              )
-            }
+          if (!Array.isArray(data?.pages)) return data
+
+          data.pages = (data.pages as FormPage[])
+            .map((page) => ({
+              ...page,
+              rows: page.rows
+                .map((row) => ({
+                  ...row,
+                  columns: row.columns.map((field) => {
+                    if (field.type === 'array' || field.type === 'group') {
+                      return {
+                        ...field,
+                        rows: field.rows.filter((r) => r.columns.length > 0),
+                      }
+                    }
+                    return field
+                  }),
+                }))
+                .filter((row) => row.columns.length > 0),
+            }))
+            .filter((page) => page.rows.length > 0)
+
+          try {
+            const fields = getAllFields(data.pages)
+            data.formSchema = buildFormSchema({ fields })
+          } catch (err) {
+            req.payload.logger.warn(
+              { err, formId: data?.id },
+              'beforeChange: failed to generate formSchema — skipping',
+            )
           }
+
           return data
         },
       ],
@@ -398,6 +425,29 @@ export function buildFormsCollection(opts: FormsCollectionOptions = {}): Collect
           if (!Array.isArray(data?.pages) || data.pages.length === 0) {
             throw new APIError('Form must have at least one page', 400, {}, true)
           }
+
+          const missing: string[] = []
+
+          function checkFields(fields: FormField[]) {
+            for (const field of fields) {
+              if (field.type === 'message') continue
+              if (!field.label || !field.name) {
+                missing.push(field.id)
+              }
+              if (field.type === 'array' || field.type === 'group') {
+                checkFields(field.rows.flatMap((r) => r.columns))
+              }
+            }
+          }
+
+          for (const page of data.pages as FormPage[]) {
+            checkFields(page.rows.flatMap((r) => r.columns))
+          }
+
+          if (missing.length > 0) {
+            throw new APIError(`Fields missing label or name: ${missing.join(', ')}`, 400, {}, true)
+          }
+
           return data
         },
       ],

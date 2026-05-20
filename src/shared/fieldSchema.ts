@@ -83,7 +83,6 @@ export type FieldConditions = z.infer<typeof fieldConditionsSchema>
 const baseSchema = z.object({
   id: z.string(),
   name: z.string().max(100),
-  _draft: z.boolean().optional(),
   errorMessage: z.string().optional(),
   hidden: z.boolean(),
   instructions: z.string().optional(),
@@ -235,7 +234,6 @@ export const consentFieldSchema = z.object({
 export const messageFieldSchema = z.object({
   id: z.string(),
   type: z.literal('message'),
-  _draft: z.boolean().optional(),
   conditions: fieldConditionsSchema.optional(),
   global: z.boolean().optional(),
   richText: serializedEditorStateSchema.optional(),
@@ -365,7 +363,6 @@ export type GroupFieldEditorProps = { field: GroupField } & EditorBaseProps
 
 const baseDefaults = {
   name: '',
-  _draft: true,
   errorMessage: '',
   hidden: false,
   instructions: '',
@@ -405,7 +402,7 @@ export function createDefaultField(id: string, type: FieldType): Field {
         multiple: false,
       }
     case 'message':
-      return { id, type, _draft: true, richText: undefined }
+      return { id, type, richText: undefined }
     case 'number':
       return { ...baseDefaults, id, type, placeholder: '' }
     case 'radio':
@@ -463,7 +460,6 @@ export const formSchema = z.object({
 const messageFieldSchemaForJsonSchema = z.object({
   id: z.string(),
   type: z.literal('message'),
-  _draft: z.boolean().optional(),
   conditions: fieldConditionsSchema.optional(),
   richText: serializedEditorStateSchema.optional(),
 })

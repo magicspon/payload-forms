@@ -219,7 +219,6 @@ export function ImportSchema() {
       const field = {
         ...base,
         name: m.name.trim(),
-        _draft: false,
         label: m.header,
       }
       if (isOptionsType(m.fieldType) && validOptions.length > 0) {
