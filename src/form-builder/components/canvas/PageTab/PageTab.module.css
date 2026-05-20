@@ -15,7 +15,9 @@
   border: 1px dashed;
   padding: 1rem;
   min-height: 4rem;
-  transition: border-color 0.15s ease, background-color 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease;
   border-radius: 0.25rem;
 }
 

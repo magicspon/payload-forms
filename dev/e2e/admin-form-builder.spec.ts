@@ -91,8 +91,16 @@ test.describe('Form builder — adding fields', () => {
   test('adds fields of every basic type without error', async ({ page }) => {
     await gotoCreate(page)
     const types = [
-      'text', 'email', 'number', 'textarea',
-      'select', 'radio', 'checkbox', 'date', 'toggle', 'consent',
+      'text',
+      'email',
+      'number',
+      'textarea',
+      'select',
+      'radio',
+      'checkbox',
+      'date',
+      'toggle',
+      'consent',
     ]
     for (const type of types) {
       await addFieldToRow(page, type)
@@ -104,9 +112,7 @@ test.describe('Form builder — adding fields', () => {
 // ─── Editing fields ───────────────────────────────────────────────────────────
 
 test.describe('Form builder — editing fields', () => {
-  test('opens the field editor drawer when edit button is clicked', async ({
-    page,
-  }) => {
+  test('opens the field editor drawer when edit button is clicked', async ({ page }) => {
     await gotoCreate(page)
     await addFieldToRow(page, 'text')
     await openFieldEditor(page)
@@ -175,7 +181,10 @@ test.describe('Form builder — deleting fields', () => {
 
     await page.getByTestId('delete-field-button').click()
     await expect(page.getByText('Delete Field')).toBeVisible()
-    await page.getByRole('button', { name: /cancel/i }).last().click()
+    await page
+      .getByRole('button', { name: /cancel/i })
+      .last()
+      .click()
 
     await expect(page.getByTestId('field-item')).toHaveCount(1)
   })
@@ -294,9 +303,12 @@ test.describe('Form builder — publish and render', () => {
     const slug = await page.getByLabel('Slug').inputValue()
     expect(slug).toBeTruthy()
 
-    // Verify the form renders on the public page
-    await page.goto(`/${slug}`)
-    await expect(page.getByLabel('Your Name')).toBeVisible()
-    await expect(page.getByLabel('I agree to the terms')).toBeVisible()
+    // Verify the form renders on the public page.
+    // Open a fresh tab to avoid the admin page's beforeunload handler aborting navigation.
+    const publicPage = await page.context().newPage()
+    await publicPage.goto(`/${slug}`)
+    await expect(publicPage.getByLabel('Your Name')).toBeVisible()
+    await expect(publicPage.getByLabel('I agree to the terms')).toBeVisible()
+    await publicPage.close()
   })
 })

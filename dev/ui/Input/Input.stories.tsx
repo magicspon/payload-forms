@@ -4,51 +4,51 @@ import * as React from 'react'
 import { Input } from '.'
 
 const meta = {
-	title: 'ui/Input',
-	component: Input,
-	parameters: { layout: 'centered' },
-	tags: ['autodocs'],
+  title: 'ui/Input',
+  component: Input,
+  parameters: { layout: 'centered' },
+  tags: ['autodocs'],
 } satisfies Meta<typeof Input>
 
 export default meta
 type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
-	args: {
-		placeholder: faker.lorem.words(3),
-	},
+  args: {
+    placeholder: faker.lorem.words(3),
+  },
 }
 
 export const Email: Story = {
-	args: {
-		type: 'email',
-		placeholder: faker.internet.email(),
-	},
+  args: {
+    type: 'email',
+    placeholder: faker.internet.email(),
+  },
 }
 
 export const Password: Story = {
-	args: {
-		type: 'password',
-		placeholder: 'Enter your password',
-	},
+  args: {
+    type: 'password',
+    placeholder: 'Enter your password',
+  },
 }
 
 export const WithValue: Story = {
-	args: {
-		defaultValue: faker.person.fullName(),
-	},
+  args: {
+    defaultValue: faker.person.fullName(),
+  },
 }
 
 export const Disabled: Story = {
-	args: {
-		disabled: true,
-		defaultValue: faker.person.fullName(),
-	},
+  args: {
+    disabled: true,
+    defaultValue: faker.person.fullName(),
+  },
 }
 
 export const Search: Story = {
-	args: {
-		type: 'search',
-		placeholder: `Search ${faker.lorem.word()}s…`,
-	},
+  args: {
+    type: 'search',
+    placeholder: `Search ${faker.lorem.word()}s…`,
+  },
 }

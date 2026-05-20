@@ -5,5 +5,5 @@
  * consistent and tests can assert against a single structure.
  */
 export function errorResponse(message: string, status: number): Response {
-	return Response.json({ error: message, success: false }, { status })
+  return Response.json({ error: message, success: false }, { status })
 }

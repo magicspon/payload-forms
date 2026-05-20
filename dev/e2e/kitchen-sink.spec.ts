@@ -30,9 +30,7 @@ test.describe('All Fields Demo — page 1', () => {
     await expect(page.getByLabel('Short Bio')).toBeVisible()
   })
 
-  test('blocks navigation and shows errors when required fields are empty', async ({
-    page,
-  }) => {
+  test('blocks navigation and shows errors when required fields are empty', async ({ page }) => {
     await page.getByRole('button', { name: /continue/i }).click()
 
     // Should still be on page 1 — Country (page 2) must not be visible
@@ -79,23 +77,17 @@ test.describe('All Fields Demo — page 2 preferences', () => {
     await expect(page.getByLabel('Budget (£)')).toBeVisible()
   })
 
-  test('newsletter frequency is hidden until subscribe toggle is on', async ({
-    page,
-  }) => {
+  test('newsletter frequency is hidden until subscribe toggle is on', async ({ page }) => {
     await expect(
       page.getByRole('group').filter({ hasText: 'Newsletter Frequency' }),
     ).not.toBeVisible()
 
     await page.getByLabel('Subscribe to our newsletter').click()
 
-    await expect(
-      page.getByRole('group').filter({ hasText: 'Newsletter Frequency' }),
-    ).toBeVisible()
+    await expect(page.getByRole('group').filter({ hasText: 'Newsletter Frequency' })).toBeVisible()
   })
 
-  test('additional notes hidden when country is uk, visible otherwise', async ({
-    page,
-  }) => {
+  test('additional notes hidden when country is uk, visible otherwise', async ({ page }) => {
     await advanceFromPage2(page)
 
     // No country selected → additional_notes visible ('' !== 'uk')
@@ -190,9 +182,7 @@ test.describe('All Fields Demo — full submission', () => {
     await page.getByLabel('Street Address').fill('1 Playwright Ave')
     await page.getByLabel('City').fill('Testville')
     await page.getByLabel('Postcode').fill('TS1 1TS')
-    await page.getByLabel(
-      'I agree to the Terms & Conditions and Privacy Policy',
-    ).click()
+    await page.getByLabel('I agree to the Terms & Conditions and Privacy Policy').click()
 
     const responsePromise = page.waitForResponse(
       (r) => r.url().includes('/api/submit') && r.request().method() === 'POST',
@@ -230,9 +220,7 @@ test.describe('All Fields Demo — full submission', () => {
     await page.getByLabel('Role').fill('Engineer')
     await page.getByLabel('Email').fill('alice@example.com')
 
-    await page.getByLabel(
-      'I agree to the Terms & Conditions and Privacy Policy',
-    ).click()
+    await page.getByLabel('I agree to the Terms & Conditions and Privacy Policy').click()
 
     const responsePromise = page.waitForResponse(
       (r) => r.url().includes('/api/submit') && r.request().method() === 'POST',

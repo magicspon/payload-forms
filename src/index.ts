@@ -1,10 +1,4 @@
-import type {
-	CollectionConfig,
-	Config,
-	Field,
-	PayloadRequest,
-	Tab,
-} from 'payload'
+import type { CollectionConfig, Config, Field, PayloadRequest, Tab } from 'payload'
 
 import { mergeCollection } from '@/shared/utils/mergeCollection'
 
@@ -14,8 +8,8 @@ import { buildSubmissionsCollection } from './collections/submissions'
 import { makeSubmissionNotifications } from './notifications/hooks/submissionNotifications'
 import { makeSubmissionExportEndpoint } from './submissions/endpoints/submissionExport'
 import {
-	makeSubmissionImportEndpoint,
-	type OnBatchImportComplete,
+  makeSubmissionImportEndpoint,
+  type OnBatchImportComplete,
 } from './submissions/endpoints/submissionImport'
 
 export type { FormsCollectionOptions } from './collections/forms'
@@ -30,11 +24,11 @@ export { shouldSendNotification } from '@/notifications/utils/notifications'
 export * from '@/shared/fieldSchema'
 export { mergePages } from '@/shared/utils/mergePages'
 export {
-	extractFieldsFromPages,
-	formatSubmissionValue,
-	generateSubmissionsCSV,
-	generateTemplateHeaders,
-	parseCsvRowToSubmissionData,
+  extractFieldsFromPages,
+  formatSubmissionValue,
+  generateSubmissionsCSV,
+  generateTemplateHeaders,
+  parseCsvRowToSubmissionData,
 } from '@/submissions/utils/csvTemplateUtils'
 export type { FieldDefinition } from '@/submissions/utils/csvTemplateUtils'
 
@@ -42,108 +36,108 @@ import type { DeepPartial } from './types'
 
 /** Resolved collection slugs used throughout the plugin. */
 export interface CollectionSlugs {
-	/** Slug for the forms collection. Defaults to `'forms'`. */
-	forms: string
-	/** Slug for the form-uploads collection. Defaults to `'form-uploads'`. */
-	formUploads: string
-	/** Slug for the submissions collection. Defaults to `'submissions'`. */
-	submissions: string
+  /** Slug for the forms collection. Defaults to `'forms'`. */
+  forms: string
+  /** Slug for the form-uploads collection. Defaults to `'form-uploads'`. */
+  formUploads: string
+  /** Slug for the submissions collection. Defaults to `'submissions'`. */
+  submissions: string
 }
 
 export interface FormsPluginConfig {
-	/**
-	 * Collection config overrides, deep-merged into the plugin defaults.
-	 * Use this to inject access control, extra fields, hooks, etc.
-	 */
-	collections?: {
-		forms?: DeepPartial<CollectionConfig>
-		formUploads?: DeepPartial<CollectionConfig>
-		submissions?: DeepPartial<CollectionConfig>
-	}
+  /**
+   * Collection config overrides, deep-merged into the plugin defaults.
+   * Use this to inject access control, extra fields, hooks, etc.
+   */
+  collections?: {
+    forms?: DeepPartial<CollectionConfig>
+    formUploads?: DeepPartial<CollectionConfig>
+    submissions?: DeepPartial<CollectionConfig>
+  }
 
-	disabled?: boolean
+  disabled?: boolean
 
-	/**
-	 * Access check used by the CSV export endpoint.
-	 * Defaults to allowing all requests (no-op). Override to enforce auth.
-	 */
-	exportAccessCheck?: (req: PayloadRequest) => boolean
+  /**
+   * Access check used by the CSV export endpoint.
+   * Defaults to allowing all requests (no-op). Override to enforce auth.
+   */
+  exportAccessCheck?: (req: PayloadRequest) => boolean
 
-	features?: {
-		confirmations: boolean
-		fieldPalette: boolean
-		importSchema: boolean
-		multipage: boolean
-		notifications: boolean
-	}
+  features?: {
+    confirmations: boolean
+    fieldPalette: boolean
+    importSchema: boolean
+    multipage: boolean
+    notifications: boolean
+  }
 
-	/**
-	 * Access check used by the CSV import endpoint.
-	 * Defaults to allowing all requests (no-op). Override to enforce auth.
-	 */
-	importAccessCheck?: (req: PayloadRequest) => boolean
+  /**
+   * Access check used by the CSV import endpoint.
+   * Defaults to allowing all requests (no-op). Override to enforce auth.
+   */
+  importAccessCheck?: (req: PayloadRequest) => boolean
 
-	/**
-	 * Live preview URL factory for the forms collection.
-	 * If omitted, live preview is disabled.
-	 */
-	livePreviewUrl?: (args: {
-		data: Record<string, unknown>
-		locale: { code: string }
-	}) => null | string
+  /**
+   * Live preview URL factory for the forms collection.
+   * If omitted, live preview is disabled.
+   */
+  livePreviewUrl?: (args: {
+    data: Record<string, unknown>
+    locale: { code: string }
+  }) => null | string
 
-	/**
-	 * Locale options for the "languages" field.
-	 * Defaults to English only.
-	 */
-	localeOptions?: { label: string; value: string }[]
+  /**
+   * Locale options for the "languages" field.
+   * Defaults to English only.
+   */
+  localeOptions?: { label: string; value: string }[]
 
-	/**
-	 * Called once after a successful batch CSV import.
-	 *
-	 * During an import each `payload.create()` carries
-	 * `context: { isBatchImport: true }`, which suppresses per-record hooks
-	 * (direct emails and notification job queuing). Provide this callback to
-	 * fire a single consolidated notification for the whole batch instead.
-	 *
-	 * @example
-	 * ```ts
-	 * // TODO: wire up your own notification handler here
-	 *
-	 * formsPlugin({
-	 *   onBatchImportComplete: async ({ payload, teamId, formId, count }) => {
-	 *     await queueNotificationRules({
-	 *       payload,
-	 *       trigger: 'form.batch_import',
-	 *       teamId,
-	 *       formId,
-	 *       count,
-	 *     })
-	 *   },
-	 * })
-	 * ```
-	 */
-	onBatchImportComplete?: OnBatchImportComplete
+  /**
+   * Called once after a successful batch CSV import.
+   *
+   * During an import each `payload.create()` carries
+   * `context: { isBatchImport: true }`, which suppresses per-record hooks
+   * (direct emails and notification job queuing). Provide this callback to
+   * fire a single consolidated notification for the whole batch instead.
+   *
+   * @example
+   * ```ts
+   * // TODO: wire up your own notification handler here
+   *
+   * formsPlugin({
+   *   onBatchImportComplete: async ({ payload, teamId, formId, count }) => {
+   *     await queueNotificationRules({
+   *       payload,
+   *       trigger: 'form.batch_import',
+   *       teamId,
+   *       formId,
+   *       count,
+   *     })
+   *   },
+   * })
+   * ```
+   */
+  onBatchImportComplete?: OnBatchImportComplete
 
-	settings?: Field[]
+  settings?: Field[]
 
-	/**
-	 * Override the collection slugs registered by this plugin.
-	 * Useful when the default names conflict with existing collections.
-	 *
-	 * @example
-	 * ```ts
-	 * formsPlugin({ slugs: { forms: 'contact-forms', submissions: 'contact-submissions' } })
-	 * ```
-	 */
-	slugs?: Partial<CollectionSlugs>
+  /**
+   * Override the collection slugs registered by this plugin.
+   * Useful when the default names conflict with existing collections.
+   *
+   * @example
+   * ```ts
+   * formsPlugin({ slugs: { forms: 'contact-forms', submissions: 'contact-submissions' } })
+   * ```
+   */
+  slugs?: Partial<CollectionSlugs>
 
-	tabLabels?: {
-		canvas: string
-		settings: string
-	}
+  tabLabels?: {
+    canvas: string
+    settings: string
+  }
 
-	tabs?: Tab[]
+  tabs?: Tab[]
 }
 
 /**
@@ -169,99 +163,106 @@ export interface FormsPluginConfig {
  * ```
  */
 export const formsPlugin =
-	(pluginOptions: FormsPluginConfig = {}) =>
-	(config: Config): Config => {
-		const {
-			collections: collectionOverrides = {},
-			disabled = false,
-			exportAccessCheck = () => true,
-			features = {
-				confirmations: true,
-				fieldPalette: true,
-				importSchema: false,
-				multipage: true,
-				notifications: true,
-			},
-			importAccessCheck = () => true,
-			livePreviewUrl,
-			localeOptions,
-			onBatchImportComplete,
-			settings = [],
-			slugs: slugOverrides,
-			tabLabels = {
-				canvas: 'Canvas',
-				settings: 'Settings',
-			},
-			tabs = [],
-		} = pluginOptions
+  (pluginOptions: FormsPluginConfig = {}) =>
+  (config: Config): Config => {
+    const {
+      collections: collectionOverrides = {},
+      disabled = false,
+      exportAccessCheck = () => true,
+      features = {
+        confirmations: true,
+        fieldPalette: true,
+        importSchema: false,
+        multipage: true,
+        notifications: true,
+      },
+      importAccessCheck = () => true,
+      livePreviewUrl,
+      localeOptions,
+      onBatchImportComplete,
+      settings = [],
+      slugs: slugOverrides,
+      tabLabels = {
+        canvas: 'Canvas',
+        settings: 'Settings',
+      },
+      tabs = [],
+    } = pluginOptions
 
-		const slugs: CollectionSlugs = {
-			forms: slugOverrides?.forms ?? 'forms',
-			formUploads: slugOverrides?.formUploads ?? 'form-uploads',
-			submissions: slugOverrides?.submissions ?? 'submissions',
-		}
+    const slugs: CollectionSlugs = {
+      forms: slugOverrides?.forms ?? 'forms',
+      formUploads: slugOverrides?.formUploads ?? 'form-uploads',
+      submissions: slugOverrides?.submissions ?? 'submissions',
+    }
 
-		// --- Hooks ---
-		// submissionNotifications is always-on: sends direct emails based on the
-		// form's built-in "Notifications" tab configuration.
-		const submissionBeforeChange = [makeSubmissionNotifications(slugs)]
-		const submissionAfterChange: never[] = []
+    // --- Hooks ---
+    // submissionNotifications is always-on: sends direct emails based on the
+    // form's built-in "Notifications" tab configuration.
+    const submissionBeforeChange = [makeSubmissionNotifications(slugs)]
+    const submissionAfterChange: never[] = []
 
-		const importEndpoint = makeSubmissionImportEndpoint(
-			importAccessCheck,
-			onBatchImportComplete,
-			slugs,
-		)
+    const importEndpoint = makeSubmissionImportEndpoint(
+      importAccessCheck,
+      onBatchImportComplete,
+      slugs,
+    )
 
-		const exportEndpoint = makeSubmissionExportEndpoint(exportAccessCheck, slugs)
+    const exportEndpoint = makeSubmissionExportEndpoint(exportAccessCheck, slugs)
 
-		// --- Build collections ---
-		const formsBase = buildFormsCollection({
-			slug: slugs.forms,
-			features,
-			livePreviewUrl,
-			localeOptions,
-			settings,
-			tabLabels,
-			tabs,
-		})
+    // --- Build collections ---
+    const formsBase = buildFormsCollection({
+      slug: slugs.forms,
+      submissionsSlug: slugs.submissions,
+      features,
+      livePreviewUrl,
+      localeOptions,
+      settings,
+      tabLabels,
+      tabs,
+    })
 
-		const submissionsBase = buildSubmissionsCollection({
-			slug: slugs.submissions,
-			afterChangeHooks: submissionAfterChange,
-			beforeChangeHooks: submissionBeforeChange,
-			exportEndpoint,
-			formsSlug: slugs.forms,
-			formUploadsSlug: slugs.formUploads,
-			importEndpoint,
-		})
+    const submissionsBase = buildSubmissionsCollection({
+      slug: slugs.submissions,
+      afterChangeHooks: submissionAfterChange,
+      beforeChangeHooks: submissionBeforeChange,
+      exportEndpoint,
+      formsSlug: slugs.forms,
+      formUploadsSlug: slugs.formUploads,
+      importEndpoint,
+    })
 
-		const formUploadsBase = buildFormUploadsCollection({
-			slug: slugs.formUploads,
-			formsSlug: slugs.forms,
-			submissionsSlug: slugs.submissions,
-		})
+    const formUploadsBase = buildFormUploadsCollection({
+      slug: slugs.formUploads,
+      formsSlug: slugs.forms,
+      submissionsSlug: slugs.submissions,
+    })
 
-		// Merge in host-app overrides
-		const formsCollection = mergeCollection(
-			formsBase,
-			collectionOverrides.forms,
-		)
+    // Merge in host-app overrides
+    const formsCollection = mergeCollection(formsBase, collectionOverrides.forms)
 
-		if (!config.collections) {config.collections = []}
-		config.collections.push(formsCollection)
-		config.collections.push(
-			mergeCollection(submissionsBase, collectionOverrides.submissions),
-		)
-		config.collections.push(
-			mergeCollection(formUploadsBase, collectionOverrides.formUploads),
-		)
+    if (!config.collections) {
+      config.collections = []
+    }
+    config.collections.push(formsCollection)
+    config.collections.push(mergeCollection(submissionsBase, collectionOverrides.submissions))
+    config.collections.push(mergeCollection(formUploadsBase, collectionOverrides.formUploads))
 
-		/**
-		 * When disabled we still register the collections so the DB schema
-		 * stays consistent (important for migrations).
-		 */
-		if (disabled) {return config}
+    /**
+     * When disabled we still register the collections so the DB schema
+     * stays consistent (important for migrations).
+     */
+    if (disabled) {
+      return config
+    }
 
-		return config
-	}
+    if (features?.fieldPalette) {
+      config.admin ??= {}
+      config.admin.components ??= {}
+      config.admin.components.providers ??= []
+      config.admin.components.providers.push({
+        path: '@spon/payload-forms/client#FormBuilderProvider',
+      })
+    }
+
+    return config
+  }

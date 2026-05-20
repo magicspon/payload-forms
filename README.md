@@ -43,29 +43,29 @@ export default buildConfig({
 
 ## Plugin options
 
-| Option | Type | Default | Description |
-|---|---|---|---|
-| `disabled` | `boolean` | `false` | Disables the plugin while keeping the DB schema intact |
-| `slugs` | `Partial<CollectionSlugs>` | — | Override the default collection slugs (`forms`, `submissions`, `form-uploads`) |
-| `collections` | `object` | — | Deep-merged overrides for `forms`, `submissions`, and `formUploads` collection configs |
-| `features` | `object` | all `true` | Toggle individual features: `confirmations`, `fieldPalette`, `importSchema`, `multipage`, `notifications` |
-| `localeOptions` | `{ label, value }[]` | English only | Languages available in the form editor |
-| `livePreviewUrl` | `function` | — | Returns the preview URL for a form; omit to disable live preview |
-| `exportAccessCheck` | `(req) => boolean` | `() => true` | Guards the CSV export endpoint |
-| `importAccessCheck` | `(req) => boolean` | `() => true` | Guards the CSV import endpoint |
-| `onBatchImportComplete` | `function` | — | Called once after a successful batch CSV import |
-| `settings` | `Field[]` | `[]` | Extra fields injected into the form settings tab |
-| `tabs` | `Tab[]` | `[]` | Extra tabs added to the form editor |
-| `tabLabels` | `{ canvas, settings }` | `{ canvas: 'Canvas', settings: 'Settings' }` | Override the default tab labels |
+| Option                  | Type                       | Default                                      | Description                                                                                               |
+| ----------------------- | -------------------------- | -------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `disabled`              | `boolean`                  | `false`                                      | Disables the plugin while keeping the DB schema intact                                                    |
+| `slugs`                 | `Partial<CollectionSlugs>` | —                                            | Override the default collection slugs (`forms`, `submissions`, `form-uploads`)                            |
+| `collections`           | `object`                   | —                                            | Deep-merged overrides for `forms`, `submissions`, and `formUploads` collection configs                    |
+| `features`              | `object`                   | all `true`                                   | Toggle individual features: `confirmations`, `fieldPalette`, `importSchema`, `multipage`, `notifications` |
+| `localeOptions`         | `{ label, value }[]`       | English only                                 | Languages available in the form editor                                                                    |
+| `livePreviewUrl`        | `function`                 | —                                            | Returns the preview URL for a form; omit to disable live preview                                          |
+| `exportAccessCheck`     | `(req) => boolean`         | `() => true`                                 | Guards the CSV export endpoint                                                                            |
+| `importAccessCheck`     | `(req) => boolean`         | `() => true`                                 | Guards the CSV import endpoint                                                                            |
+| `onBatchImportComplete` | `function`                 | —                                            | Called once after a successful batch CSV import                                                           |
+| `settings`              | `Field[]`                  | `[]`                                         | Extra fields injected into the form settings tab                                                          |
+| `tabs`                  | `Tab[]`                    | `[]`                                         | Extra tabs added to the form editor                                                                       |
+| `tabLabels`             | `{ canvas, settings }`     | `{ canvas: 'Canvas', settings: 'Settings' }` | Override the default tab labels                                                                           |
 
 ## Exports
 
-| Export path | Contents |
-|---|---|
-| `@spon/payload-forms` | Plugin function, collection option types, shared utilities |
-| `@spon/payload-forms/client` | Client components (requires `'use client'`) |
-| `@spon/payload-forms/rsc` | React Server Components |
-| `@spon/payload-forms/form` | Field prop types and form value types for the frontend form renderer |
+| Export path                  | Contents                                                             |
+| ---------------------------- | -------------------------------------------------------------------- |
+| `@spon/payload-forms`        | Plugin function, collection option types, shared utilities           |
+| `@spon/payload-forms/client` | Client components (requires `'use client'`)                          |
+| `@spon/payload-forms/rsc`    | React Server Components                                              |
+| `@spon/payload-forms/form`   | Field prop types and form value types for the frontend form renderer |
 
 ## Collections registered
 

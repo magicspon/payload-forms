@@ -4,26 +4,28 @@ import config from '@payload-config'
 import { getPayload } from 'payload'
 
 interface Props {
-	params: Promise<{ slug: string }>
+  params: Promise<{ slug: string }>
 }
 
 export default async function FormPage({ params }: Props) {
-	const { slug } = await params
-	const payload = await getPayload({ config })
+  const { slug } = await params
+  const payload = await getPayload({ config })
 
-	const form = await payload
-		.find({
-			collection: 'forms',
-			where: { slug: { equals: slug } },
-		})
-		.then((resp) => resp.docs?.[0])
-		.catch(() => null)
+  const form = await payload
+    .find({
+      collection: 'forms',
+      where: { slug: { equals: slug } },
+    })
+    .then((resp) => resp.docs?.[0])
+    .catch(() => null)
 
-	if (!form) {notFound()}
+  if (!form) {
+    notFound()
+  }
 
-	return (
-		<div className="max-w-3xl mx-auto px-4 py-8">
-			<Form data={form} />
-		</div>
-	)
+  return (
+    <div className="max-w-3xl mx-auto px-4 py-8">
+      <Form data={form} />
+    </div>
+  )
 }

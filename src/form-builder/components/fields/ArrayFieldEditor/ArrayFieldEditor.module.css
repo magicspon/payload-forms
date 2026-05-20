@@ -22,6 +22,26 @@
   opacity: 0.5;
 }
 
+.indicatorLeft {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 0.125rem;
+  background-color: #3b82f6;
+  border-radius: 9999px;
+}
+
+.indicatorRight {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 0.125rem;
+  background-color: #3b82f6;
+  border-radius: 9999px;
+}
+
 .handle {
   color: var(--theme-elevation-400);
   cursor: grab;
@@ -127,7 +147,9 @@
   border-radius: 0.25rem;
   border: 1px dashed var(--theme-elevation-200);
   padding: 0.5rem;
-  transition: border-color 0.15s ease, background-color 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease;
 }
 
 .dropZoneEmpty {
@@ -150,7 +172,7 @@
 }
 
 .addFieldLabel {
-  font-size: 0.875rem;
+  font-size: 1rem;
   margin-left: 0.25rem;
 }
 
@@ -164,7 +186,9 @@
   padding: 0.75rem;
   min-height: 4rem;
   border-radius: 0.25rem;
-  transition: border-color 0.15s ease, background-color 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease;
 }
 
 .subFieldsEmpty {
@@ -182,7 +206,6 @@
   font-size: 0.875rem;
   color: var(--theme-elevation-600);
 }
-
 
 .twoColGrid {
   display: grid;

@@ -8,110 +8,110 @@ import type { Form as TFormProps } from '../../../payload-types'
 import { FieldRenderer } from './FieldRenderer'
 
 interface FormProps {
-	data: Pick<TFormProps, 'id' | 'pages' | 'formSchema'> & { submitButtonLabel?: string | null }
-	onSubmit?: (values: FormValues, { _hp }: { _hp?: string }) => Promise<void>
-	defaultValues?: FormValues
-	className?: string
-	showHidden?: boolean
+  data: Pick<TFormProps, 'id' | 'pages' | 'formSchema'> & { submitButtonLabel?: string | null }
+  onSubmit?: (values: FormValues, { _hp }: { _hp?: string }) => Promise<void>
+  defaultValues?: FormValues
+  className?: string
+  showHidden?: boolean
 }
 
 export function Form({ data, onSubmit, defaultValues, className, showHidden }: FormProps) {
-	const baseUrl = typeof window !== 'undefined' ? window.location.origin : ''
-	const mountTime = React.useRef(String(Date.now()))
+  const baseUrl = typeof window !== 'undefined' ? window.location.origin : ''
+  const mountTime = React.useRef(String(Date.now()))
 
-	const handleSubmit = React.useCallback(
-		async (values: FormValues, { _hp }: { _hp?: string }) => {
-			if (onSubmit) {
-				return onSubmit(values, { _hp })
-			}
-			const formData = createFormBody({
-				value: values as Record<string, unknown>,
-				id: String(data.id),
-				_hp: _hp ?? '',
-				_ts: mountTime.current,
-			})
-			await fetch(`${baseUrl}/api/submit`, {
-				method: 'POST',
-				body: formData,
-			})
-		},
-		[onSubmit, data.id, baseUrl],
-	)
+  const handleSubmit = React.useCallback(
+    async (values: FormValues, { _hp }: { _hp?: string }) => {
+      if (onSubmit) {
+        return onSubmit(values, { _hp })
+      }
+      const formData = createFormBody({
+        value: values as Record<string, unknown>,
+        id: String(data.id),
+        _hp: _hp ?? '',
+        _ts: mountTime.current,
+      })
+      await fetch(`${baseUrl}/api/submit`, {
+        method: 'POST',
+        body: formData,
+      })
+    },
+    [onSubmit, data.id, baseUrl],
+  )
 
-	const {
-		form,
-		page,
-		values,
-		validatorCache,
-		pagination: { isFirstPage, isLastPage, handleNext, handlePrev },
-		honeypotRef,
-	} = useForm({
-		onSubmit: handleSubmit,
-		pages: data.pages,
-		formSchema: data.formSchema,
-		defaultValues,
-	})
+  const {
+    form,
+    page,
+    values,
+    validatorCache,
+    pagination: { isFirstPage, isLastPage, handleNext, handlePrev },
+    honeypotRef,
+  } = useForm({
+    onSubmit: handleSubmit,
+    pages: data.pages,
+    formSchema: data.formSchema,
+    defaultValues,
+  })
 
-	if (!page) {return null}
+  if (!page) {
+    return null
+  }
 
-	return (
-		<form.AppForm>
-			<form
-				onSubmit={(e) => {
-					e.preventDefault()
-					e.stopPropagation()
-					void form.handleSubmit()
-				}}
-				className={className}
-			>
-				<input
-					ref={honeypotRef}
-					type="text"
-					name="pageId"
-					autoComplete="off"
-					tabIndex={-1}
-					aria-hidden="true"
-					style={{
-						position: 'absolute',
-						left: '-9999px',
-						opacity: 0,
-						pointerEvents: 'none',
-					}}
-				/>
-				<div>
-					{page.rows.map((row) => (
-						<div key={row.id}>
-							{row.columns.map((field) => (
-								<FieldRenderer
-									key={field.id}
-									field={field}
-									values={values}
-									validatorCache={validatorCache}
-									showHidden={showHidden}
-								/>
-							))}
-						</div>
-					))}
-				</div>
+  return (
+    <form.AppForm>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault()
+          e.stopPropagation()
+          void form.handleSubmit()
+        }}
+        className={className}
+      >
+        <input
+          ref={honeypotRef}
+          type="text"
+          name="pageId"
+          autoComplete="off"
+          tabIndex={-1}
+          aria-hidden="true"
+          style={{
+            position: 'absolute',
+            left: '-9999px',
+            opacity: 0,
+            pointerEvents: 'none',
+          }}
+        />
+        <div>
+          {page.rows.map((row) => (
+            <div key={row.id}>
+              {row.columns.map((field) => (
+                <FieldRenderer
+                  key={field.id}
+                  field={field}
+                  values={values}
+                  validatorCache={validatorCache}
+                  showHidden={showHidden}
+                />
+              ))}
+            </div>
+          ))}
+        </div>
 
-				<div>
-					{!isFirstPage && (
-						<button type="button" onClick={() => handlePrev()}>
-							{page.backButton ?? 'Back'}
-						</button>
-					)}
+        <div>
+          {!isFirstPage && (
+            <button type="button" onClick={() => handlePrev()}>
+              {page.backButton ?? 'Back'}
+            </button>
+          )}
 
-					{isLastPage ? (
-						<form.SubscribeButton>
-							{data.submitButtonLabel ?? 'Submit'}
-						</form.SubscribeButton>
-					) : (
-						<button type="button" onClick={() => void handleNext()}>
-							{page.nextButton ?? 'Next'}
-						</button>
-					)}
-				</div>
-			</form>
-		</form.AppForm>
-	)
+          {isLastPage ? (
+            <form.SubscribeButton>{data.submitButtonLabel ?? 'Submit'}</form.SubscribeButton>
+          ) : (
+            <button type="button" onClick={() => void handleNext()}>
+              {page.nextButton ?? 'Next'}
+            </button>
+          )}
+        </div>
+      </form>
+    </form.AppForm>
+  )
 }

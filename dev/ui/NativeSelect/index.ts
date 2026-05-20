@@ -1,5 +1,1 @@
-export {
-	NativeSelect,
-	NativeSelectOptGroup,
-	NativeSelectOption,
-} from './NativeSelect'
+export { NativeSelect, NativeSelectOptGroup, NativeSelectOption } from './NativeSelect'

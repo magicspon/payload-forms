@@ -16,100 +16,90 @@ import type { Field } from '@/shared/fieldSchema'
  * (FR-039)
  */
 export function mergePages(
-	canonical: FormPage[],
-	locale: FormPage[] | null | undefined,
+  canonical: FormPage[],
+  locale: FormPage[] | null | undefined,
 ): FormPage[] {
-	const localePageMap = new Map((locale ?? []).map((page) => [page.id, page]))
+  const localePageMap = new Map((locale ?? []).map((page) => [page.id, page]))
 
-	return canonical.map((canonicalPage) => {
-		const localePage = localePageMap.get(canonicalPage.id)
+  return canonical.map((canonicalPage) => {
+    const localePage = localePageMap.get(canonicalPage.id)
 
-		return {
-			...canonicalPage,
-			backButton: localePage?.backButton ?? canonicalPage.backButton,
-			nextButton: localePage?.nextButton ?? canonicalPage.nextButton,
-			rows: canonicalPage.rows.map((canonicalRow) =>
-				mergeRow(canonicalRow, localePage),
-			),
-			title: localePage?.title ?? canonicalPage.title,
-		}
-	})
+    return {
+      ...canonicalPage,
+      backButton: localePage?.backButton ?? canonicalPage.backButton,
+      nextButton: localePage?.nextButton ?? canonicalPage.nextButton,
+      rows: canonicalPage.rows.map((canonicalRow) => mergeRow(canonicalRow, localePage)),
+      title: localePage?.title ?? canonicalPage.title,
+    }
+  })
 }
 
-function mergeRow(
-	canonicalRow: FormRow,
-	localePage: FormPage | undefined,
-): FormRow {
-	const localeFieldMap = new Map<string, Field>(
-		(localePage?.rows ?? []).flatMap((row) =>
-			row.columns.map((field) => [field.id, field]),
-		),
-	)
+function mergeRow(canonicalRow: FormRow, localePage: FormPage | undefined): FormRow {
+  const localeFieldMap = new Map<string, Field>(
+    (localePage?.rows ?? []).flatMap((row) => row.columns.map((field) => [field.id, field])),
+  )
 
-	return {
-		...canonicalRow,
-		columns: canonicalRow.columns.map((canonicalField) =>
-			mergeField(canonicalField, localeFieldMap.get(canonicalField.id)),
-		),
-	}
+  return {
+    ...canonicalRow,
+    columns: canonicalRow.columns.map((canonicalField) =>
+      mergeField(canonicalField, localeFieldMap.get(canonicalField.id)),
+    ),
+  }
 }
 
 type NonMessageField = Exclude<Field, { type: 'message' }>
 
 function mergeField(canonical: Field, locale: Field | undefined): Field {
-	if (!locale || locale.type !== canonical.type) {return canonical}
-	if (canonical.type === 'message') {return canonical}
+  if (!locale || locale.type !== canonical.type) {
+    return canonical
+  }
+  if (canonical.type === 'message') {
+    return canonical
+  }
 
-	const c = canonical as NonMessageField
-	const l = locale as NonMessageField
+  const c = canonical as NonMessageField
+  const l = locale as NonMessageField
 
-	const merged: NonMessageField = {
-		...c,
-		errorMessage: l.errorMessage ?? c.errorMessage,
-		instructions: l.instructions ?? c.instructions,
-		label: l.label ?? c.label,
-	}
+  const merged: NonMessageField = {
+    ...c,
+    errorMessage: l.errorMessage ?? c.errorMessage,
+    instructions: l.instructions ?? c.instructions,
+    label: l.label ?? c.label,
+  }
 
-	if (
-		merged.type === 'radio' ||
-		merged.type === 'checkbox' ||
-		merged.type === 'select'
-	) {
-		const localeOpts = (l as typeof merged).options
-		const localeOptionByValue = new Map(
-			localeOpts.map((o) => [o.value, o.label]),
-		)
-		const withOptions: typeof merged = {
-			...merged,
-			options: merged.options.map((opt) => ({
-				label: localeOptionByValue.get(opt.value) ?? opt.label,
-				value: opt.value,
-			})),
-		}
+  if (merged.type === 'radio' || merged.type === 'checkbox' || merged.type === 'select') {
+    const localeOpts = (l as typeof merged).options
+    const localeOptionByValue = new Map(localeOpts.map((o) => [o.value, o.label]))
+    const withOptions: typeof merged = {
+      ...merged,
+      options: merged.options.map((opt) => ({
+        label: localeOptionByValue.get(opt.value) ?? opt.label,
+        value: opt.value,
+      })),
+    }
 
-		if (withOptions.type === 'select') {
-			return {
-				...withOptions,
-				placeholder:
-					(l as typeof withOptions).placeholder ?? withOptions.placeholder,
-			}
-		}
+    if (withOptions.type === 'select') {
+      return {
+        ...withOptions,
+        placeholder: (l as typeof withOptions).placeholder ?? withOptions.placeholder,
+      }
+    }
 
-		return withOptions
-	}
+    return withOptions
+  }
 
-	if (
-		merged.type === 'text' ||
-		merged.type === 'textarea' ||
-		merged.type === 'email' ||
-		merged.type === 'number' ||
-		merged.type === 'date'
-	) {
-		return {
-			...merged,
-			placeholder: (l as typeof merged).placeholder ?? merged.placeholder,
-		}
-	}
+  if (
+    merged.type === 'text' ||
+    merged.type === 'textarea' ||
+    merged.type === 'email' ||
+    merged.type === 'number' ||
+    merged.type === 'date'
+  ) {
+    return {
+      ...merged,
+      placeholder: (l as typeof merged).placeholder ?? merged.placeholder,
+    }
+  }
 
-	return merged
+  return merged
 }
