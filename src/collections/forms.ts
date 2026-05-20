@@ -308,24 +308,15 @@ export function buildFormsCollection(opts: FormsCollectionOptions = {}): Collect
       name: 'pages',
       type: 'json',
       admin: { hidden: true },
-      hooks: {
-        beforeValidate: [
-          ({ value }) => {
-            if (value) {
-              return value
-            }
-            return [
-              {
-                id: nanoid(),
-                backButton: 'Back',
-                nextButton: 'Next',
-                rows: [{ id: nanoid(), columns: [] }],
-                title: 'Page 1',
-              },
-            ]
-          },
-        ],
-      },
+      defaultValue: () => [
+        {
+          id: nanoid(),
+          backButton: 'Back',
+          nextButton: 'Next',
+          rows: [{ id: nanoid(), columns: [] }],
+          title: 'Page 1',
+        },
+      ],
       typescriptSchema: [() => formJSONSchema as JSONSchema4],
     },
   ]
@@ -334,7 +325,6 @@ export function buildFormsCollection(opts: FormsCollectionOptions = {}): Collect
     fields.push({
       name: 'richText',
       type: 'richText',
-      // Same lexicalEditor() type workaround as the notification fields above
       admin: {
         description: 'Schema path used for rich text content field (message)',
         hidden: true,
@@ -387,25 +377,44 @@ export function buildFormsCollection(opts: FormsCollectionOptions = {}): Collect
         ({ data, req }) => {
           if (!Array.isArray(data?.pages)) return data
 
-          data.pages = (data.pages as FormPage[])
-            .map((page) => ({
-              ...page,
-              rows: page.rows
-                .map((row) => ({
-                  ...row,
-                  columns: row.columns.map((field) => {
-                    if (field.type === 'array' || field.type === 'group') {
-                      return {
-                        ...field,
-                        rows: field.rows.filter((r) => r.columns.length > 0),
-                      }
+          const pagesWithCleanedRows = (data.pages as FormPage[]).map((page) => {
+            const filteredRows = page.rows
+              .map((row) => ({
+                ...row,
+                columns: row.columns.map((field) => {
+                  if (field.type === 'array' || field.type === 'group') {
+                    return {
+                      ...field,
+                      rows: field.rows.filter((r) => r.columns.length > 0),
                     }
-                    return field
-                  }),
-                }))
-                .filter((row) => row.columns.length > 0),
-            }))
-            .filter((page) => page.rows.length > 0)
+                  }
+                  return field
+                }),
+              }))
+              .filter((row) => row.columns.length > 0)
+
+            // Preserve at least one empty row per page (reuse existing ID if possible)
+            const rows =
+              filteredRows.length > 0
+                ? filteredRows
+                : [{ id: page.rows[0]?.id ?? nanoid(), columns: [] }]
+
+            return { ...page, rows }
+          })
+
+          // Preserve at least one page (reuse existing ID if possible)
+          data.pages =
+            pagesWithCleanedRows.length > 0
+              ? pagesWithCleanedRows
+              : [
+                  {
+                    id: (data.pages as FormPage[])[0]?.id ?? nanoid(),
+                    backButton: 'Back',
+                    nextButton: 'Next',
+                    rows: [{ id: nanoid(), columns: [] }],
+                    title: 'Page 1',
+                  },
+                ]
 
           try {
             const fields = getAllFields(data.pages)

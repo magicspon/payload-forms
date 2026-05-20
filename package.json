@@ -52,8 +52,10 @@
     "lint:fix": "eslint ./src --fix",
     "release": "changeset publish",
     "typecheck": "tsc --noEmit",
+    "dev:build": "next build dev",
+    "dev:start": "next start dev -p 3001",
     "test": "pnpm test:unit && pnpm test:e2e",
-    "test:e2e": "playwright test",
+    "test:e2e": "pnpm dev:build && playwright test",
     "test:integration": "vitest --config vitest.integration.config.ts",
     "test:unit": "vitest"
   },

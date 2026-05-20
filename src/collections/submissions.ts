@@ -1,12 +1,57 @@
 import type {
   CollectionAfterChangeHook,
+  CollectionAfterReadHook,
   CollectionBeforeChangeHook,
   CollectionConfig,
+  CollectionSlug,
   Endpoint,
   Field,
 } from 'payload'
 
+import type { FileUploadEntry, RemoteFileValue } from '../shared/types'
+
 import { makeSubmissionEndpoint } from '../submissions/endpoints/submission'
+
+const afterReadHook: CollectionAfterReadHook = async ({ doc, req }) => {
+  const fileUploads = doc.fileUploads as FileUploadEntry[] | null
+  if (!fileUploads?.length) return doc
+
+  const submissionData = { ...((doc.submissionData ?? {}) as Record<string, unknown>) }
+
+  for (const entry of fileUploads) {
+    const resolved = await Promise.all(
+      entry.ids.map(async (id) => {
+        try {
+          return await req.payload.findByID({
+            id,
+            collection: entry.relationTo as never,
+            depth: 0,
+          })
+        } catch {
+          return null
+        }
+      }),
+    )
+
+    const remoteFiles: RemoteFileValue[] = resolved
+      .filter((d): d is NonNullable<typeof d> => d !== null)
+      .map((uploadDoc) => {
+        const d = uploadDoc as Record<string, unknown>
+        return {
+          kind: 'remote' as const,
+          id: String(d.id),
+          filename: (d.filename as string) ?? '',
+          filesize: (d.filesize as number) ?? 0,
+          mimeType: (d.mimeType as string) ?? '',
+          url: (d.url as string) ?? '',
+        }
+      })
+
+    submissionData[entry.fieldName] = remoteFiles
+  }
+
+  return { ...doc, submissionData }
+}
 
 export interface SubmissionsCollectionOptions {
   /** afterChange hooks to prepend ahead of the built-in ones. */
@@ -87,6 +132,7 @@ export function buildSubmissionsCollection(
     endpoints,
     hooks: {
       afterChange: [...afterChangeHooks],
+      afterRead: [afterReadHook],
       beforeChange: [...beforeChangeHooks],
     },
     labels: { plural: 'Submissions', singular: 'Submission' },
@@ -124,7 +170,7 @@ export function buildSubmissionsCollection(
           description: 'Reference to parent form (for grouping/queries)',
           readOnly: false,
         },
-        relationTo: formsSlug,
+        relationTo: formsSlug as CollectionSlug,
       },
       {
         type: 'tabs',
@@ -202,6 +248,16 @@ export function buildSubmissionsCollection(
             ],
             label: 'Metadata',
           },
+        ],
+      },
+      {
+        name: 'fileUploads',
+        type: 'json',
+        admin: { hidden: true },
+        typescriptSchema: [
+          () => ({
+            tsType: `Array<{ fieldName: string; ids: string[]; maxFiles: number; relationTo: string }> | null`,
+          }),
         ],
       },
       ...extraFields,

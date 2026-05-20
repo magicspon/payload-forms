@@ -83,7 +83,9 @@ export function getDefaultValues(pages?: FormPage[]): FormValues {
           })) as ArrayItemValue[]
           continue
         }
-        if (col.type === 'checkbox') {
+        if (col.type === 'file') {
+          values[col.name] = []
+        } else if (col.type === 'checkbox') {
           values[col.name] = col.defaultValue ?? []
         } else if (col.type === 'toggle' || col.type === 'consent') {
           values[col.name] = col.defaultValue ?? false

@@ -438,7 +438,6 @@ async function createKitchenSinkForm(payload: Payload) {
                 allowedFileTypes: '.pdf,.doc,.docx',
                 maxFileSize: 5 * 1024 * 1024,
                 maxFiles: 1,
-                multiple: false,
               },
             ],
           },

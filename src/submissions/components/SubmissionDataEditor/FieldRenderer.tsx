@@ -396,11 +396,9 @@ function FileFieldRenderer({
   onChange: (v: unknown) => void
   value: unknown
 }) {
-  // submissionData stores file as { id, url, name } or array of same
+  // submissionData stores file as Array<{ kind: 'remote', id, ... }> after afterRead hook
   const uploadValue = useMemo(() => {
-    if (!value) {
-      return undefined
-    }
+    if (!value) return undefined
     if (Array.isArray(value)) {
       return value.map((f: { id?: string }) => f.id).filter(Boolean) as string[]
     }
@@ -408,13 +406,15 @@ function FileFieldRenderer({
     return f.id ?? undefined
   }, [value])
 
+  const targetCollection = field.relationTo ?? formUploadsSlug
+
   return (
     <UploadInput
-      hasMany={field.multiple ?? false}
+      hasMany={(field.maxFiles ?? 1) !== 1}
       label={field.label}
       onChange={(selected) => onChange(selected)}
       path={field.name}
-      relationTo={formUploadsSlug as Parameters<typeof UploadInput>[0]['relationTo']}
+      relationTo={targetCollection as Parameters<typeof UploadInput>[0]['relationTo']}
       required={field.required}
       value={uploadValue}
     />

@@ -200,10 +200,10 @@ export const dateFieldSchema = z.object({
 
 export const fileFieldSchemaJson = z.object({
   type: z.literal('file'),
-  allowedFileTypes: z.string().optional(), // e.g., ".pdf,.doc,.docx,image/*"
-  maxFiles: z.number().int().positive().optional(), // Max number of files (for multiple)
-  maxFileSize: z.number().int().positive().optional(), // Max file size in bytes
-  multiple: z.boolean().optional(), // Allow multiple file uploads
+  allowedFileTypes: z.string().optional(),
+  maxFileSize: z.number().int().positive().optional(),
+  maxFiles: z.number().int().positive().optional(),
+  relationTo: z.string().optional(),
 })
 
 export const fileFieldSchema = z.object({
@@ -397,9 +397,8 @@ export function createDefaultField(id: string, type: FieldType): Field {
         id,
         type,
         allowedFileTypes: '',
-        maxFiles: 1,
         maxFileSize: 10 * 1024 * 1024,
-        multiple: false,
+        maxFiles: 1,
       }
     case 'message':
       return { id, type, richText: undefined }

@@ -1,6 +1,7 @@
-import type { FormUpload } from '@/shared/types'
+import type { FileUploadEntry, FormUpload } from '@/shared/types'
 import type { Endpoint, PayloadRequest } from 'payload'
 
+import { getAllFields } from '@/form-builder/utils/formTree'
 import { attemptAsync } from '@/shared/utils/attemptAsync'
 import { replaceDataPlaceholders } from '@/shared/utils/replaceDataPlaceholders'
 import { errorResponse } from '@/submissions/utils/errorResponse'
@@ -12,6 +13,7 @@ import {
 import { z } from 'zod'
 
 import type { CollectionSlugs } from '../..'
+import type { FormPage } from '@/form-builder/utils/formTree'
 
 // Skip timing check in test or non-production environments
 const MIN_SUBMISSION_TIME_MS =
@@ -136,6 +138,7 @@ export function makeSubmissionEndpoint(slugs: CollectionSlugs): Endpoint {
           select: {
             confirmationMessage: true,
             confirmationType: true,
+            pages: true,
             title: true,
           },
         }),
@@ -146,14 +149,25 @@ export function makeSubmissionEndpoint(slugs: CollectionSlugs): Endpoint {
         return errorResponse('Form not found', 404)
       }
 
-      // Upload files and collect their Payload document IDs
+      // Build a fieldName → file field config map from the form's pages.
+      // Used to look up per-field relationTo (upload collection slug).
+      const allFields = getAllFields((form.pages as FormPage[] | null) ?? [])
+      const fileFieldMap = new Map(
+        allFields.filter((f) => f.type === 'file').map((f) => [f.name, f]),
+      )
+
+      // Upload files to their target collection (per-field relationTo or default)
       const uploadedFiles: {
         fieldName: string
         fileId: string
+        targetCollection: string
         uploaded: FormUpload
       }[] = []
 
       for (const { fieldName, file } of filesToUpload) {
+        const fieldConfig = fileFieldMap.get(fieldName)
+        const targetCollection = fieldConfig?.relationTo ?? slugs.formUploads
+
         const [prepErr, prepared] = await attemptAsync(() => prepareFileForUpload(fieldName, file))
 
         if (prepErr || !prepared) {
@@ -166,8 +180,8 @@ export function makeSubmissionEndpoint(slugs: CollectionSlugs): Endpoint {
 
         const [uploadErr, uploaded] = await attemptAsync(() =>
           payload.create({
-            collection: slugs.formUploads as 'form-uploads',
-            data: { fieldName, form: formId },
+            collection: targetCollection as 'form-uploads',
+            data: { fieldName, form: formId as unknown as number },
             file: {
               name: prepared.uniqueFileName,
               data: prepared.buffer,
@@ -190,16 +204,29 @@ export function makeSubmissionEndpoint(slugs: CollectionSlugs): Endpoint {
         uploadedFiles.push({
           fieldName,
           fileId: String(uploaded.id),
-          uploaded: data as FormUpload,
+          targetCollection,
+          uploaded: data as unknown as FormUpload,
         })
       }
 
-      // Merge uploaded file metadata into submission data, replacing the raw
-      // field value with the stored upload document
-      const finalSubmissionData: Record<string, unknown> = { ...submissionData }
-      for (const { fieldName, uploaded } of uploadedFiles) {
-        finalSubmissionData[fieldName] = uploaded
+      // Group uploads by field into the fileUploads structure.
+      // afterRead hook uses this to populate submissionData at read time.
+      const fileUploadMap = new Map<string, FileUploadEntry>()
+      for (const { fieldName, fileId, targetCollection } of uploadedFiles) {
+        const fieldConfig = fileFieldMap.get(fieldName)
+        const existing = fileUploadMap.get(fieldName)
+        if (existing) {
+          existing.ids.push(fileId)
+        } else {
+          fileUploadMap.set(fieldName, {
+            fieldName,
+            ids: [fileId],
+            maxFiles: fieldConfig?.maxFiles ?? 1,
+            relationTo: targetCollection,
+          })
+        }
       }
+      const fileUploads = Array.from(fileUploadMap.values())
 
       // Coerce the string URL param to the correct ID type for the relationship validator.
       // Payload's isValidID requires typeof === 'number' when defaultIDType is 'number' (SQLite).
@@ -209,9 +236,10 @@ export function makeSubmissionEndpoint(slugs: CollectionSlugs): Endpoint {
         payload.create({
           collection: slugs.submissions as 'submissions',
           data: {
-            form: parsedFormId,
+            fileUploads,
+            form: parsedFormId as number,
             from,
-            submissionData: finalSubmissionData,
+            submissionData,
             title: form.title,
             userAgent,
             // (NFR-012) IP stored for fraud investigation only; purge after 90 days
@@ -231,28 +259,9 @@ export function makeSubmissionEndpoint(slugs: CollectionSlugs): Endpoint {
         return errorResponse('Failed to save submission', 500)
       }
 
-      // Link each upload document back to the newly created submission
-      for (const { fileId } of uploadedFiles) {
-        const [linkErr] = await attemptAsync(() =>
-          payload.update({
-            id: fileId,
-            collection: slugs.formUploads as 'form-uploads',
-            data: { submission: submission.id },
-          }),
-        )
-
-        if (linkErr) {
-          // Non-fatal: the submission was saved; the link is best-effort
-          payload.logger.error(
-            { err: linkErr, fileId, submissionId: submission.id },
-            'submission: failed to link upload to submission',
-          )
-        }
-      }
-
       const message =
         form.confirmationType === 'message'
-          ? replaceDataPlaceholders(finalSubmissionData)(form.confirmationMessage)
+          ? replaceDataPlaceholders(submissionData)(form.confirmationMessage)
           : null
 
       return Response.json({ doc: submission, message, success: true }, { status: 201 })

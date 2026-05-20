@@ -49,11 +49,22 @@ export type NamedFieldProps =
   | ArrayFieldProps
   | GroupFieldProps
 
-export type StoredFileUpload = {
-  name: string
-  size: number
-  type: string
+export type LocalFileValue = {
+  file: File
+  kind: 'local'
+  previewUrl?: string
 }
+
+export type RemoteFileValue = {
+  filename: string
+  filesize: number
+  id: string
+  kind: 'remote'
+  mimeType: string
+  url: string
+}
+
+export type FileFieldValue = Array<LocalFileValue | RemoteFileValue>
 
 export type ArrayItemValue = Record<string, string | number | boolean | string[] | File[]>
 
@@ -62,7 +73,6 @@ export type FormFieldValue =
   | number
   | boolean
   | string[]
-  | File[]
-  | StoredFileUpload
+  | FileFieldValue
   | ArrayItemValue
   | ArrayItemValue[]

@@ -34,15 +34,16 @@ describe('Plugin integration tests', () => {
   })
 
   test('can create a form', async () => {
+    const slug = `test-form-int-${crypto.randomUUID()}`
     const form = await payload.create({
       collection: 'forms',
       data: {
         title: 'Test Form',
-        slug: 'test-form-int',
+        slug,
         pages: [{ id: crypto.randomUUID(), title: 'Page 1', rows: [] }],
       },
     })
     expect(form.title).toBe('Test Form')
-    expect(form.slug).toBe('test-form-int')
+    expect(form.slug).toBe(slug)
   })
 })

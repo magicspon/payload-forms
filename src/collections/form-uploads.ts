@@ -1,4 +1,4 @@
-import type { CollectionConfig, Field } from 'payload'
+import type { CollectionConfig, CollectionSlug, Field } from 'payload'
 
 /** Build the form-uploads CollectionConfig. */
 export function buildFormUploadsCollection(opts: {
@@ -19,7 +19,7 @@ export function buildFormUploadsCollection(opts: {
         description: 'The form this file was uploaded through',
         readOnly: true,
       },
-      relationTo: formsSlug,
+      relationTo: formsSlug as CollectionSlug,
     },
     {
       name: 'submission',
@@ -28,7 +28,7 @@ export function buildFormUploadsCollection(opts: {
         description: 'The submission this file belongs to',
         readOnly: true,
       },
-      relationTo: submissionsSlug,
+      relationTo: submissionsSlug as CollectionSlug,
     },
     {
       name: 'fieldName',

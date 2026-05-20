@@ -23,7 +23,7 @@ export function FileFieldEditorContent() {
         <form.Field name="allowedFileTypes">
           {(f) => (
             <TextInput
-              description="Comma-separated list of file extensions or MIME types (e.g., .pdf,.doc,image/*)"
+              description="Comma-separated list of file extensions or MIME types (e.g., .pdf,.doc,image/*). Drives the HTML accept attribute — client-side only."
               label="Allowed File Types"
               onChange={(e: ChangeEvent<HTMLInputElement>) => f.handleChange(e.target.value)}
               path="allowedFileTypes"
@@ -31,16 +31,42 @@ export function FileFieldEditorContent() {
             />
           )}
         </form.Field>
+        <form.Field name="maxFiles">
+          {(f) => (
+            <TextInput
+              description="Maximum number of files. 1 = single file (default). Leave blank for unlimited."
+              label="Max Files"
+              onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                f.handleChange(e.target.value ? Number(e.target.value) : undefined)
+              }
+              path="maxFiles"
+              value={f.state.value !== undefined ? String(f.state.value) : ''}
+            />
+          )}
+        </form.Field>
         <form.Field name="maxFileSize">
           {(f) => (
             <TextInput
-              description="Maximum file size in megabytes"
+              description="Client-side size hint in megabytes. The upload collection enforces the server-side limit."
               label="Max File Size (MB)"
               onChange={(e: ChangeEvent<HTMLInputElement>) =>
                 f.handleChange(e.target.value ? Number(e.target.value) * 1024 * 1024 : undefined)
               }
               path="maxFileSize"
               value={f.state.value ? String(f.state.value / (1024 * 1024)) : ''}
+            />
+          )}
+        </form.Field>
+        <form.Field name="relationTo">
+          {(f) => (
+            <TextInput
+              description="Upload collection slug. Defaults to 'form-uploads' when blank."
+              label="Upload Collection"
+              onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                f.handleChange(e.target.value || undefined)
+              }
+              path="relationTo"
+              value={(f.state.value as string) ?? ''}
             />
           )}
         </form.Field>

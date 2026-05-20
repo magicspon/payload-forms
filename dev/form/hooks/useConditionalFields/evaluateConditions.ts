@@ -10,6 +10,8 @@ export type ConditionOperator =
   | 'contains'
   | 'isEmpty'
   | 'isNotEmpty'
+  | 'hasChanged'
+  | 'hasNotChanged'
 
 export type Condition = {
   field: string

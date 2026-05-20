@@ -27,7 +27,7 @@ export async function SubmissionDataEditor({
   if (formId) {
     const form = await payload.findByID({
       id: formId,
-      collection: formsSlug,
+      collection: formsSlug as 'forms',
       depth: 0,
     })
 

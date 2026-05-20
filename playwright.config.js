@@ -16,7 +16,7 @@ export default defineConfig({
   reporter: [['html', { open: 'never' }]],
   globalSetup: './dev/e2e/global-setup.ts',
   use: {
-    baseURL: 'http://localhost:3000',
+    baseURL: 'http://localhost:3001',
     trace: 'on-first-retry',
   },
   projects: [
@@ -37,11 +37,12 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: 'pnpm dev',
+    command: 'pnpm dev:start',
     reuseExistingServer: true,
-    url: 'http://localhost:3000/admin',
-    timeout: 60_000,
+    url: 'http://localhost:3001/admin',
+    timeout: 120_000,
     env: {
+      PAYLOAD_URL: 'http://localhost:3001',
       TEST_ENV: 'true',
     },
   },

@@ -1,4 +1,4 @@
-export function createFormEndpoint(endpoint: string) {
+export function createFormEndpoint(endpoint?: string) {
   return async (request: Request) => {
     try {
       const formData = await request.formData()
@@ -12,7 +12,9 @@ export function createFormEndpoint(endpoint: string) {
       formData.set('_userAgent', userAgent)
       formData.set('_ipAddress', ipAddress)
 
-      const response = await fetch(`${endpoint}/api/submissions/${formData.get('id')}`, {
+      // Derive base URL from the incoming request origin so this works on any port
+      const base = endpoint ?? new URL(request.url).origin
+      const response = await fetch(`${base}/api/submissions/${formData.get('id')}`, {
         method: 'POST',
         body: formData,
       })
@@ -58,18 +60,18 @@ export function createFormBody({
 
   // Separate files from regular form values
   for (const [fieldName, fieldValue] of Object.entries(value)) {
-    if (Array.isArray(fieldValue) && fieldValue.length > 0 && fieldValue[0] instanceof File) {
-      // Store file metadata in submissionData
-      const fileMeta = (fieldValue as File[]).map((file) => ({
-        name: file.name,
-        size: file.size,
-        type: file.type,
-      }))
-      submissionData[fieldName] = fileMeta
-
-      // Append each file to FormData
-      for (const file of fieldValue as File[]) {
-        formData.append(fieldName, file)
+    if (
+      Array.isArray(fieldValue) &&
+      fieldValue.length > 0 &&
+      typeof (fieldValue[0] as { kind?: string })?.kind === 'string'
+    ) {
+      // File field: send kind:'local' files as FormData entries.
+      // kind:'remote' entries are already uploaded — nothing to send.
+      // File fields are omitted from submissionData; the server builds fileUploads.
+      for (const entry of fieldValue as Array<{ kind: string; file?: File }>) {
+        if (entry.kind === 'local' && entry.file) {
+          formData.append(fieldName, entry.file)
+        }
       }
     } else {
       submissionData[fieldName] = fieldValue

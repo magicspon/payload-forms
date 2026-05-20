@@ -303,9 +303,12 @@ test.describe('Form builder — publish and render', () => {
     const slug = await page.getByLabel('Slug').inputValue()
     expect(slug).toBeTruthy()
 
-    // Verify the form renders on the public page
-    await page.goto(`/${slug}`)
-    await expect(page.getByLabel('Your Name')).toBeVisible()
-    await expect(page.getByLabel('I agree to the terms')).toBeVisible()
+    // Verify the form renders on the public page.
+    // Open a fresh tab to avoid the admin page's beforeunload handler aborting navigation.
+    const publicPage = await page.context().newPage()
+    await publicPage.goto(`/${slug}`)
+    await expect(publicPage.getByLabel('Your Name')).toBeVisible()
+    await expect(publicPage.getByLabel('I agree to the terms')).toBeVisible()
+    await publicPage.close()
   })
 })
