@@ -286,7 +286,7 @@ export function buildFormsCollection(opts: FormsCollectionOptions = {}): Collect
           required: true,
         },
         slugField({
-          fieldToUse: 'title',
+          useAsSlug: 'title',
           position: 'main',
         }),
       ],

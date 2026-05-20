@@ -47,39 +47,6 @@ export function TabItem({
   const timerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null)
 
   React.useEffect(() => {
-    const tabEl = tabRef.current
-    if (!tabEl || !onHoverDrag) return
-
-    return dropTargetForElements({
-      element: tabEl,
-      canDrop: ({ source }) =>
-        source.data.type === 'existing-row' && source.data.pageId !== id,
-      getData: () => ({ type: 'row-hover-tab', pageId: id }),
-      onDragEnter: () => {
-        setIsRowHoverTarget(true)
-        timerRef.current = setTimeout(() => {
-          onHoverDrag(id)
-          timerRef.current = null
-        }, 600)
-      },
-      onDragLeave: () => {
-        setIsRowHoverTarget(false)
-        if (timerRef.current !== null) {
-          clearTimeout(timerRef.current)
-          timerRef.current = null
-        }
-      },
-      onDrop: () => {
-        setIsRowHoverTarget(false)
-        if (timerRef.current !== null) {
-          clearTimeout(timerRef.current)
-          timerRef.current = null
-        }
-      },
-    })
-  }, [id, onHoverDrag])
-
-  React.useEffect(() => {
     return () => {
       if (timerRef.current !== null) clearTimeout(timerRef.current)
     }
@@ -88,66 +55,105 @@ export function TabItem({
   React.useEffect(() => {
     const tabEl = tabRef.current
     const handleEl = handleRef.current
-    if (!tabEl || !handleEl || disabled || !onReorder) {
-      return
+    if (!tabEl) return
+
+    const pieces: (() => void)[] = []
+
+    if (!disabled && onReorder && handleEl) {
+      pieces.push(
+        draggable({
+          element: tabEl,
+          dragHandle: handleEl,
+          getInitialData: () => ({ type: 'page-tab', pageId: id, index, title }),
+          onDragStart: () => setIsDragging(true),
+          onDrop: () => setIsDragging(false),
+          onGenerateDragPreview: ({ nativeSetDragImage }) => {
+            setCustomNativeDragPreview({
+              nativeSetDragImage,
+              render: ({ container }) => {
+                const preview = document.createElement('div')
+                preview.textContent = title
+                container.appendChild(preview)
+              },
+            })
+          },
+        }),
+      )
     }
 
-    return combine(
-      draggable({
-        element: tabEl,
-        dragHandle: handleEl,
-        getInitialData: () => ({ type: 'page-tab', pageId: id, index, title }),
-        onDragStart: () => setIsDragging(true),
-        onDrop: () => setIsDragging(false),
-        onGenerateDragPreview: ({ nativeSetDragImage }) => {
-          setCustomNativeDragPreview({
-            nativeSetDragImage,
-            render: ({ container }) => {
-              const preview = document.createElement('div')
-              preview.textContent = title
-              container.appendChild(preview)
-            },
-          })
-        },
-      }),
-      dropTargetForElements({
-        element: tabEl,
-        canDrop: ({ source }) => source.data.type === 'page-tab' && source.data.pageId !== id,
-        getData: ({ input, element }) =>
-          attachClosestEdge(
-            { type: 'page-tab-target', pageId: id, index },
-            { input, element, allowedEdges: ['left', 'right'] },
-          ),
-        onDrag: ({ self, source }) => {
-          if (source.data.pageId === id) {
-            setClosestEdge(null)
-            return
-          }
-          setClosestEdge(extractClosestEdge(self.data))
-        },
-        onDragLeave: () => setClosestEdge(null),
-        onDrop: ({ source, self }) => {
-          setClosestEdge(null)
-          if (!onReorder) {
-            return
-          }
-          const sourceIndex = source.data.index as number
-          const edge = extractClosestEdge(self.data)
-          if (sourceIndex === index) {
-            return
-          }
-          let newIndex = index
-          if (edge === 'right') {
-            newIndex = index + 1
-          }
-          if (sourceIndex < newIndex) {
-            newIndex -= 1
-          }
-          onReorder(sourceIndex, newIndex)
-        },
-      }),
-    )
-  }, [id, index, title, disabled, onReorder])
+    // Single dropTargetForElements handles both page-tab reorder and existing-row
+    // hover-to-switch — pragmatic-dnd only allows one drop target per element.
+    const acceptsPageTab = !disabled && !!onReorder
+    const acceptsRowHover = !!onHoverDrag
+    if (acceptsPageTab || acceptsRowHover) {
+      pieces.push(
+        dropTargetForElements({
+          element: tabEl,
+          canDrop: ({ source }) => {
+            if (source.data.type === 'page-tab') return acceptsPageTab && source.data.pageId !== id
+            if (source.data.type === 'existing-row') return acceptsRowHover && source.data.pageId !== id
+            return false
+          },
+          getData: ({ input, element, source }) => {
+            if (source.data.type === 'page-tab') {
+              return attachClosestEdge(
+                { type: 'page-tab-target', pageId: id, index },
+                { input, element, allowedEdges: ['left', 'right'] },
+              )
+            }
+            return { type: 'row-hover-tab', pageId: id }
+          },
+          onDragEnter: ({ source }) => {
+            if (source.data.type === 'existing-row') {
+              setIsRowHoverTarget(true)
+              timerRef.current = setTimeout(() => {
+                onHoverDrag?.(id)
+                timerRef.current = null
+              }, 600)
+            }
+          },
+          onDrag: ({ self, source }) => {
+            if (source.data.type === 'page-tab') {
+              setClosestEdge(source.data.pageId === id ? null : extractClosestEdge(self.data))
+            }
+          },
+          onDragLeave: ({ source }) => {
+            if (source.data.type === 'page-tab') setClosestEdge(null)
+            if (source.data.type === 'existing-row') {
+              setIsRowHoverTarget(false)
+              if (timerRef.current !== null) {
+                clearTimeout(timerRef.current)
+                timerRef.current = null
+              }
+            }
+          },
+          onDrop: ({ source, self }) => {
+            if (source.data.type === 'page-tab') {
+              setClosestEdge(null)
+              if (!onReorder) return
+              const sourceIndex = source.data.index as number
+              const edge = extractClosestEdge(self.data)
+              if (sourceIndex === index) return
+              let newIndex = index
+              if (edge === 'right') newIndex = index + 1
+              if (sourceIndex < newIndex) newIndex -= 1
+              onReorder(sourceIndex, newIndex)
+            }
+            if (source.data.type === 'existing-row') {
+              setIsRowHoverTarget(false)
+              if (timerRef.current !== null) {
+                clearTimeout(timerRef.current)
+                timerRef.current = null
+              }
+            }
+          },
+        }),
+      )
+    }
+
+    if (pieces.length === 0) return
+    return combine(...pieces)
+  }, [id, index, title, disabled, onReorder, onHoverDrag])
 
   return (
     <div
