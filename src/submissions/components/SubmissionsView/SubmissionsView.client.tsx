@@ -57,8 +57,8 @@ function renderCell(value: unknown, type: FieldType): React.ReactNode {
         )
       }
       if (typeof value === 'object' && value !== null) {
-        const filename = (value as Record<string, unknown>).filename
-        return filename ? String(filename) : <Badge>1 file</Badge>
+        const filename = (value as Record<string, unknown>).filename as string
+        return filename ? filename : <Badge>1 file</Badge>
       }
       return '—'
     }
@@ -68,7 +68,7 @@ function renderCell(value: unknown, type: FieldType): React.ReactNode {
     case 'checkbox':
       return Array.isArray(value) ? value.join(', ') || '—' : '—'
     default:
-      return String(value)
+      return value as string
   }
 }
 

@@ -104,7 +104,7 @@ export function OptionsEditor({ onChange, options }: TOptionsEditorProps) {
     (fromIndex: number, toIndex: number) => {
       const next = [...options]
       const [item] = next.splice(fromIndex, 1)
-      next.splice(toIndex, 0, item!)
+      next.splice(toIndex, 0, item)
       onChange(next)
     },
     [options, onChange],

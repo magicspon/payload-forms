@@ -170,7 +170,7 @@ function ArrayRowItem({
   function handleReorder(fromIndex: number, toIndex: number) {
     const next = [...row.columns]
     const [item] = next.splice(fromIndex, 1)
-    next.splice(toIndex, 0, item!)
+    next.splice(toIndex, 0, item)
     onReorderFields(row.id, next)
   }
 
