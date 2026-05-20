@@ -1,23 +1,20 @@
 'use client'
 
 import type { Field, FieldType } from '@/shared/fieldSchema'
+import type { DragEndEvent, DragOverEvent } from '@dnd-kit/core'
 
-import { FieldPalette } from '@/form-builder/components/shared/FieldPalette'
-import { FieldRenderer } from '@/form-builder/components/shared/FieldRenderer'
 import { FieldMetaProvider } from '@/form-builder/context/FieldMetaProvider'
-import { FormFieldsProvider, useFormFields } from '@/form-builder/context/FormFieldsContext'
+import { useFormBuilderDnd } from '@/form-builder/context/FormBuilderProvider'
+import { useFormFields } from '@/form-builder/context/FormFieldsContext'
 import { useFieldDrop } from '@/form-builder/hooks/useFieldDrop'
 import { useFormPages } from '@/form-builder/hooks/useFormPages'
 import { useRowReorder } from '@/form-builder/hooks/useRowReorder'
+import { FieldRenderer } from '@/form-builder/components/shared/FieldRenderer'
 import { safeClosestCenter } from '@/form-builder/utils/safeClosestCenter'
-import { Inline, Stack  } from '@/shared/layout'
+import { Inline, Stack } from '@/shared/layout'
 import { nanoid } from '@/shared/utils/nanoid'
 import {
 	DndContext,
-	type DragEndEvent,
-	type DragOverEvent,
-	DragOverlay,
-	type DragStartEvent,
 	PointerSensor,
 	useSensor,
 	useSensors,
@@ -38,37 +35,17 @@ import { TabItem } from '../TabItem'
 import { type DndEdge, DndIndicatorProvider } from './DndIndicatorContext'
 import styles from './FormCanvas.module.css'
 
-// ─── Drag preview shown in the overlay during drag ────────────────────────────
+// ─── Inner canvas — registers DnD handlers and wraps children ─────────────────
 
-function DragPreview({ type, label }: { label: string; type: string }) {
-	return (
-		<div className={styles.dragPreview}>
-			<span className={styles.dragPreviewHandle}>⋮⋮</span>
-			<div>
-				<div className={styles.dragPreviewTitle}>{label}</div>
-				<div className={styles.dragPreviewType}>{type}</div>
-			</div>
-		</div>
-	)
-}
-
-// ─── Inner canvas — holds DnD state and wraps children ───────────────────────
-
-type ActiveDragItem =
-	| { field: Field; kind: 'existing-field' }
-	| { fieldType: string; kind: 'new-field'; label: string }
-	| { kind: 'existing-row'; label: string; pageId: string; rowId: string }
-
-function FormCanvasInner({ children }: { children: React.ReactNode; palette?: React.ReactNode }) {
+function FormCanvasInner({ children }: { children: React.ReactNode }) {
 	const handleFieldDrop = useFieldDrop()
 	const handleRowReorder = useRowReorder()
-	const dndId = React.useId()
+	const { registerDndHandlers } = useFormBuilderDnd()
 
 	const { clearSelectedField, editorDrawerSlug, selectedField, selectedFieldMeta } = useFormFields()
 	const { modalState } = useModal()
 	const isEditorOpen = !!modalState[editorDrawerSlug]?.isOpen
 
-	// Sync: if the Drawer is closed externally (X button), clear selected field state
 	React.useEffect(() => {
 		if (!isEditorOpen && selectedField) {
 			clearSelectedField()
@@ -79,33 +56,8 @@ function FormCanvasInner({ children }: { children: React.ReactNode; palette?: Re
 		? ('label' in selectedField ? (selectedField.label ?? selectedField.type) : selectedField.type)
 		: 'Edit field'
 
-	const [activeItem, setActiveItem] = React.useState<ActiveDragItem | null>(null)
 	const [targetId, setTargetId] = React.useState<null | string>(null)
 	const [edge, setEdge] = React.useState<DndEdge | null>(null)
-
-	const sensors = useSensors(
-		useSensor(PointerSensor, {
-			// require a small movement before drag starts to avoid accidental drags on click
-			activationConstraint: { distance: 6 },
-		}),
-	)
-
-	function handleDragStart({ active }: DragStartEvent) {
-		const data = active.data.current
-		if (!data) {return}
-		if (data.type === 'new-field') {
-			setActiveItem({ fieldType: data.fieldType as string, kind: 'new-field', label: data.label as string })
-		} else if (data.type === 'field') {
-			setActiveItem({ field: data.field as Field, kind: 'existing-field' })
-		} else if (data.type === 'row') {
-			setActiveItem({
-				kind: 'existing-row',
-				label: `Row`,
-				pageId: data.pageId as string,
-				rowId: data.rowId as string,
-			})
-		}
-	}
 
 	function handleDragOver({ active, over }: DragOverEvent) {
 		if (!over) {
@@ -120,7 +72,6 @@ function FormCanvasInner({ children }: { children: React.ReactNode; palette?: Re
 		setTargetId(over.id as string)
 
 		if (activeType === 'row' && overType === 'row') {
-			// Determine top/bottom insertion edge for row reordering
 			const overRect = over.rect
 			const overCenterY = overRect.top + overRect.height / 2
 			const translated = active.rect.current.translated
@@ -129,7 +80,6 @@ function FormCanvasInner({ children }: { children: React.ReactNode; palette?: Re
 				setEdge(activeCenterY < overCenterY ? 'top' : 'bottom')
 			}
 		} else if (overType === 'field' && activeType !== 'row') {
-			// Determine left/right insertion edge for field reordering
 			const overRect = over.rect
 			const overCenterX = overRect.left + overRect.width / 2
 			const translated = active.rect.current.translated
@@ -138,14 +88,12 @@ function FormCanvasInner({ children }: { children: React.ReactNode; palette?: Re
 				setEdge(activeCenterX < overCenterX ? 'left' : 'right')
 			}
 		} else {
-			// Dropping onto a row (append) or new-row target — no edge indicator
 			setEdge(null)
 		}
 	}
 
 	function handleDragEnd({ active, over }: DragEndEvent) {
 		const cleanup = () => {
-			setActiveItem(null)
 			setTargetId(null)
 			setEdge(null)
 		}
@@ -156,7 +104,6 @@ function FormCanvasInner({ children }: { children: React.ReactNode; palette?: Re
 		const overType = over.data.current?.type as string | undefined
 
 		if (activeType === 'row') {
-			// Row reordering — only if dropped onto another row
 			if (overType === 'row' && edge) {
 				handleRowReorder({
 					edge: edge as 'bottom' | 'top',
@@ -201,45 +148,22 @@ function FormCanvasInner({ children }: { children: React.ReactNode; palette?: Re
 		cleanup()
 	}
 
+	// Always point to latest handlers so the effect only runs once
+	const handlersRef = React.useRef({ handleDragOver, handleDragEnd })
+	handlersRef.current = { handleDragOver, handleDragEnd }
+
+	React.useEffect(() => {
+		return registerDndHandlers({
+			onDragOver: (e) => handlersRef.current.handleDragOver(e),
+			onDragEnd: (e) => handlersRef.current.handleDragEnd(e),
+		})
+	}, [registerDndHandlers])
+
 	const indicatorValue = { edge, targetId }
 
 	return (
-		<DndContext
-			collisionDetection={safeClosestCenter}
-			id={dndId}
-			onDragEnd={handleDragEnd}
-			onDragOver={handleDragOver}
-			onDragStart={handleDragStart}
-			sensors={sensors}
-		>
-			{/*{palette ? (
-				<div className={styles.paletteWrapper}>
-					{palette}
-				</div>
-			) : null}*/}
-			<DndIndicatorProvider value={indicatorValue}>
-				{children}
-			</DndIndicatorProvider>
-			<DragOverlay>
-				{activeItem ? (
-					<DragPreview
-						label={
-							activeItem.kind === 'new-field'
-								? activeItem.label
-								: activeItem.kind === 'existing-field'
-									? ('label' in activeItem.field ? (activeItem.field.label ?? activeItem.field.type) : activeItem.field.type)
-									: activeItem.label
-						}
-						type={
-							activeItem.kind === 'new-field'
-								? activeItem.fieldType
-								: activeItem.kind === 'existing-field'
-									? activeItem.field.type
-									: 'row'
-						}
-					/>
-				) : null}
-			</DragOverlay>
+		<DndIndicatorProvider value={indicatorValue}>
+			{children}
 			<Drawer slug={editorDrawerSlug} title={editorDrawerTitle}>
 				{selectedFieldMeta && (
 					<FieldMetaProvider pageId={selectedFieldMeta.pageId} rowId={selectedFieldMeta.rowId}>
@@ -247,7 +171,7 @@ function FormCanvasInner({ children }: { children: React.ReactNode; palette?: Re
 					</FieldMetaProvider>
 				)}
 			</Drawer>
-		</DndContext>
+		</DndIndicatorProvider>
 	)
 }
 
@@ -261,7 +185,6 @@ function Multipage() {
 	const { value: locked } = useField<boolean>({ path: 'locked' })
 	const tabDndId = React.useId()
 
-	// Sync active tab when pages load (e.g. on locale switch)
 	React.useEffect(() => {
 		if (!activeTab && pages?.[0]?.id) {
 			setActiveTab(pages[0].id)
@@ -383,16 +306,10 @@ function SinglePage() {
 
 // ─── Public export ────────────────────────────────────────────────────────────
 
-export function FormCanvas({ fieldPalette = false, multipage = true }: { fieldPalette?: boolean; multipage?: boolean }) {
+export function FormCanvas({ multipage = true }: { multipage?: boolean }) {
 	return (
-		<FormFieldsProvider>
-			<FormCanvasInner palette={fieldPalette ? <FieldPalette /> : undefined}>
-				{multipage ? <Multipage /> : <SinglePage />}
-
-				{fieldPalette && (
-					<FieldPalette />
-				)}
-			</FormCanvasInner>
-		</FormFieldsProvider>
+		<FormCanvasInner>
+			{multipage ? <Multipage /> : <SinglePage />}
+		</FormCanvasInner>
 	)
 }

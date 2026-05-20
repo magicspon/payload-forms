@@ -127,7 +127,6 @@ export function buildFormsCollection(
 						components: {
 							Field: {
 								clientProps: {
-									fieldPalette: features?.fieldPalette,
 									multipage: features?.multipage,
 								},
 								path: '@spon/payload-forms/client#FormCanvas',
@@ -273,6 +272,20 @@ export function buildFormsCollection(
 
 
 	const fields: Field[] = [
+		...(features?.fieldPalette
+			? [
+					{
+						name: 'fieldPalette',
+						type: 'ui' as const,
+						admin: {
+							components: {
+								Field: '@spon/payload-forms/client#FieldPalette',
+							},
+							position: 'sidebar' as const,
+						},
+					},
+				]
+			: []),
 		{
 			name: 'title',
 			type: 'text',

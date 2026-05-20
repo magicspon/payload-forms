@@ -3,6 +3,7 @@
 export { ImportSchema } from '../form-builder/components/actions/ImportSchema'
 
 export { FormCanvas } from '../form-builder/components/canvas/FormCanvas/FormCanvas'
+export { FormBuilderProvider } from '../form-builder/context/FormBuilderProvider/FormBuilderProvider'
 export { FormFieldReferenceClientFeature } from '../form-builder/components/lexical/FormFieldReference/feature.client'
 export { FieldPalette } from '../form-builder/components/shared/FieldPalette/FieldPalette'
 export { EmailFieldSelect } from '../notifications/components/EmailFieldSelect/EmailFieldSelect'

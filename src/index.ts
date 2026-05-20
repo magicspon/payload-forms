@@ -264,5 +264,14 @@ export const formsPlugin =
 		 */
 		if (disabled) {return config}
 
+		if (features?.fieldPalette) {
+			config.admin ??= {}
+			config.admin.components ??= {}
+			config.admin.components.providers ??= []
+			config.admin.components.providers.push({
+				path: '@spon/payload-forms/client#FormBuilderProvider',
+			})
+		}
+
 		return config
 	}
