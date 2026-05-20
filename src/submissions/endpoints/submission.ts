@@ -137,7 +137,6 @@ export function makeSubmissionEndpoint(slugs: CollectionSlugs): Endpoint {
 					select: {
 						confirmationMessage: true,
 						confirmationType: true,
-						team: true,
 						title: true,
 					},
 				}),
@@ -174,7 +173,7 @@ export function makeSubmissionEndpoint(slugs: CollectionSlugs): Endpoint {
 				const [uploadErr, uploaded] = await attemptAsync(() =>
 					payload.create({
 						collection: slugs.formUploads as 'form-uploads',
-						data: { fieldName, form: formId, team: form.team },
+						data: { fieldName, form: formId },
 						file: {
 							name: prepared.uniqueFileName,
 							data: prepared.buffer,
@@ -192,7 +191,7 @@ export function makeSubmissionEndpoint(slugs: CollectionSlugs): Endpoint {
 					return errorResponse('Failed to upload file', 500)
 				}
 
-				const { form: _form, team: _team, ...data } = uploaded
+				const { form: _form, ...data } = uploaded
 
 				uploadedFiles.push({
 					fieldName,
@@ -223,7 +222,6 @@ export function makeSubmissionEndpoint(slugs: CollectionSlugs): Endpoint {
 						userAgent,
 						// (NFR-012) IP stored for fraud investigation only; purge after 90 days
 						ipAddress,
-						team: form.team,
 					},
 					// draft: false publishes immediately on draft-enabled collections
 					draft: false,

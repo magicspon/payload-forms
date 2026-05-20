@@ -49,7 +49,6 @@ export default buildConfig({
 | `slugs` | `Partial<CollectionSlugs>` | — | Override the default collection slugs (`forms`, `submissions`, `form-uploads`) |
 | `collections` | `object` | — | Deep-merged overrides for `forms`, `submissions`, and `formUploads` collection configs |
 | `features` | `object` | all `true` | Toggle individual features: `confirmations`, `fieldPalette`, `importSchema`, `multipage`, `notifications` |
-| `multitenancy` | `object` | — | Adds a `team` relationship field to all collections when `enabled: true` |
 | `localeOptions` | `{ label, value }[]` | English only | Languages available in the form editor |
 | `livePreviewUrl` | `function` | — | Returns the preview URL for a form; omit to disable live preview |
 | `exportAccessCheck` | `(req) => boolean` | `() => true` | Guards the CSV export endpoint |

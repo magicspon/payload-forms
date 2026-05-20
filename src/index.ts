@@ -99,17 +99,6 @@ export interface FormsPluginConfig {
 	localeOptions?: { label: string; value: string }[]
 
 	/**
-	 * Multitenancy — adds a `team` relationship field to all three collections
-	 * and an index on `forms(team, slug)` when enabled.
-	 */
-	multitenancy?: {
-		enabled: boolean
-		/** Payload field override for the team field. */
-		fieldOverride?: Partial<Field>
-		/** Name of the teams collection. Defaults to "teams". */
-		teamsCollection?: string
-	}
-	/**
 	 * Called once after a successful batch CSV import.
 	 *
 	 * During an import each `payload.create()` carries
@@ -196,7 +185,6 @@ export const formsPlugin =
 			importAccessCheck = () => true,
 			livePreviewUrl,
 			localeOptions,
-			multitenancy,
 			onBatchImportComplete,
 			settings = [],
 			slugs: slugOverrides,
@@ -212,23 +200,6 @@ export const formsPlugin =
 			formUploads: slugOverrides?.formUploads ?? 'form-uploads',
 			submissions: slugOverrides?.submissions ?? 'submissions',
 		}
-
-		// Build the team field when multitenancy is enabled
-
-		const teamField: Field | undefined = multitenancy?.enabled
-			? ({
-					name: 'team',
-					type: 'relationship',
-					defaultValue: ({ user }: { user: unknown }) =>
-						(user as { activeTeamId?: string } | null)?.activeTeamId ??
-						undefined,
-					index: true,
-					label: 'Team',
-					relationTo: multitenancy.teamsCollection ?? 'teams',
-					required: false,
-					...multitenancy.fieldOverride,
-				} as Field)
-			: undefined
 
 		// --- Hooks ---
 		// submissionNotifications is always-on: sends direct emails based on the
@@ -253,18 +224,7 @@ export const formsPlugin =
 			settings,
 			tabLabels,
 			tabs,
-			teamField: teamField
-				? ({ ...teamField, admin: { position: 'sidebar' } } as Field)
-				: undefined,
 		})
-
-		// Add unique index on (team, slug) when multitenancy is on
-		if (multitenancy?.enabled) {
-			formsBase.indexes = [
-				...(formsBase.indexes ?? []),
-				{ fields: ['team', 'slug'], unique: true },
-			]
-		}
 
 		const submissionsBase = buildSubmissionsCollection({
 			slug: slugs.submissions,
@@ -274,18 +234,12 @@ export const formsPlugin =
 			formsSlug: slugs.forms,
 			formUploadsSlug: slugs.formUploads,
 			importEndpoint,
-			teamField: teamField
-				? ({ ...teamField, admin: { position: 'sidebar' } } as Field)
-				: undefined,
 		})
 
 		const formUploadsBase = buildFormUploadsCollection({
 			slug: slugs.formUploads,
 			formsSlug: slugs.forms,
 			submissionsSlug: slugs.submissions,
-			teamField: teamField
-				? ({ ...teamField, admin: { position: 'sidebar' } } as Field)
-				: undefined,
 		})
 
 		// Merge in host-app overrides

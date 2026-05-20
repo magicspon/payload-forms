@@ -17,7 +17,7 @@ import {
 import Papa from 'papaparse'
 import * as React from 'react'
 
-import type { TeamData } from './FormImportButton'
+import type { FormOption } from './FormImportButton'
 
 interface ImportResult {
 	count?: number
@@ -27,14 +27,9 @@ interface ImportResult {
 
 const BATCH_SIZE = 50
 
-/**
- * Client component for batch-importing submissions from a CSV file.
- * Receives pre-fetched team/form data from the server component.
- */
-export function FormImportButtonClient({ teams }: { teams: TeamData[] }) {
+export function FormImportButtonClient({ forms }: { forms: FormOption[] }) {
 	const drawerSlug = useDrawerSlug('submission-import')
 
-	const [teamId, setTeamId] = React.useState('')
 	const [formId, setFormId] = React.useState('')
 
 	const [parsedRows, setParsedRows] = React.useState<Record<string, string>[]>(
@@ -48,25 +43,10 @@ export function FormImportButtonClient({ teams }: { teams: TeamData[] }) {
 	const [isPending, setIsPending] = React.useState(false)
 	const [importError, setImportError] = React.useState<Error | null>(null)
 
-	// Derive options from pre-fetched data
-	const teamOptions: OptionObject[] = teams.map((t) => ({
-		label: t.name,
-		value: t.id,
+	const formOptions: OptionObject[] = forms.map((f) => ({
+		label: f.title,
+		value: f.id,
 	}))
-
-	const selectedTeam = teams.find((t) => t.id === teamId)
-
-	const formOptions: OptionObject[] = (selectedTeam?.forms ?? [])
-		.filter((f) => f.title)
-		.map((f) => ({
-			label: f.title,
-			value: f.id,
-		}))
-
-	function handleTeamChange(opt: unknown) {
-		setTeamId(opt ? (opt as OptionObject).value : '')
-		setFormId('')
-	}
 
 	const fileInputRef = React.useRef<HTMLInputElement>(null)
 
@@ -119,11 +99,7 @@ export function FormImportButtonClient({ teams }: { teams: TeamData[] }) {
 		try {
 			for (let i = 0; i < batches.length; i++) {
 				const res = await fetch(`/api/submissions/import-csv`, {
-					body: JSON.stringify({
-						formId,
-						...(teamId ? { teamId } : {}),
-						rows: batches[i],
-					}),
+					body: JSON.stringify({ formId, rows: batches[i] }),
 					credentials: 'include',
 					headers: { 'Content-Type': 'application/json' },
 					method: 'POST',
@@ -148,9 +124,7 @@ export function FormImportButtonClient({ teams }: { teams: TeamData[] }) {
 		}
 	}
 
-	const contextReady = Boolean(formId)
-	const canImport =
-		contextReady && parsedRows.length > 0 && !parseError && !isPending
+	const canImport = Boolean(formId) && parsedRows.length > 0 && !parseError && !isPending
 
 	return (
 		<>
@@ -171,18 +145,6 @@ export function FormImportButtonClient({ teams }: { teams: TeamData[] }) {
 							maxWidth: 560,
 						}}
 					>
-						{teams.length > 0 && (
-							<SelectInput
-								isClearable
-								label="Team"
-								name="import-team"
-								onChange={handleTeamChange}
-								options={teamOptions}
-								path="import-team"
-								value={teamId}
-							/>
-						)}
-
 						<SelectInput
 							isClearable
 							label="Form"
@@ -190,23 +152,20 @@ export function FormImportButtonClient({ teams }: { teams: TeamData[] }) {
 							onChange={(opt) =>
 								setFormId(opt ? (opt as OptionObject).value : '')
 							}
-							options={teams.length > 0 ? formOptions : teams.flatMap((t) => t.forms).filter((f) => f.title).map((f) => ({ label: f.title, value: f.id }))}
+							options={formOptions}
 							path="import-form"
-							placeholder={
-								teams.length > 0 && !teamId ? 'Select a team first' : 'Select a form…'
-							}
-							readOnly={teams.length > 0 && !teamId}
+							placeholder="Select a form…"
 							value={formId}
 						/>
 
 						<div className="field-type">
 							<FieldLabel label="CSV File" />
-							<Dropzone disabled={!contextReady || isPending} onChange={handleDrop}>
+							<Dropzone disabled={!formId || isPending} onChange={handleDrop}>
 								<div className="file-field__dropzoneContent">
 									<div className="file-field__dropzoneButtons">
 										<Button
 											buttonStyle="pill"
-											disabled={!contextReady || isPending}
+											disabled={!formId || isPending}
 											onClick={() => fileInputRef.current?.click()}
 											size="small"
 											type="button"

@@ -13,31 +13,6 @@ vi.mock('@payloadcms/richtext-lexical/plaintext', () => ({
 	convertLexicalToPlaintext: vi.fn().mockReturnValue('notification body'),
 }))
 
-// Minimal Team shape required by the hook
-const makeTeam = (adminEmail = 'admin@example.com') => ({
-	id: 'team-1',
-	teamMembers: {
-		docs: [
-			{
-				role: 'admin',
-				user: { id: 'user-1', email: adminEmail },
-			},
-		],
-	},
-})
-
-const makeTeamWithMembers = (
-	members: Array<{ email: string; role: string }>,
-) => ({
-	id: 'team-1',
-	teamMembers: {
-		docs: members.map((m, i) => ({
-			role: m.role,
-			user: { id: `user-${i}`, email: m.email },
-		})),
-	},
-})
-
 // Minimal notification item on a form
 const makeNotification = (overrides: Record<string, unknown> = {}) => ({
 	conditions: null,
@@ -52,7 +27,6 @@ const makeForm = (notifications: unknown[] = [makeNotification()]) => ({
 	id: 'form-1',
 	formSchema: { fields: [] },
 	notification: notifications,
-	team: makeTeam(),
 })
 
 function makeReq(form = makeForm()) {
@@ -124,20 +98,6 @@ describe('submissionNotifications', () => {
 		expect(req.payload.sendEmail).toHaveBeenCalledOnce()
 		expect(req.payload.sendEmail).toHaveBeenCalledWith(
 			expect.objectContaining({ to: ['notify@example.com'] }),
-		)
-	})
-
-	it('sends email to {{team}} token — resolves to team admin emails', async () => {
-		const req = makeReq(makeForm([makeNotification({ email: '{{team}}' })]))
-		await submissionNotifications({
-			collection: {} as never,
-			context: {},
-			data: baseData,
-			operation: 'create',
-			req: req as never,
-		})
-		expect(req.payload.sendEmail).toHaveBeenCalledWith(
-			expect.objectContaining({ to: ['admin@example.com'] }),
 		)
 	})
 
@@ -279,57 +239,6 @@ describe('submissionNotifications', () => {
 			.calls[0][0]
 		expect(call.to).toHaveLength(1)
 		expect(call.to).toEqual(['same@example.com'])
-	})
-
-	it('resolves {{team}} token to all admin emails when team has multiple admins', async () => {
-		const team = makeTeamWithMembers([
-			{ email: 'admin1@example.com', role: 'admin' },
-			{ email: 'owner@example.com', role: 'owner' },
-		])
-		const form = {
-			id: 'form-1',
-			formSchema: { fields: [] },
-			notification: [makeNotification({ email: '{{team}}' })],
-			team,
-		}
-		const req = makeReq(form as never)
-		await submissionNotifications({
-			collection: {} as never,
-			context: {},
-			data: baseData,
-			operation: 'create',
-			req: req as never,
-		})
-		expect(req.payload.sendEmail).toHaveBeenCalledWith(
-			expect.objectContaining({
-				to: expect.arrayContaining(['admin1@example.com', 'owner@example.com']),
-			}),
-		)
-	})
-
-	it('does not include member-role team members in {{team}} recipients', async () => {
-		const team = makeTeamWithMembers([
-			{ email: 'admin@example.com', role: 'admin' },
-			{ email: 'member@example.com', role: 'member' },
-		])
-		const form = {
-			id: 'form-1',
-			formSchema: { fields: [] },
-			notification: [makeNotification({ email: '{{team}}' })],
-			team,
-		}
-		const req = makeReq(form as never)
-		await submissionNotifications({
-			collection: {} as never,
-			context: {},
-			data: baseData,
-			operation: 'create',
-			req: req as never,
-		})
-		const call = (req.payload.sendEmail as ReturnType<typeof vi.fn>).mock
-			.calls[0][0]
-		expect(call.to).toContain('admin@example.com')
-		expect(call.to).not.toContain('member@example.com')
 	})
 
 	it('nested object submission data value in token renders as string (documents current behaviour)', async () => {

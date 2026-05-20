@@ -116,7 +116,6 @@ export function makeSubmissionImportEndpoint(
 							title: formTitle,
 							// Payload generated types expect string; PostgreSQL adapter accepts numbers too.
 							form: formId as string,
-							...(teamId ? { team: teamId } : {}),
 							formSnapshot: form as unknown as Record<string, unknown>,
 							submissionData,
 						},

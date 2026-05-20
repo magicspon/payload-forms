@@ -27,8 +27,6 @@ export interface SubmissionsCollectionOptions {
 	importEndpoint?: Endpoint
 	/** Collection slug. Defaults to `'submissions'`. */
 	slug?: string
-	/** teamField to include in the sidebar, or undefined to omit. */
-	teamField?: Field
 }
 
 /** Build the submissions CollectionConfig. */
@@ -45,11 +43,7 @@ export function buildSubmissionsCollection(
 		formsSlug = 'forms',
 		formUploadsSlug = 'form-uploads',
 		importEndpoint,
-		teamField,
 	} = opts
-
-	const sidebarFields: Field[] = []
-	if (teamField) {sidebarFields.push(teamField)}
 
 	// Static paths must come before dynamic /:id to avoid shadowing
 	const endpoints: Endpoint[] = []
@@ -77,7 +71,10 @@ export function buildSubmissionsCollection(
 					list: {
 						actions: [
 							'@spon/payload-forms/client#FormSubmissionListViewButton',
-							// '@spon/payload-forms/rsc#FormImportButton',
+							{
+								path: '@spon/payload-forms/rsc#FormImportButton',
+								serverProps: { formsSlug },
+							},
 						],
 					},
 				},
@@ -101,7 +98,6 @@ export function buildSubmissionsCollection(
 		},
 
 		fields: [
-			...sidebarFields,
 			{
 				name: 'title',
 				type: 'text',
