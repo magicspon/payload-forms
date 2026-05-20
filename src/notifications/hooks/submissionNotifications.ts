@@ -1,5 +1,4 @@
 import type { FieldConditions } from '@/shared/fieldSchema'
-import type { Team, TeamMember, User } from '@/shared/types'
 import type { CollectionBeforeChangeHook } from 'payload'
 
 import { shouldSendNotification } from '@/notifications/utils/notifications'
@@ -15,60 +14,32 @@ import type { CollectionSlugs } from '../..'
 const TOKEN_RE = /^\{\{\s*(\w+)\s*\}\}$/
 
 /**
- * Extract admin/owner email addresses from a populated Team object.
- *
- * Requires depth ≥ 2 on the findByID call so that teamMembers and their users
- * are populated. Members with the `member` or `client` role are excluded —
- * only `admin` and `owner` receive team-addressed notifications.
- */
-function getTeamAdminEmails(team: Team): string[] {
-	return (team.teamMembers?.docs ?? [])
-		.filter((tm): tm is TeamMember => typeof tm === 'object' && tm !== null)
-		.filter((tm) => tm.role === 'owner' || tm.role === 'admin')
-		.flatMap((tm) => {
-			if (typeof tm.user !== 'object' || tm.user === null) {return []}
-			const email = (tm.user as User).email
-			return email ? [email] : []
-		})
-}
-
-/**
  * Resolve a comma-separated email field value into concrete addresses.
  *
  * Supported entries:
  *   - Plain address:   "admin@example.com"
  *   - Field token:     "{{email}}" → submissionData['email'] (validated as email)
- *   - Team token:      "{{team}}"  → all admin/owner emails from the populated team
  */
 function resolveRecipients(
 	emailField: string,
 	submissionData: Record<string, unknown>,
-	team: null | Team | undefined,
 ): string[] {
 	const entries = emailField
 		.split(',')
 		.map((s) => s.trim())
 		.filter(Boolean)
 
-	// Lazy-initialise team emails so we only query the team member list once
-	let teamEmails: null | string[] = null
 	const resolved: string[] = []
 
 	for (const entry of entries) {
 		const match = entry.match(TOKEN_RE)
 		if (!match) {
-			// Plain email address — use as-is
 			resolved.push(entry)
 			continue
 		}
 
 		const tokenName = match[1]
-
-		if (tokenName === 'team') {
-			teamEmails ??= team ? getTeamAdminEmails(team) : []
-			resolved.push(...teamEmails)
-		} else if (tokenName) {
-			// Field token — resolve from submission data and validate as email
+		if (tokenName) {
 			const result = z.email().safeParse(submissionData[tokenName])
 			if (result.success) {resolved.push(result.data)}
 		}
@@ -104,22 +75,14 @@ export function makeSubmissionNotifications(
 		type FormResult = {
 			formSchema: unknown
 			notification?: NotificationItem[] | null
-			team: unknown
 		}
 
 		const [fetchErr, result] = await attemptAsync(() =>
 			payload.findByID({
 				id: data.form,
 				collection: slugs.forms as 'forms',
-				select: { formSchema: true, notification: true, team: true },
-				// depth 2: form → team (depth 1) → teamMembers + their users (depth 2).
-				// We need team members' emails to resolve the {{team}} token.
-				// The populate option narrows which sub-documents are fetched at each level.
-				depth: 2,
-				populate: {
-					teamMembers: { role: true, user: true },
-					teams: { teamMembers: true },
-				},
+				select: { formSchema: true, notification: true },
+				depth: 0,
 			}),
 		)
 
@@ -134,7 +97,6 @@ export function makeSubmissionNotifications(
 		const form = result as unknown as FormResult
 		data.formSnapshot = form.formSchema
 		const submissionData = data.submissionData as Record<string, unknown>
-		const team = form.team as null | Team | undefined
 
 		const { notification } = form
 		if (!notification?.length) {return data}
@@ -147,7 +109,7 @@ export function makeSubmissionNotifications(
 				return shouldSendNotification(conditions, submissionData)
 			})
 			.map((item: NotificationItem) => {
-				const recipients = resolveRecipients(item.email, submissionData, team)
+				const recipients = resolveRecipients(item.email, submissionData)
 				if (recipients.length === 0) {return null}
 
 				const rawText = convertLexicalToPlaintext({ data: item.message as never })

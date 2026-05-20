@@ -23,11 +23,7 @@ export async function getTestPayload(): Promise<Payload> {
 			// Minimal users stub — required because submissions has relationTo: 'users'
 			{ slug: 'users', auth: true, fields: [] },
 		],
-		plugins: [
-			formsPlugin({
-				multitenancy: { enabled: false },
-			}),
-		],
+		plugins: [formsPlugin()],
 		typescript: { outputFile: '/tmp/payload-types-forms-test.ts' },
 	})
 

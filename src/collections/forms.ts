@@ -71,8 +71,6 @@ export interface FormsCollectionOptions {
 
 	tabs?: Tab[]
 
-	/** teamField to include in the sidebar, or undefined to omit. */
-	teamField?: Field
 }
 
 /** Build the forms CollectionConfig. */
@@ -96,7 +94,6 @@ export function buildFormsCollection(
 			canvas: 'Canvas',
 			settings: 'Settings',
 		},
-		teamField,
 	} = opts
 
 	const settingsFields: Field[] = []
@@ -334,7 +331,6 @@ export function buildFormsCollection(
 		},
 	]
 
-	if (teamField) {fields.push(teamField)}
 
 	if (features?.confirmations || features?.notifications) {
 		fields.push({

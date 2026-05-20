@@ -187,10 +187,6 @@ export function EmailNotificationInput({ path }: TextFieldClientProps) {
 					buttonType="custom"
 				>
 					<PopupList.ButtonGroup>
-						<PopupList.Button onClick={() => addToken('{{team}}')}>
-							Team email{' '}
-							<span className={styles.muted}>{'{{team}}'}</span>
-						</PopupList.Button>
 						{formFields.map((field) => (
 							<PopupList.Button
 								key={field.name}

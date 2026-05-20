@@ -8,13 +8,11 @@ export function buildFormUploadsCollection(opts: {
 	slug?: string
 	/** Slug of the submissions collection. Defaults to `'submissions'`. */
 	submissionsSlug?: string
-	teamField?: Field
 }): CollectionConfig {
 	const {
 		slug = 'form-uploads',
 		formsSlug = 'forms',
 		submissionsSlug = 'submissions',
-		teamField,
 	} = opts
 
 	const fields: Field[] = [
@@ -45,10 +43,6 @@ export function buildFormUploadsCollection(opts: {
 			},
 		},
 	]
-
-	if (teamField) {
-		fields.push(teamField)
-	}
 
 	return {
 		slug,
