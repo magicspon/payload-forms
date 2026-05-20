@@ -4,7 +4,6 @@ import type {
   CollectionBeforeChangeHook,
   CollectionConfig,
 	Endpoint,
-  CollectionSlug,
   Field,
 } from 'payload'
 
@@ -170,8 +169,7 @@ export function buildSubmissionsCollection(
           description: 'Reference to parent form (for grouping/queries)',
           readOnly: false,
         },
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion this is required by next for the e2e tests
-        relationTo: formsSlug as CollectionSlug,
+        relationTo: formsSlug,
       },
       {
         type: 'tabs',

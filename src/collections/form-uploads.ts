@@ -1,4 +1,4 @@
-import type { CollectionConfig, CollectionSlug, Field } from 'payload'
+import type { CollectionConfig, Field } from 'payload'
 
 /** Build the form-uploads CollectionConfig. */
 export function buildFormUploadsCollection(opts: {
@@ -19,8 +19,7 @@ export function buildFormUploadsCollection(opts: {
         description: 'The form this file was uploaded through',
         readOnly: true,
       },
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion this is required by next for the e2e tests
-      relationTo: formsSlug as CollectionSlug,
+      relationTo: formsSlug,
     },
     {
       name: 'submission',
@@ -29,8 +28,7 @@ export function buildFormUploadsCollection(opts: {
         description: 'The submission this file belongs to',
         readOnly: true,
 			},
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion this is required by next for the e2e tests
-      relationTo: submissionsSlug as CollectionSlug,
+      relationTo: submissionsSlug,
     },
     {
       name: 'fieldName',
