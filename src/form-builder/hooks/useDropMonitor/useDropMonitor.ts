@@ -22,22 +22,32 @@ export function useDropMonitor({ handleFieldDrop, handleRowReorder }: DropMonito
 
         if (source.data.type === 'existing-row') {
           const rowTarget = targets.find((t) => t.data.type === 'row-target')
-          if (!rowTarget) {
+          const newRowTarget = targets.find((t) => t.data.type === 'new-row-target')
+
+          if (rowTarget) {
+            const edge = extractClosestEdge(rowTarget.data) as 'bottom' | 'top' | null
+            if (!edge) return
+
+            handleRowReorder({
+              sourceRowId: source.data.rowId as string,
+              sourcePageId: source.data.pageId as string,
+              targetRowId: rowTarget.data.rowId as string,
+              targetPageId: rowTarget.data.pageId as string,
+              edge,
+            })
             return
           }
 
-          const edge = extractClosestEdge(rowTarget.data) as 'bottom' | 'top' | null
-          if (!edge) {
+          if (newRowTarget) {
+            handleRowReorder({
+              sourceRowId: source.data.rowId as string,
+              sourcePageId: source.data.pageId as string,
+              targetPageId: newRowTarget.data.pageId as string,
+              edge: 'bottom',
+            })
             return
           }
 
-          handleRowReorder({
-            sourceRowId: source.data.rowId as string,
-            sourcePageId: source.data.pageId as string,
-            targetRowId: rowTarget.data.rowId as string,
-            targetPageId: rowTarget.data.pageId as string,
-            edge,
-          })
           return
         }
 

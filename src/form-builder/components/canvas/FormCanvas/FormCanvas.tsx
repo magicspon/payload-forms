@@ -1,5 +1,6 @@
 'use client'
 
+import type { TRowReorderParams } from '@/form-builder/hooks/useRowReorder'
 import type { FormPage } from '@/form-builder/utils/formTree'
 
 import { FieldMetaProvider } from '@/form-builder/context/FieldMetaProvider'
@@ -32,9 +33,14 @@ function arrayMove<T>(arr: T[], from: number, to: number): T[] {
 
 // ─── Inner canvas — registers the drop monitor and owns the editor drawer ─────
 
-function FormCanvasInner({ children }: { children: React.ReactNode }) {
+type FormCanvasInnerProps = {
+  children: React.ReactNode
+  onCrossPageDrop?: (targetPageId: string) => void
+}
+
+function FormCanvasInner({ children, onCrossPageDrop }: FormCanvasInnerProps) {
   const handleFieldDrop = useFieldDrop()
-  const handleRowReorder = useRowReorder()
+  const handleRowReorderBase = useRowReorder()
   const { clearSelectedField, editorDrawerSlug, selectedField, selectedFieldMeta } = useFormFields()
   const { modalState } = useModal()
   const isEditorOpen = !!modalState[editorDrawerSlug]?.isOpen
@@ -44,6 +50,16 @@ function FormCanvasInner({ children }: { children: React.ReactNode }) {
       clearSelectedField()
     }
   }, [isEditorOpen, clearSelectedField, selectedField])
+
+  const handleRowReorder = React.useCallback(
+    (params: TRowReorderParams) => {
+      const targetPageId = handleRowReorderBase(params)
+      if (targetPageId) {
+        onCrossPageDrop?.(targetPageId)
+      }
+    },
+    [handleRowReorderBase, onCrossPageDrop],
+  )
 
   useDropMonitor({ handleFieldDrop, handleRowReorder })
 
@@ -69,16 +85,20 @@ function FormCanvasInner({ children }: { children: React.ReactNode }) {
 
 // ─── Multi-page layout ────────────────────────────────────────────────────────
 
-function Multipage() {
+type MultipageProps = {
+  activeTab: string | undefined
+  setActiveTab: (id: string) => void
+}
+
+function Multipage({ activeTab, setActiveTab }: MultipageProps) {
   const { pages, setPages } = useFormPages()
-  const [activeTab, setActiveTab] = React.useState<string | undefined>(pages?.[0]?.id)
   const { value: locked } = useField<boolean>({ path: 'locked' })
 
   React.useEffect(() => {
     if (!activeTab && pages?.[0]?.id) {
       setActiveTab(pages[0].id)
     }
-  }, [activeTab, pages])
+  }, [activeTab, pages, setActiveTab])
 
   function handleTabReorder(fromIndex: number, toIndex: number) {
     setPages(arrayMove(pages, fromIndex, toIndex))
@@ -96,6 +116,7 @@ function Multipage() {
                 id={page.id}
                 index={index}
                 key={page.id}
+                onHoverDrag={locked ? undefined : setActiveTab}
                 onReorder={locked ? undefined : handleTabReorder}
                 tab={activeTab!}
                 title={page.title ?? ''}
@@ -115,7 +136,7 @@ function Multipage() {
                   <DeletePage
                     key="delete"
                     onDelete={() => {
-                      setActiveTab(pages?.[0]?.id)
+                      setActiveTab(pages?.[0]?.id ?? '')
                     }}
                     pageId={page.id}
                   />
@@ -176,5 +197,11 @@ function SinglePage() {
 // ─── Public export ────────────────────────────────────────────────────────────
 
 export function FormCanvas({ multipage = true }: { multipage?: boolean }) {
-  return <FormCanvasInner>{multipage ? <Multipage /> : <SinglePage />}</FormCanvasInner>
+  const [activeTab, setActiveTab] = React.useState<string | undefined>()
+
+  return (
+    <FormCanvasInner onCrossPageDrop={setActiveTab}>
+      {multipage ? <Multipage activeTab={activeTab} setActiveTab={setActiveTab} /> : <SinglePage />}
+    </FormCanvasInner>
+  )
 }

@@ -22,6 +22,7 @@ export type TabItemProps = {
   disabled?: boolean
   id: string
   index: number
+  onHoverDrag?: (pageId: string) => void
   onReorder?: (fromIndex: number, toIndex: number) => void
   tab: string
   title: string
@@ -33,6 +34,7 @@ export function TabItem({
   count,
   disabled,
   index,
+  onHoverDrag,
   onReorder,
   tab,
   title,
@@ -41,6 +43,47 @@ export function TabItem({
   const handleRef = React.useRef<HTMLDivElement>(null)
   const [isDragging, setIsDragging] = React.useState(false)
   const [closestEdge, setClosestEdge] = React.useState<Edge | null>(null)
+  const [isRowHoverTarget, setIsRowHoverTarget] = React.useState(false)
+  const timerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  React.useEffect(() => {
+    const tabEl = tabRef.current
+    if (!tabEl || !onHoverDrag) return
+
+    return dropTargetForElements({
+      element: tabEl,
+      canDrop: ({ source }) =>
+        source.data.type === 'existing-row' && source.data.pageId !== id,
+      getData: () => ({ type: 'row-hover-tab', pageId: id }),
+      onDragEnter: () => {
+        setIsRowHoverTarget(true)
+        timerRef.current = setTimeout(() => {
+          onHoverDrag(id)
+          timerRef.current = null
+        }, 600)
+      },
+      onDragLeave: () => {
+        setIsRowHoverTarget(false)
+        if (timerRef.current !== null) {
+          clearTimeout(timerRef.current)
+          timerRef.current = null
+        }
+      },
+      onDrop: () => {
+        setIsRowHoverTarget(false)
+        if (timerRef.current !== null) {
+          clearTimeout(timerRef.current)
+          timerRef.current = null
+        }
+      },
+    })
+  }, [id, onHoverDrag])
+
+  React.useEffect(() => {
+    return () => {
+      if (timerRef.current !== null) clearTimeout(timerRef.current)
+    }
+  }, [])
 
   React.useEffect(() => {
     const tabEl = tabRef.current
@@ -114,7 +157,7 @@ export function TabItem({
     >
       {closestEdge === 'left' && <div className={styles.indicatorLeft} />}
       {closestEdge === 'right' && <div className={styles.indicatorRight} />}
-      <Inline className={cx(styles.tabInline, { [styles.tabInlineActive]: id === tab })}>
+      <Inline className={cx(styles.tabInline, { [styles.tabInlineActive]: id === tab, [styles.rowHoverTarget]: isRowHoverTarget })}>
         <div
           className={cx(styles.handle, { [styles.hidden]: count <= 1 || id !== tab })}
           data-testid="handle"

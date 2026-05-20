@@ -35,7 +35,9 @@ function NewRowTarget({ pageId }: TNewRowTargetProps) {
     return dropTargetForElements({
       element: el,
       canDrop: ({ source }) =>
-        source.data.type === 'new-field' || source.data.type === 'existing-field',
+        source.data.type === 'new-field' ||
+        source.data.type === 'existing-field' ||
+        source.data.type === 'existing-row',
       getData: () => ({ type: 'new-row-target', pageId }),
       onDragEnter: () => setIsDraggedOver(true),
       onDragLeave: () => setIsDraggedOver(false),
