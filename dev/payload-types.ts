@@ -218,7 +218,6 @@ export interface Form {
   };
   pages?: {
     id: string;
-    title: string;
     backButton?: string;
     nextButton?: string;
     rows: {
@@ -227,14 +226,13 @@ export interface Form {
         | {
             id: string;
             name: string;
+            _draft?: boolean;
+            errorMessage?: string;
+            hidden: boolean;
+            instructions?: string;
             label: string;
             required: boolean;
-            hidden: boolean;
-            errorMessage?: string;
-            instructions?: string;
-            _draft?: boolean;
             conditions?: {
-              logic: 'and' | 'or';
               conditions: {
                 field: string;
                 operator:
@@ -251,24 +249,24 @@ export interface Form {
                   | 'hasNotChanged';
                 value?: string | number;
               }[];
+              logic: 'and' | 'or';
             };
             type: 'text';
-            placeholder?: string;
             defaultValue?: string;
-            minLength?: number;
             maxLength?: number;
+            minLength?: number;
+            placeholder?: string;
           }
         | {
             id: string;
             name: string;
+            _draft?: boolean;
+            errorMessage?: string;
+            hidden: boolean;
+            instructions?: string;
             label: string;
             required: boolean;
-            hidden: boolean;
-            errorMessage?: string;
-            instructions?: string;
-            _draft?: boolean;
             conditions?: {
-              logic: 'and' | 'or';
               conditions: {
                 field: string;
                 operator:
@@ -285,25 +283,25 @@ export interface Form {
                   | 'hasNotChanged';
                 value?: string | number;
               }[];
+              logic: 'and' | 'or';
             };
             type: 'textarea';
-            placeholder?: string;
             defaultValue?: string;
-            minLength?: number;
             maxLength?: number;
+            minLength?: number;
+            placeholder?: string;
             rows: number;
           }
         | {
             id: string;
             name: string;
+            _draft?: boolean;
+            errorMessage?: string;
+            hidden: boolean;
+            instructions?: string;
             label: string;
             required: boolean;
-            hidden: boolean;
-            errorMessage?: string;
-            instructions?: string;
-            _draft?: boolean;
             conditions?: {
-              logic: 'and' | 'or';
               conditions: {
                 field: string;
                 operator:
@@ -320,22 +318,22 @@ export interface Form {
                   | 'hasNotChanged';
                 value?: string | number;
               }[];
+              logic: 'and' | 'or';
             };
             type: 'email';
-            placeholder?: string;
             defaultValue?: string | string;
+            placeholder?: string;
           }
         | {
             id: string;
             name: string;
+            _draft?: boolean;
+            errorMessage?: string;
+            hidden: boolean;
+            instructions?: string;
             label: string;
             required: boolean;
-            hidden: boolean;
-            errorMessage?: string;
-            instructions?: string;
-            _draft?: boolean;
             conditions?: {
-              logic: 'and' | 'or';
               conditions: {
                 field: string;
                 operator:
@@ -352,25 +350,25 @@ export interface Form {
                   | 'hasNotChanged';
                 value?: string | number;
               }[];
+              logic: 'and' | 'or';
             };
             type: 'number';
-            placeholder?: string;
             defaultValue?: number;
-            min?: number;
             max?: number;
+            min?: number;
+            placeholder?: string;
             step?: number;
           }
         | {
             id: string;
             name: string;
+            _draft?: boolean;
+            errorMessage?: string;
+            hidden: boolean;
+            instructions?: string;
             label: string;
             required: boolean;
-            hidden: boolean;
-            errorMessage?: string;
-            instructions?: string;
-            _draft?: boolean;
             conditions?: {
-              logic: 'and' | 'or';
               conditions: {
                 field: string;
                 operator:
@@ -387,25 +385,25 @@ export interface Form {
                   | 'hasNotChanged';
                 value?: string | number;
               }[];
+              logic: 'and' | 'or';
             };
             type: 'checkbox';
+            defaultValue?: string[];
             options: {
               label: string;
               value: string;
             }[];
-            defaultValue?: string[];
           }
         | {
             id: string;
             name: string;
+            _draft?: boolean;
+            errorMessage?: string;
+            hidden: boolean;
+            instructions?: string;
             label: string;
             required: boolean;
-            hidden: boolean;
-            errorMessage?: string;
-            instructions?: string;
-            _draft?: boolean;
             conditions?: {
-              logic: 'and' | 'or';
               conditions: {
                 field: string;
                 operator:
@@ -422,25 +420,25 @@ export interface Form {
                   | 'hasNotChanged';
                 value?: string | number;
               }[];
+              logic: 'and' | 'or';
             };
             type: 'radio';
+            defaultValue?: string;
             options: {
               label: string;
               value: string;
             }[];
-            defaultValue?: string;
           }
         | {
             id: string;
             name: string;
+            _draft?: boolean;
+            errorMessage?: string;
+            hidden: boolean;
+            instructions?: string;
             label: string;
             required: boolean;
-            hidden: boolean;
-            errorMessage?: string;
-            instructions?: string;
-            _draft?: boolean;
             conditions?: {
-              logic: 'and' | 'or';
               conditions: {
                 field: string;
                 operator:
@@ -457,26 +455,26 @@ export interface Form {
                   | 'hasNotChanged';
                 value?: string | number;
               }[];
+              logic: 'and' | 'or';
             };
             type: 'select';
+            defaultValue?: string;
             options: {
               label: string;
               value: string;
             }[];
             placeholder?: string;
-            defaultValue?: string;
           }
         | {
             id: string;
             name: string;
+            _draft?: boolean;
+            errorMessage?: string;
+            hidden: boolean;
+            instructions?: string;
             label: string;
             required: boolean;
-            hidden: boolean;
-            errorMessage?: string;
-            instructions?: string;
-            _draft?: boolean;
             conditions?: {
-              logic: 'and' | 'or';
               conditions: {
                 field: string;
                 operator:
@@ -493,24 +491,24 @@ export interface Form {
                   | 'hasNotChanged';
                 value?: string | number;
               }[];
+              logic: 'and' | 'or';
             };
             type: 'date';
-            placeholder?: string;
             defaultValue?: string;
-            minDate?: string;
             maxDate?: string;
+            minDate?: string;
+            placeholder?: string;
           }
         | {
             id: string;
             name: string;
+            _draft?: boolean;
+            errorMessage?: string;
+            hidden: boolean;
+            instructions?: string;
             label: string;
             required: boolean;
-            hidden: boolean;
-            errorMessage?: string;
-            instructions?: string;
-            _draft?: boolean;
             conditions?: {
-              logic: 'and' | 'or';
               conditions: {
                 field: string;
                 operator:
@@ -527,24 +525,24 @@ export interface Form {
                   | 'hasNotChanged';
                 value?: string | number;
               }[];
+              logic: 'and' | 'or';
             };
             type: 'file';
             allowedFileTypes?: string;
-            maxFileSize?: number;
             maxFiles?: number;
+            maxFileSize?: number;
             multiple?: boolean;
           }
         | {
             id: string;
             name: string;
+            _draft?: boolean;
+            errorMessage?: string;
+            hidden: boolean;
+            instructions?: string;
             label: string;
             required: boolean;
-            hidden: boolean;
-            errorMessage?: string;
-            instructions?: string;
-            _draft?: boolean;
             conditions?: {
-              logic: 'and' | 'or';
               conditions: {
                 field: string;
                 operator:
@@ -561,6 +559,7 @@ export interface Form {
                   | 'hasNotChanged';
                 value?: string | number;
               }[];
+              logic: 'and' | 'or';
             };
             type: 'toggle';
             defaultValue?: boolean;
@@ -568,14 +567,13 @@ export interface Form {
         | {
             id: string;
             name: string;
+            _draft?: boolean;
+            errorMessage?: string;
+            hidden: boolean;
+            instructions?: string;
             label: string;
             required: boolean;
-            hidden: boolean;
-            errorMessage?: string;
-            instructions?: string;
-            _draft?: boolean;
             conditions?: {
-              logic: 'and' | 'or';
               conditions: {
                 field: string;
                 operator:
@@ -592,6 +590,7 @@ export interface Form {
                   | 'hasNotChanged';
                 value?: string | number;
               }[];
+              logic: 'and' | 'or';
             };
             type: 'consent';
             defaultValue?: boolean;
@@ -599,10 +598,29 @@ export interface Form {
         | {
             id: string;
             type: 'message';
+            _draft?: boolean;
+            conditions?: {
+              conditions: {
+                field: string;
+                operator:
+                  | 'equals'
+                  | 'notEquals'
+                  | 'greaterThan'
+                  | 'lessThan'
+                  | 'greaterThanOrEquals'
+                  | 'lessThanOrEquals'
+                  | 'contains'
+                  | 'isEmpty'
+                  | 'isNotEmpty'
+                  | 'hasChanged'
+                  | 'hasNotChanged';
+                value?: string | number;
+              }[];
+              logic: 'and' | 'or';
+            };
             richText?: {
               root: {
                 type: string;
-                version: number;
                 children: {
                   type: string;
                   version: number;
@@ -611,40 +629,20 @@ export interface Form {
                 direction: 'ltr' | 'rtl' | null;
                 format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
                 indent: number;
+                version: number;
               };
-            };
-            _draft?: boolean;
-            conditions?: {
-              logic: 'and' | 'or';
-              conditions: {
-                field: string;
-                operator:
-                  | 'equals'
-                  | 'notEquals'
-                  | 'greaterThan'
-                  | 'lessThan'
-                  | 'greaterThanOrEquals'
-                  | 'lessThanOrEquals'
-                  | 'contains'
-                  | 'isEmpty'
-                  | 'isNotEmpty'
-                  | 'hasChanged'
-                  | 'hasNotChanged';
-                value?: string | number;
-              }[];
             };
           }
         | {
             id: string;
             name: string;
+            _draft?: boolean;
+            errorMessage?: string;
+            hidden: boolean;
+            instructions?: string;
             label: string;
             required: boolean;
-            hidden: boolean;
-            errorMessage?: string;
-            instructions?: string;
-            _draft?: boolean;
             conditions?: {
-              logic: 'and' | 'or';
               conditions: {
                 field: string;
                 operator:
@@ -661,22 +659,24 @@ export interface Form {
                   | 'hasNotChanged';
                 value?: string | number;
               }[];
+              logic: 'and' | 'or';
             };
             type: 'array';
+            maxRows?: number;
+            minRows?: number;
             rows: {
               id: string;
               columns: (
                 | {
                     id: string;
                     name: string;
+                    _draft?: boolean;
+                    errorMessage?: string;
+                    hidden: boolean;
+                    instructions?: string;
                     label: string;
                     required: boolean;
-                    hidden: boolean;
-                    errorMessage?: string;
-                    instructions?: string;
-                    _draft?: boolean;
                     conditions?: {
-                      logic: 'and' | 'or';
                       conditions: {
                         field: string;
                         operator:
@@ -693,24 +693,24 @@ export interface Form {
                           | 'hasNotChanged';
                         value?: string | number;
                       }[];
+                      logic: 'and' | 'or';
                     };
                     type: 'text';
-                    placeholder?: string;
                     defaultValue?: string;
-                    minLength?: number;
                     maxLength?: number;
+                    minLength?: number;
+                    placeholder?: string;
                   }
                 | {
                     id: string;
                     name: string;
+                    _draft?: boolean;
+                    errorMessage?: string;
+                    hidden: boolean;
+                    instructions?: string;
                     label: string;
                     required: boolean;
-                    hidden: boolean;
-                    errorMessage?: string;
-                    instructions?: string;
-                    _draft?: boolean;
                     conditions?: {
-                      logic: 'and' | 'or';
                       conditions: {
                         field: string;
                         operator:
@@ -727,25 +727,25 @@ export interface Form {
                           | 'hasNotChanged';
                         value?: string | number;
                       }[];
+                      logic: 'and' | 'or';
                     };
                     type: 'textarea';
-                    placeholder?: string;
                     defaultValue?: string;
-                    minLength?: number;
                     maxLength?: number;
+                    minLength?: number;
+                    placeholder?: string;
                     rows: number;
                   }
                 | {
                     id: string;
                     name: string;
+                    _draft?: boolean;
+                    errorMessage?: string;
+                    hidden: boolean;
+                    instructions?: string;
                     label: string;
                     required: boolean;
-                    hidden: boolean;
-                    errorMessage?: string;
-                    instructions?: string;
-                    _draft?: boolean;
                     conditions?: {
-                      logic: 'and' | 'or';
                       conditions: {
                         field: string;
                         operator:
@@ -762,22 +762,22 @@ export interface Form {
                           | 'hasNotChanged';
                         value?: string | number;
                       }[];
+                      logic: 'and' | 'or';
                     };
                     type: 'email';
-                    placeholder?: string;
                     defaultValue?: string | string;
+                    placeholder?: string;
                   }
                 | {
                     id: string;
                     name: string;
+                    _draft?: boolean;
+                    errorMessage?: string;
+                    hidden: boolean;
+                    instructions?: string;
                     label: string;
                     required: boolean;
-                    hidden: boolean;
-                    errorMessage?: string;
-                    instructions?: string;
-                    _draft?: boolean;
                     conditions?: {
-                      logic: 'and' | 'or';
                       conditions: {
                         field: string;
                         operator:
@@ -794,25 +794,25 @@ export interface Form {
                           | 'hasNotChanged';
                         value?: string | number;
                       }[];
+                      logic: 'and' | 'or';
                     };
                     type: 'number';
-                    placeholder?: string;
                     defaultValue?: number;
-                    min?: number;
                     max?: number;
+                    min?: number;
+                    placeholder?: string;
                     step?: number;
                   }
                 | {
                     id: string;
                     name: string;
+                    _draft?: boolean;
+                    errorMessage?: string;
+                    hidden: boolean;
+                    instructions?: string;
                     label: string;
                     required: boolean;
-                    hidden: boolean;
-                    errorMessage?: string;
-                    instructions?: string;
-                    _draft?: boolean;
                     conditions?: {
-                      logic: 'and' | 'or';
                       conditions: {
                         field: string;
                         operator:
@@ -829,25 +829,25 @@ export interface Form {
                           | 'hasNotChanged';
                         value?: string | number;
                       }[];
+                      logic: 'and' | 'or';
                     };
                     type: 'checkbox';
+                    defaultValue?: string[];
                     options: {
                       label: string;
                       value: string;
                     }[];
-                    defaultValue?: string[];
                   }
                 | {
                     id: string;
                     name: string;
+                    _draft?: boolean;
+                    errorMessage?: string;
+                    hidden: boolean;
+                    instructions?: string;
                     label: string;
                     required: boolean;
-                    hidden: boolean;
-                    errorMessage?: string;
-                    instructions?: string;
-                    _draft?: boolean;
                     conditions?: {
-                      logic: 'and' | 'or';
                       conditions: {
                         field: string;
                         operator:
@@ -864,25 +864,25 @@ export interface Form {
                           | 'hasNotChanged';
                         value?: string | number;
                       }[];
+                      logic: 'and' | 'or';
                     };
                     type: 'radio';
+                    defaultValue?: string;
                     options: {
                       label: string;
                       value: string;
                     }[];
-                    defaultValue?: string;
                   }
                 | {
                     id: string;
                     name: string;
+                    _draft?: boolean;
+                    errorMessage?: string;
+                    hidden: boolean;
+                    instructions?: string;
                     label: string;
                     required: boolean;
-                    hidden: boolean;
-                    errorMessage?: string;
-                    instructions?: string;
-                    _draft?: boolean;
                     conditions?: {
-                      logic: 'and' | 'or';
                       conditions: {
                         field: string;
                         operator:
@@ -899,26 +899,26 @@ export interface Form {
                           | 'hasNotChanged';
                         value?: string | number;
                       }[];
+                      logic: 'and' | 'or';
                     };
                     type: 'select';
+                    defaultValue?: string;
                     options: {
                       label: string;
                       value: string;
                     }[];
                     placeholder?: string;
-                    defaultValue?: string;
                   }
                 | {
                     id: string;
                     name: string;
+                    _draft?: boolean;
+                    errorMessage?: string;
+                    hidden: boolean;
+                    instructions?: string;
                     label: string;
                     required: boolean;
-                    hidden: boolean;
-                    errorMessage?: string;
-                    instructions?: string;
-                    _draft?: boolean;
                     conditions?: {
-                      logic: 'and' | 'or';
                       conditions: {
                         field: string;
                         operator:
@@ -935,24 +935,24 @@ export interface Form {
                           | 'hasNotChanged';
                         value?: string | number;
                       }[];
+                      logic: 'and' | 'or';
                     };
                     type: 'date';
-                    placeholder?: string;
                     defaultValue?: string;
-                    minDate?: string;
                     maxDate?: string;
+                    minDate?: string;
+                    placeholder?: string;
                   }
                 | {
                     id: string;
                     name: string;
+                    _draft?: boolean;
+                    errorMessage?: string;
+                    hidden: boolean;
+                    instructions?: string;
                     label: string;
                     required: boolean;
-                    hidden: boolean;
-                    errorMessage?: string;
-                    instructions?: string;
-                    _draft?: boolean;
                     conditions?: {
-                      logic: 'and' | 'or';
                       conditions: {
                         field: string;
                         operator:
@@ -969,24 +969,24 @@ export interface Form {
                           | 'hasNotChanged';
                         value?: string | number;
                       }[];
+                      logic: 'and' | 'or';
                     };
                     type: 'file';
                     allowedFileTypes?: string;
-                    maxFileSize?: number;
                     maxFiles?: number;
+                    maxFileSize?: number;
                     multiple?: boolean;
                   }
                 | {
                     id: string;
                     name: string;
+                    _draft?: boolean;
+                    errorMessage?: string;
+                    hidden: boolean;
+                    instructions?: string;
                     label: string;
                     required: boolean;
-                    hidden: boolean;
-                    errorMessage?: string;
-                    instructions?: string;
-                    _draft?: boolean;
                     conditions?: {
-                      logic: 'and' | 'or';
                       conditions: {
                         field: string;
                         operator:
@@ -1003,6 +1003,7 @@ export interface Form {
                           | 'hasNotChanged';
                         value?: string | number;
                       }[];
+                      logic: 'and' | 'or';
                     };
                     type: 'toggle';
                     defaultValue?: boolean;
@@ -1010,14 +1011,13 @@ export interface Form {
                 | {
                     id: string;
                     name: string;
+                    _draft?: boolean;
+                    errorMessage?: string;
+                    hidden: boolean;
+                    instructions?: string;
                     label: string;
                     required: boolean;
-                    hidden: boolean;
-                    errorMessage?: string;
-                    instructions?: string;
-                    _draft?: boolean;
                     conditions?: {
-                      logic: 'and' | 'or';
                       conditions: {
                         field: string;
                         operator:
@@ -1034,17 +1034,424 @@ export interface Form {
                           | 'hasNotChanged';
                         value?: string | number;
                       }[];
+                      logic: 'and' | 'or';
                     };
                     type: 'consent';
                     defaultValue?: boolean;
                   }
               )[];
             }[];
-            minRows?: number;
-            maxRows?: number;
+          }
+        | {
+            id: string;
+            name: string;
+            _draft?: boolean;
+            errorMessage?: string;
+            hidden: boolean;
+            instructions?: string;
+            label: string;
+            required: boolean;
+            conditions?: {
+              conditions: {
+                field: string;
+                operator:
+                  | 'equals'
+                  | 'notEquals'
+                  | 'greaterThan'
+                  | 'lessThan'
+                  | 'greaterThanOrEquals'
+                  | 'lessThanOrEquals'
+                  | 'contains'
+                  | 'isEmpty'
+                  | 'isNotEmpty'
+                  | 'hasChanged'
+                  | 'hasNotChanged';
+                value?: string | number;
+              }[];
+              logic: 'and' | 'or';
+            };
+            type: 'group';
+            rows: {
+              id: string;
+              columns: (
+                | {
+                    id: string;
+                    name: string;
+                    _draft?: boolean;
+                    errorMessage?: string;
+                    hidden: boolean;
+                    instructions?: string;
+                    label: string;
+                    required: boolean;
+                    conditions?: {
+                      conditions: {
+                        field: string;
+                        operator:
+                          | 'equals'
+                          | 'notEquals'
+                          | 'greaterThan'
+                          | 'lessThan'
+                          | 'greaterThanOrEquals'
+                          | 'lessThanOrEquals'
+                          | 'contains'
+                          | 'isEmpty'
+                          | 'isNotEmpty'
+                          | 'hasChanged'
+                          | 'hasNotChanged';
+                        value?: string | number;
+                      }[];
+                      logic: 'and' | 'or';
+                    };
+                    type: 'text';
+                    defaultValue?: string;
+                    maxLength?: number;
+                    minLength?: number;
+                    placeholder?: string;
+                  }
+                | {
+                    id: string;
+                    name: string;
+                    _draft?: boolean;
+                    errorMessage?: string;
+                    hidden: boolean;
+                    instructions?: string;
+                    label: string;
+                    required: boolean;
+                    conditions?: {
+                      conditions: {
+                        field: string;
+                        operator:
+                          | 'equals'
+                          | 'notEquals'
+                          | 'greaterThan'
+                          | 'lessThan'
+                          | 'greaterThanOrEquals'
+                          | 'lessThanOrEquals'
+                          | 'contains'
+                          | 'isEmpty'
+                          | 'isNotEmpty'
+                          | 'hasChanged'
+                          | 'hasNotChanged';
+                        value?: string | number;
+                      }[];
+                      logic: 'and' | 'or';
+                    };
+                    type: 'textarea';
+                    defaultValue?: string;
+                    maxLength?: number;
+                    minLength?: number;
+                    placeholder?: string;
+                    rows: number;
+                  }
+                | {
+                    id: string;
+                    name: string;
+                    _draft?: boolean;
+                    errorMessage?: string;
+                    hidden: boolean;
+                    instructions?: string;
+                    label: string;
+                    required: boolean;
+                    conditions?: {
+                      conditions: {
+                        field: string;
+                        operator:
+                          | 'equals'
+                          | 'notEquals'
+                          | 'greaterThan'
+                          | 'lessThan'
+                          | 'greaterThanOrEquals'
+                          | 'lessThanOrEquals'
+                          | 'contains'
+                          | 'isEmpty'
+                          | 'isNotEmpty'
+                          | 'hasChanged'
+                          | 'hasNotChanged';
+                        value?: string | number;
+                      }[];
+                      logic: 'and' | 'or';
+                    };
+                    type: 'email';
+                    defaultValue?: string | string;
+                    placeholder?: string;
+                  }
+                | {
+                    id: string;
+                    name: string;
+                    _draft?: boolean;
+                    errorMessage?: string;
+                    hidden: boolean;
+                    instructions?: string;
+                    label: string;
+                    required: boolean;
+                    conditions?: {
+                      conditions: {
+                        field: string;
+                        operator:
+                          | 'equals'
+                          | 'notEquals'
+                          | 'greaterThan'
+                          | 'lessThan'
+                          | 'greaterThanOrEquals'
+                          | 'lessThanOrEquals'
+                          | 'contains'
+                          | 'isEmpty'
+                          | 'isNotEmpty'
+                          | 'hasChanged'
+                          | 'hasNotChanged';
+                        value?: string | number;
+                      }[];
+                      logic: 'and' | 'or';
+                    };
+                    type: 'number';
+                    defaultValue?: number;
+                    max?: number;
+                    min?: number;
+                    placeholder?: string;
+                    step?: number;
+                  }
+                | {
+                    id: string;
+                    name: string;
+                    _draft?: boolean;
+                    errorMessage?: string;
+                    hidden: boolean;
+                    instructions?: string;
+                    label: string;
+                    required: boolean;
+                    conditions?: {
+                      conditions: {
+                        field: string;
+                        operator:
+                          | 'equals'
+                          | 'notEquals'
+                          | 'greaterThan'
+                          | 'lessThan'
+                          | 'greaterThanOrEquals'
+                          | 'lessThanOrEquals'
+                          | 'contains'
+                          | 'isEmpty'
+                          | 'isNotEmpty'
+                          | 'hasChanged'
+                          | 'hasNotChanged';
+                        value?: string | number;
+                      }[];
+                      logic: 'and' | 'or';
+                    };
+                    type: 'checkbox';
+                    defaultValue?: string[];
+                    options: {
+                      label: string;
+                      value: string;
+                    }[];
+                  }
+                | {
+                    id: string;
+                    name: string;
+                    _draft?: boolean;
+                    errorMessage?: string;
+                    hidden: boolean;
+                    instructions?: string;
+                    label: string;
+                    required: boolean;
+                    conditions?: {
+                      conditions: {
+                        field: string;
+                        operator:
+                          | 'equals'
+                          | 'notEquals'
+                          | 'greaterThan'
+                          | 'lessThan'
+                          | 'greaterThanOrEquals'
+                          | 'lessThanOrEquals'
+                          | 'contains'
+                          | 'isEmpty'
+                          | 'isNotEmpty'
+                          | 'hasChanged'
+                          | 'hasNotChanged';
+                        value?: string | number;
+                      }[];
+                      logic: 'and' | 'or';
+                    };
+                    type: 'radio';
+                    defaultValue?: string;
+                    options: {
+                      label: string;
+                      value: string;
+                    }[];
+                  }
+                | {
+                    id: string;
+                    name: string;
+                    _draft?: boolean;
+                    errorMessage?: string;
+                    hidden: boolean;
+                    instructions?: string;
+                    label: string;
+                    required: boolean;
+                    conditions?: {
+                      conditions: {
+                        field: string;
+                        operator:
+                          | 'equals'
+                          | 'notEquals'
+                          | 'greaterThan'
+                          | 'lessThan'
+                          | 'greaterThanOrEquals'
+                          | 'lessThanOrEquals'
+                          | 'contains'
+                          | 'isEmpty'
+                          | 'isNotEmpty'
+                          | 'hasChanged'
+                          | 'hasNotChanged';
+                        value?: string | number;
+                      }[];
+                      logic: 'and' | 'or';
+                    };
+                    type: 'select';
+                    defaultValue?: string;
+                    options: {
+                      label: string;
+                      value: string;
+                    }[];
+                    placeholder?: string;
+                  }
+                | {
+                    id: string;
+                    name: string;
+                    _draft?: boolean;
+                    errorMessage?: string;
+                    hidden: boolean;
+                    instructions?: string;
+                    label: string;
+                    required: boolean;
+                    conditions?: {
+                      conditions: {
+                        field: string;
+                        operator:
+                          | 'equals'
+                          | 'notEquals'
+                          | 'greaterThan'
+                          | 'lessThan'
+                          | 'greaterThanOrEquals'
+                          | 'lessThanOrEquals'
+                          | 'contains'
+                          | 'isEmpty'
+                          | 'isNotEmpty'
+                          | 'hasChanged'
+                          | 'hasNotChanged';
+                        value?: string | number;
+                      }[];
+                      logic: 'and' | 'or';
+                    };
+                    type: 'date';
+                    defaultValue?: string;
+                    maxDate?: string;
+                    minDate?: string;
+                    placeholder?: string;
+                  }
+                | {
+                    id: string;
+                    name: string;
+                    _draft?: boolean;
+                    errorMessage?: string;
+                    hidden: boolean;
+                    instructions?: string;
+                    label: string;
+                    required: boolean;
+                    conditions?: {
+                      conditions: {
+                        field: string;
+                        operator:
+                          | 'equals'
+                          | 'notEquals'
+                          | 'greaterThan'
+                          | 'lessThan'
+                          | 'greaterThanOrEquals'
+                          | 'lessThanOrEquals'
+                          | 'contains'
+                          | 'isEmpty'
+                          | 'isNotEmpty'
+                          | 'hasChanged'
+                          | 'hasNotChanged';
+                        value?: string | number;
+                      }[];
+                      logic: 'and' | 'or';
+                    };
+                    type: 'file';
+                    allowedFileTypes?: string;
+                    maxFiles?: number;
+                    maxFileSize?: number;
+                    multiple?: boolean;
+                  }
+                | {
+                    id: string;
+                    name: string;
+                    _draft?: boolean;
+                    errorMessage?: string;
+                    hidden: boolean;
+                    instructions?: string;
+                    label: string;
+                    required: boolean;
+                    conditions?: {
+                      conditions: {
+                        field: string;
+                        operator:
+                          | 'equals'
+                          | 'notEquals'
+                          | 'greaterThan'
+                          | 'lessThan'
+                          | 'greaterThanOrEquals'
+                          | 'lessThanOrEquals'
+                          | 'contains'
+                          | 'isEmpty'
+                          | 'isNotEmpty'
+                          | 'hasChanged'
+                          | 'hasNotChanged';
+                        value?: string | number;
+                      }[];
+                      logic: 'and' | 'or';
+                    };
+                    type: 'toggle';
+                    defaultValue?: boolean;
+                  }
+                | {
+                    id: string;
+                    name: string;
+                    _draft?: boolean;
+                    errorMessage?: string;
+                    hidden: boolean;
+                    instructions?: string;
+                    label: string;
+                    required: boolean;
+                    conditions?: {
+                      conditions: {
+                        field: string;
+                        operator:
+                          | 'equals'
+                          | 'notEquals'
+                          | 'greaterThan'
+                          | 'lessThan'
+                          | 'greaterThanOrEquals'
+                          | 'lessThanOrEquals'
+                          | 'contains'
+                          | 'isEmpty'
+                          | 'isNotEmpty'
+                          | 'hasChanged'
+                          | 'hasNotChanged';
+                        value?: string | number;
+                      }[];
+                      logic: 'and' | 'or';
+                    };
+                    type: 'consent';
+                    defaultValue?: boolean;
+                  }
+              )[];
+            }[];
           }
       )[];
     }[];
+    title: string;
   }[];
   /**
    * Schema path used for rich text content field (message)
@@ -1090,35 +1497,9 @@ export interface Submission {
   formSnapshot?: Record<string, any> | null;
   userAgent?: string | null;
   ipAddress?: string | null;
-  user?: (number | null) | User;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "users".
- */
-export interface User {
-  id: number;
-  updatedAt: string;
-  createdAt: string;
-  email: string;
-  resetPasswordToken?: string | null;
-  resetPasswordExpiration?: string | null;
-  salt?: string | null;
-  hash?: string | null;
-  loginAttempts?: number | null;
-  lockUntil?: string | null;
-  sessions?:
-    | {
-        id: string;
-        createdAt?: string | null;
-        expiresAt: string;
-      }[]
-    | null;
-  password?: string | null;
-  collection: 'users';
 }
 /**
  * Files uploaded via form submissions
@@ -1168,6 +1549,31 @@ export interface PayloadKv {
     | number
     | boolean
     | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "users".
+ */
+export interface User {
+  id: number;
+  updatedAt: string;
+  createdAt: string;
+  email: string;
+  resetPasswordToken?: string | null;
+  resetPasswordExpiration?: string | null;
+  salt?: string | null;
+  hash?: string | null;
+  loginAttempts?: number | null;
+  lockUntil?: string | null;
+  sessions?:
+    | {
+        id: string;
+        createdAt?: string | null;
+        expiresAt: string;
+      }[]
+    | null;
+  password?: string | null;
+  collection: 'users';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1297,7 +1703,6 @@ export interface SubmissionsSelect<T extends boolean = true> {
   formSnapshot?: T;
   userAgent?: T;
   ipAddress?: T;
-  user?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
