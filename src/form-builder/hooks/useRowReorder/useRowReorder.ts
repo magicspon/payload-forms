@@ -20,7 +20,13 @@ export function useRowReorder() {
   const { pages, setPages } = useFormPages()
 
   const handleRowReorder = React.useCallback(
-    ({ edge, sourcePageId, sourceRowId, targetPageId, targetRowId }: TRowReorderParams): string | undefined => {
+    ({
+      edge,
+      sourcePageId,
+      sourceRowId,
+      targetPageId,
+      targetRowId,
+    }: TRowReorderParams): string | undefined => {
       if (sourcePageId === targetPageId) {
         if (!targetRowId) return undefined
 

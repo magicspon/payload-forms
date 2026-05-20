@@ -59,172 +59,174 @@ export type SupportedTimezones =
   | 'Pacific/Guam'
   | 'Pacific/Noumea'
   | 'Pacific/Auckland'
-  | 'Pacific/Fiji';
+  | 'Pacific/Fiji'
 
 export interface Config {
   auth: {
-    users: UserAuthOperations;
-  };
-  blocks: {};
+    users: UserAuthOperations
+  }
+  blocks: {}
   collections: {
-    media: Media;
-    forms: Form;
-    submissions: Submission;
-    'form-uploads': FormUpload;
-    'payload-kv': PayloadKv;
-    users: User;
-    'payload-locked-documents': PayloadLockedDocument;
-    'payload-preferences': PayloadPreference;
-    'payload-migrations': PayloadMigration;
-  };
-  collectionsJoins: {};
+    media: Media
+    forms: Form
+    submissions: Submission
+    'form-uploads': FormUpload
+    'payload-kv': PayloadKv
+    users: User
+    'payload-locked-documents': PayloadLockedDocument
+    'payload-preferences': PayloadPreference
+    'payload-migrations': PayloadMigration
+  }
+  collectionsJoins: {}
   collectionsSelect: {
-    media: MediaSelect<false> | MediaSelect<true>;
-    forms: FormsSelect<false> | FormsSelect<true>;
-    submissions: SubmissionsSelect<false> | SubmissionsSelect<true>;
-    'form-uploads': FormUploadsSelect<false> | FormUploadsSelect<true>;
-    'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
-    users: UsersSelect<false> | UsersSelect<true>;
-    'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
-    'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
-    'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
-  };
+    media: MediaSelect<false> | MediaSelect<true>
+    forms: FormsSelect<false> | FormsSelect<true>
+    submissions: SubmissionsSelect<false> | SubmissionsSelect<true>
+    'form-uploads': FormUploadsSelect<false> | FormUploadsSelect<true>
+    'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>
+    users: UsersSelect<false> | UsersSelect<true>
+    'payload-locked-documents':
+      | PayloadLockedDocumentsSelect<false>
+      | PayloadLockedDocumentsSelect<true>
+    'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>
+    'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>
+  }
   db: {
-    defaultIDType: number;
-  };
-  fallbackLocale: null;
-  globals: {};
-  globalsSelect: {};
-  locale: null;
+    defaultIDType: number
+  }
+  fallbackLocale: null
+  globals: {}
+  globalsSelect: {}
+  locale: null
   widgets: {
-    collections: CollectionsWidget;
-  };
-  user: User;
+    collections: CollectionsWidget
+  }
+  user: User
   jobs: {
-    tasks: unknown;
-    workflows: unknown;
-  };
+    tasks: unknown
+    workflows: unknown
+  }
 }
 export interface UserAuthOperations {
   forgotPassword: {
-    email: string;
-    password: string;
-  };
+    email: string
+    password: string
+  }
   login: {
-    email: string;
-    password: string;
-  };
+    email: string
+    password: string
+  }
   registerFirstUser: {
-    email: string;
-    password: string;
-  };
+    email: string
+    password: string
+  }
   unlock: {
-    email: string;
-    password: string;
-  };
+    email: string
+    password: string
+  }
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "media".
  */
 export interface Media {
-  id: number;
-  updatedAt: string;
-  createdAt: string;
-  url?: string | null;
-  thumbnailURL?: string | null;
-  filename?: string | null;
-  mimeType?: string | null;
-  filesize?: number | null;
-  width?: number | null;
-  height?: number | null;
-  focalX?: number | null;
-  focalY?: number | null;
+  id: number
+  updatedAt: string
+  createdAt: string
+  url?: string | null
+  thumbnailURL?: string | null
+  filename?: string | null
+  mimeType?: string | null
+  filesize?: number | null
+  width?: number | null
+  height?: number | null
+  focalX?: number | null
+  focalY?: number | null
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "forms".
  */
 export interface Form {
-  id: number;
-  title: string;
+  id: number
+  title: string
   /**
    * When enabled, the slug will auto-generate from the title field on save and autosave.
    */
-  generateSlug?: boolean | null;
-  slug: string;
+  generateSlug?: boolean | null
+  slug: string
   /**
    * Form fields become locked once a form has submissions or connected data
    */
-  locked?: boolean | null;
-  confirmationType?: ('redirect' | 'message') | null;
+  locked?: boolean | null
+  confirmationType?: ('redirect' | 'message') | null
   confirmationMessage?: {
     root: {
-      type: string;
+      type: string
       children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  redirectUrl?: string | null;
-  redirect?: string | null;
+        type: any
+        version: number
+        [k: string]: unknown
+      }[]
+      direction: ('ltr' | 'rtl') | null
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | ''
+      indent: number
+      version: number
+    }
+    [k: string]: unknown
+  } | null
+  redirectUrl?: string | null
+  redirect?: string | null
   notification?:
     | {
-        email: string;
-        subject: string;
+        email: string
+        subject: string
         message: {
           root: {
-            type: string;
+            type: string
             children: {
-              type: any;
-              version: number;
-              [k: string]: unknown;
-            }[];
-            direction: ('ltr' | 'rtl') | null;
-            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-            indent: number;
-            version: number;
-          };
-          [k: string]: unknown;
-        };
+              type: any
+              version: number
+              [k: string]: unknown
+            }[]
+            direction: ('ltr' | 'rtl') | null
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | ''
+            indent: number
+            version: number
+          }
+          [k: string]: unknown
+        }
         conditions?:
           | {
-              [k: string]: unknown;
+              [k: string]: unknown
             }
           | unknown[]
           | string
           | number
           | boolean
-          | null;
-        id?: string | null;
+          | null
+        id?: string | null
       }[]
-    | null;
-  formSchema?: Record<string, unknown> | null;
+    | null
+  formSchema?: Record<string, unknown> | null
   pages?: {
-    id: string;
-    backButton?: string;
-    nextButton?: string;
+    id: string
+    backButton?: string
+    nextButton?: string
     rows: {
-      id: string;
+      id: string
       columns: (
         | {
-            id: string;
-            name: string;
-            errorMessage?: string;
-            hidden: boolean;
-            instructions?: string;
-            label: string;
-            required: boolean;
+            id: string
+            name: string
+            errorMessage?: string
+            hidden: boolean
+            instructions?: string
+            label: string
+            required: boolean
             conditions?: {
               conditions: {
-                field: string;
+                field: string
                 operator:
                   | 'equals'
                   | 'notEquals'
@@ -236,28 +238,28 @@ export interface Form {
                   | 'isEmpty'
                   | 'isNotEmpty'
                   | 'hasChanged'
-                  | 'hasNotChanged';
-                value?: string | number;
-              }[];
-              logic: 'and' | 'or';
-            };
-            type: 'text';
-            defaultValue?: string;
-            maxLength?: number;
-            minLength?: number;
-            placeholder?: string;
+                  | 'hasNotChanged'
+                value?: string | number
+              }[]
+              logic: 'and' | 'or'
+            }
+            type: 'text'
+            defaultValue?: string
+            maxLength?: number
+            minLength?: number
+            placeholder?: string
           }
         | {
-            id: string;
-            name: string;
-            errorMessage?: string;
-            hidden: boolean;
-            instructions?: string;
-            label: string;
-            required: boolean;
+            id: string
+            name: string
+            errorMessage?: string
+            hidden: boolean
+            instructions?: string
+            label: string
+            required: boolean
             conditions?: {
               conditions: {
-                field: string;
+                field: string
                 operator:
                   | 'equals'
                   | 'notEquals'
@@ -269,29 +271,29 @@ export interface Form {
                   | 'isEmpty'
                   | 'isNotEmpty'
                   | 'hasChanged'
-                  | 'hasNotChanged';
-                value?: string | number;
-              }[];
-              logic: 'and' | 'or';
-            };
-            type: 'textarea';
-            defaultValue?: string;
-            maxLength?: number;
-            minLength?: number;
-            placeholder?: string;
-            rows: number;
+                  | 'hasNotChanged'
+                value?: string | number
+              }[]
+              logic: 'and' | 'or'
+            }
+            type: 'textarea'
+            defaultValue?: string
+            maxLength?: number
+            minLength?: number
+            placeholder?: string
+            rows: number
           }
         | {
-            id: string;
-            name: string;
-            errorMessage?: string;
-            hidden: boolean;
-            instructions?: string;
-            label: string;
-            required: boolean;
+            id: string
+            name: string
+            errorMessage?: string
+            hidden: boolean
+            instructions?: string
+            label: string
+            required: boolean
             conditions?: {
               conditions: {
-                field: string;
+                field: string
                 operator:
                   | 'equals'
                   | 'notEquals'
@@ -303,26 +305,26 @@ export interface Form {
                   | 'isEmpty'
                   | 'isNotEmpty'
                   | 'hasChanged'
-                  | 'hasNotChanged';
-                value?: string | number;
-              }[];
-              logic: 'and' | 'or';
-            };
-            type: 'email';
-            defaultValue?: string;
-            placeholder?: string;
+                  | 'hasNotChanged'
+                value?: string | number
+              }[]
+              logic: 'and' | 'or'
+            }
+            type: 'email'
+            defaultValue?: string
+            placeholder?: string
           }
         | {
-            id: string;
-            name: string;
-            errorMessage?: string;
-            hidden: boolean;
-            instructions?: string;
-            label: string;
-            required: boolean;
+            id: string
+            name: string
+            errorMessage?: string
+            hidden: boolean
+            instructions?: string
+            label: string
+            required: boolean
             conditions?: {
               conditions: {
-                field: string;
+                field: string
                 operator:
                   | 'equals'
                   | 'notEquals'
@@ -334,29 +336,29 @@ export interface Form {
                   | 'isEmpty'
                   | 'isNotEmpty'
                   | 'hasChanged'
-                  | 'hasNotChanged';
-                value?: string | number;
-              }[];
-              logic: 'and' | 'or';
-            };
-            type: 'number';
-            defaultValue?: number;
-            max?: number;
-            min?: number;
-            placeholder?: string;
-            step?: number;
+                  | 'hasNotChanged'
+                value?: string | number
+              }[]
+              logic: 'and' | 'or'
+            }
+            type: 'number'
+            defaultValue?: number
+            max?: number
+            min?: number
+            placeholder?: string
+            step?: number
           }
         | {
-            id: string;
-            name: string;
-            errorMessage?: string;
-            hidden: boolean;
-            instructions?: string;
-            label: string;
-            required: boolean;
+            id: string
+            name: string
+            errorMessage?: string
+            hidden: boolean
+            instructions?: string
+            label: string
+            required: boolean
             conditions?: {
               conditions: {
-                field: string;
+                field: string
                 operator:
                   | 'equals'
                   | 'notEquals'
@@ -368,29 +370,29 @@ export interface Form {
                   | 'isEmpty'
                   | 'isNotEmpty'
                   | 'hasChanged'
-                  | 'hasNotChanged';
-                value?: string | number;
-              }[];
-              logic: 'and' | 'or';
-            };
-            type: 'checkbox';
-            defaultValue?: string[];
+                  | 'hasNotChanged'
+                value?: string | number
+              }[]
+              logic: 'and' | 'or'
+            }
+            type: 'checkbox'
+            defaultValue?: string[]
             options: {
-              label: string;
-              value: string;
-            }[];
+              label: string
+              value: string
+            }[]
           }
         | {
-            id: string;
-            name: string;
-            errorMessage?: string;
-            hidden: boolean;
-            instructions?: string;
-            label: string;
-            required: boolean;
+            id: string
+            name: string
+            errorMessage?: string
+            hidden: boolean
+            instructions?: string
+            label: string
+            required: boolean
             conditions?: {
               conditions: {
-                field: string;
+                field: string
                 operator:
                   | 'equals'
                   | 'notEquals'
@@ -402,29 +404,29 @@ export interface Form {
                   | 'isEmpty'
                   | 'isNotEmpty'
                   | 'hasChanged'
-                  | 'hasNotChanged';
-                value?: string | number;
-              }[];
-              logic: 'and' | 'or';
-            };
-            type: 'radio';
-            defaultValue?: string;
+                  | 'hasNotChanged'
+                value?: string | number
+              }[]
+              logic: 'and' | 'or'
+            }
+            type: 'radio'
+            defaultValue?: string
             options: {
-              label: string;
-              value: string;
-            }[];
+              label: string
+              value: string
+            }[]
           }
         | {
-            id: string;
-            name: string;
-            errorMessage?: string;
-            hidden: boolean;
-            instructions?: string;
-            label: string;
-            required: boolean;
+            id: string
+            name: string
+            errorMessage?: string
+            hidden: boolean
+            instructions?: string
+            label: string
+            required: boolean
             conditions?: {
               conditions: {
-                field: string;
+                field: string
                 operator:
                   | 'equals'
                   | 'notEquals'
@@ -436,30 +438,30 @@ export interface Form {
                   | 'isEmpty'
                   | 'isNotEmpty'
                   | 'hasChanged'
-                  | 'hasNotChanged';
-                value?: string | number;
-              }[];
-              logic: 'and' | 'or';
-            };
-            type: 'select';
-            defaultValue?: string;
+                  | 'hasNotChanged'
+                value?: string | number
+              }[]
+              logic: 'and' | 'or'
+            }
+            type: 'select'
+            defaultValue?: string
             options: {
-              label: string;
-              value: string;
-            }[];
-            placeholder?: string;
+              label: string
+              value: string
+            }[]
+            placeholder?: string
           }
         | {
-            id: string;
-            name: string;
-            errorMessage?: string;
-            hidden: boolean;
-            instructions?: string;
-            label: string;
-            required: boolean;
+            id: string
+            name: string
+            errorMessage?: string
+            hidden: boolean
+            instructions?: string
+            label: string
+            required: boolean
             conditions?: {
               conditions: {
-                field: string;
+                field: string
                 operator:
                   | 'equals'
                   | 'notEquals'
@@ -471,28 +473,28 @@ export interface Form {
                   | 'isEmpty'
                   | 'isNotEmpty'
                   | 'hasChanged'
-                  | 'hasNotChanged';
-                value?: string | number;
-              }[];
-              logic: 'and' | 'or';
-            };
-            type: 'date';
-            defaultValue?: string;
-            maxDate?: string;
-            minDate?: string;
-            placeholder?: string;
+                  | 'hasNotChanged'
+                value?: string | number
+              }[]
+              logic: 'and' | 'or'
+            }
+            type: 'date'
+            defaultValue?: string
+            maxDate?: string
+            minDate?: string
+            placeholder?: string
           }
         | {
-            id: string;
-            name: string;
-            errorMessage?: string;
-            hidden: boolean;
-            instructions?: string;
-            label: string;
-            required: boolean;
+            id: string
+            name: string
+            errorMessage?: string
+            hidden: boolean
+            instructions?: string
+            label: string
+            required: boolean
             conditions?: {
               conditions: {
-                field: string;
+                field: string
                 operator:
                   | 'equals'
                   | 'notEquals'
@@ -504,28 +506,28 @@ export interface Form {
                   | 'isEmpty'
                   | 'isNotEmpty'
                   | 'hasChanged'
-                  | 'hasNotChanged';
-                value?: string | number;
-              }[];
-              logic: 'and' | 'or';
-            };
-            type: 'file';
-            allowedFileTypes?: string;
-            maxFileSize?: number;
-            maxFiles?: number;
-            relationTo?: string;
+                  | 'hasNotChanged'
+                value?: string | number
+              }[]
+              logic: 'and' | 'or'
+            }
+            type: 'file'
+            allowedFileTypes?: string
+            maxFileSize?: number
+            maxFiles?: number
+            relationTo?: string
           }
         | {
-            id: string;
-            name: string;
-            errorMessage?: string;
-            hidden: boolean;
-            instructions?: string;
-            label: string;
-            required: boolean;
+            id: string
+            name: string
+            errorMessage?: string
+            hidden: boolean
+            instructions?: string
+            label: string
+            required: boolean
             conditions?: {
               conditions: {
-                field: string;
+                field: string
                 operator:
                   | 'equals'
                   | 'notEquals'
@@ -537,25 +539,25 @@ export interface Form {
                   | 'isEmpty'
                   | 'isNotEmpty'
                   | 'hasChanged'
-                  | 'hasNotChanged';
-                value?: string | number;
-              }[];
-              logic: 'and' | 'or';
-            };
-            type: 'toggle';
-            defaultValue?: boolean;
+                  | 'hasNotChanged'
+                value?: string | number
+              }[]
+              logic: 'and' | 'or'
+            }
+            type: 'toggle'
+            defaultValue?: boolean
           }
         | {
-            id: string;
-            name: string;
-            errorMessage?: string;
-            hidden: boolean;
-            instructions?: string;
-            label: string;
-            required: boolean;
+            id: string
+            name: string
+            errorMessage?: string
+            hidden: boolean
+            instructions?: string
+            label: string
+            required: boolean
             conditions?: {
               conditions: {
-                field: string;
+                field: string
                 operator:
                   | 'equals'
                   | 'notEquals'
@@ -567,20 +569,20 @@ export interface Form {
                   | 'isEmpty'
                   | 'isNotEmpty'
                   | 'hasChanged'
-                  | 'hasNotChanged';
-                value?: string | number;
-              }[];
-              logic: 'and' | 'or';
-            };
-            type: 'consent';
-            defaultValue?: boolean;
+                  | 'hasNotChanged'
+                value?: string | number
+              }[]
+              logic: 'and' | 'or'
+            }
+            type: 'consent'
+            defaultValue?: boolean
           }
         | {
-            id: string;
-            type: 'message';
+            id: string
+            type: 'message'
             conditions?: {
               conditions: {
-                field: string;
+                field: string
                 operator:
                   | 'equals'
                   | 'notEquals'
@@ -592,37 +594,37 @@ export interface Form {
                   | 'isEmpty'
                   | 'isNotEmpty'
                   | 'hasChanged'
-                  | 'hasNotChanged';
-                value?: string | number;
-              }[];
-              logic: 'and' | 'or';
-            };
+                  | 'hasNotChanged'
+                value?: string | number
+              }[]
+              logic: 'and' | 'or'
+            }
             richText?: {
               root: {
-                type: string;
+                type: string
                 children: {
-                  type: string;
-                  version: number;
-                  [k: string]: unknown;
-                }[];
-                direction: 'ltr' | 'rtl' | null;
-                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-                indent: number;
-                version: number;
-              };
-            };
+                  type: string
+                  version: number
+                  [k: string]: unknown
+                }[]
+                direction: 'ltr' | 'rtl' | null
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | ''
+                indent: number
+                version: number
+              }
+            }
           }
         | {
-            id: string;
-            name: string;
-            errorMessage?: string;
-            hidden: boolean;
-            instructions?: string;
-            label: string;
-            required: boolean;
+            id: string
+            name: string
+            errorMessage?: string
+            hidden: boolean
+            instructions?: string
+            label: string
+            required: boolean
             conditions?: {
               conditions: {
-                field: string;
+                field: string
                 operator:
                   | 'equals'
                   | 'notEquals'
@@ -634,28 +636,28 @@ export interface Form {
                   | 'isEmpty'
                   | 'isNotEmpty'
                   | 'hasChanged'
-                  | 'hasNotChanged';
-                value?: string | number;
-              }[];
-              logic: 'and' | 'or';
-            };
-            type: 'array';
-            maxRows?: number;
-            minRows?: number;
+                  | 'hasNotChanged'
+                value?: string | number
+              }[]
+              logic: 'and' | 'or'
+            }
+            type: 'array'
+            maxRows?: number
+            minRows?: number
             rows: {
-              id: string;
+              id: string
               columns: (
                 | {
-                    id: string;
-                    name: string;
-                    errorMessage?: string;
-                    hidden: boolean;
-                    instructions?: string;
-                    label: string;
-                    required: boolean;
+                    id: string
+                    name: string
+                    errorMessage?: string
+                    hidden: boolean
+                    instructions?: string
+                    label: string
+                    required: boolean
                     conditions?: {
                       conditions: {
-                        field: string;
+                        field: string
                         operator:
                           | 'equals'
                           | 'notEquals'
@@ -667,28 +669,28 @@ export interface Form {
                           | 'isEmpty'
                           | 'isNotEmpty'
                           | 'hasChanged'
-                          | 'hasNotChanged';
-                        value?: string | number;
-                      }[];
-                      logic: 'and' | 'or';
-                    };
-                    type: 'text';
-                    defaultValue?: string;
-                    maxLength?: number;
-                    minLength?: number;
-                    placeholder?: string;
+                          | 'hasNotChanged'
+                        value?: string | number
+                      }[]
+                      logic: 'and' | 'or'
+                    }
+                    type: 'text'
+                    defaultValue?: string
+                    maxLength?: number
+                    minLength?: number
+                    placeholder?: string
                   }
                 | {
-                    id: string;
-                    name: string;
-                    errorMessage?: string;
-                    hidden: boolean;
-                    instructions?: string;
-                    label: string;
-                    required: boolean;
+                    id: string
+                    name: string
+                    errorMessage?: string
+                    hidden: boolean
+                    instructions?: string
+                    label: string
+                    required: boolean
                     conditions?: {
                       conditions: {
-                        field: string;
+                        field: string
                         operator:
                           | 'equals'
                           | 'notEquals'
@@ -700,29 +702,29 @@ export interface Form {
                           | 'isEmpty'
                           | 'isNotEmpty'
                           | 'hasChanged'
-                          | 'hasNotChanged';
-                        value?: string | number;
-                      }[];
-                      logic: 'and' | 'or';
-                    };
-                    type: 'textarea';
-                    defaultValue?: string;
-                    maxLength?: number;
-                    minLength?: number;
-                    placeholder?: string;
-                    rows: number;
+                          | 'hasNotChanged'
+                        value?: string | number
+                      }[]
+                      logic: 'and' | 'or'
+                    }
+                    type: 'textarea'
+                    defaultValue?: string
+                    maxLength?: number
+                    minLength?: number
+                    placeholder?: string
+                    rows: number
                   }
                 | {
-                    id: string;
-                    name: string;
-                    errorMessage?: string;
-                    hidden: boolean;
-                    instructions?: string;
-                    label: string;
-                    required: boolean;
+                    id: string
+                    name: string
+                    errorMessage?: string
+                    hidden: boolean
+                    instructions?: string
+                    label: string
+                    required: boolean
                     conditions?: {
                       conditions: {
-                        field: string;
+                        field: string
                         operator:
                           | 'equals'
                           | 'notEquals'
@@ -734,26 +736,26 @@ export interface Form {
                           | 'isEmpty'
                           | 'isNotEmpty'
                           | 'hasChanged'
-                          | 'hasNotChanged';
-                        value?: string | number;
-                      }[];
-                      logic: 'and' | 'or';
-                    };
-                    type: 'email';
-                    defaultValue?: string;
-                    placeholder?: string;
+                          | 'hasNotChanged'
+                        value?: string | number
+                      }[]
+                      logic: 'and' | 'or'
+                    }
+                    type: 'email'
+                    defaultValue?: string
+                    placeholder?: string
                   }
                 | {
-                    id: string;
-                    name: string;
-                    errorMessage?: string;
-                    hidden: boolean;
-                    instructions?: string;
-                    label: string;
-                    required: boolean;
+                    id: string
+                    name: string
+                    errorMessage?: string
+                    hidden: boolean
+                    instructions?: string
+                    label: string
+                    required: boolean
                     conditions?: {
                       conditions: {
-                        field: string;
+                        field: string
                         operator:
                           | 'equals'
                           | 'notEquals'
@@ -765,29 +767,29 @@ export interface Form {
                           | 'isEmpty'
                           | 'isNotEmpty'
                           | 'hasChanged'
-                          | 'hasNotChanged';
-                        value?: string | number;
-                      }[];
-                      logic: 'and' | 'or';
-                    };
-                    type: 'number';
-                    defaultValue?: number;
-                    max?: number;
-                    min?: number;
-                    placeholder?: string;
-                    step?: number;
+                          | 'hasNotChanged'
+                        value?: string | number
+                      }[]
+                      logic: 'and' | 'or'
+                    }
+                    type: 'number'
+                    defaultValue?: number
+                    max?: number
+                    min?: number
+                    placeholder?: string
+                    step?: number
                   }
                 | {
-                    id: string;
-                    name: string;
-                    errorMessage?: string;
-                    hidden: boolean;
-                    instructions?: string;
-                    label: string;
-                    required: boolean;
+                    id: string
+                    name: string
+                    errorMessage?: string
+                    hidden: boolean
+                    instructions?: string
+                    label: string
+                    required: boolean
                     conditions?: {
                       conditions: {
-                        field: string;
+                        field: string
                         operator:
                           | 'equals'
                           | 'notEquals'
@@ -799,29 +801,29 @@ export interface Form {
                           | 'isEmpty'
                           | 'isNotEmpty'
                           | 'hasChanged'
-                          | 'hasNotChanged';
-                        value?: string | number;
-                      }[];
-                      logic: 'and' | 'or';
-                    };
-                    type: 'checkbox';
-                    defaultValue?: string[];
+                          | 'hasNotChanged'
+                        value?: string | number
+                      }[]
+                      logic: 'and' | 'or'
+                    }
+                    type: 'checkbox'
+                    defaultValue?: string[]
                     options: {
-                      label: string;
-                      value: string;
-                    }[];
+                      label: string
+                      value: string
+                    }[]
                   }
                 | {
-                    id: string;
-                    name: string;
-                    errorMessage?: string;
-                    hidden: boolean;
-                    instructions?: string;
-                    label: string;
-                    required: boolean;
+                    id: string
+                    name: string
+                    errorMessage?: string
+                    hidden: boolean
+                    instructions?: string
+                    label: string
+                    required: boolean
                     conditions?: {
                       conditions: {
-                        field: string;
+                        field: string
                         operator:
                           | 'equals'
                           | 'notEquals'
@@ -833,29 +835,29 @@ export interface Form {
                           | 'isEmpty'
                           | 'isNotEmpty'
                           | 'hasChanged'
-                          | 'hasNotChanged';
-                        value?: string | number;
-                      }[];
-                      logic: 'and' | 'or';
-                    };
-                    type: 'radio';
-                    defaultValue?: string;
+                          | 'hasNotChanged'
+                        value?: string | number
+                      }[]
+                      logic: 'and' | 'or'
+                    }
+                    type: 'radio'
+                    defaultValue?: string
                     options: {
-                      label: string;
-                      value: string;
-                    }[];
+                      label: string
+                      value: string
+                    }[]
                   }
                 | {
-                    id: string;
-                    name: string;
-                    errorMessage?: string;
-                    hidden: boolean;
-                    instructions?: string;
-                    label: string;
-                    required: boolean;
+                    id: string
+                    name: string
+                    errorMessage?: string
+                    hidden: boolean
+                    instructions?: string
+                    label: string
+                    required: boolean
                     conditions?: {
                       conditions: {
-                        field: string;
+                        field: string
                         operator:
                           | 'equals'
                           | 'notEquals'
@@ -867,30 +869,30 @@ export interface Form {
                           | 'isEmpty'
                           | 'isNotEmpty'
                           | 'hasChanged'
-                          | 'hasNotChanged';
-                        value?: string | number;
-                      }[];
-                      logic: 'and' | 'or';
-                    };
-                    type: 'select';
-                    defaultValue?: string;
+                          | 'hasNotChanged'
+                        value?: string | number
+                      }[]
+                      logic: 'and' | 'or'
+                    }
+                    type: 'select'
+                    defaultValue?: string
                     options: {
-                      label: string;
-                      value: string;
-                    }[];
-                    placeholder?: string;
+                      label: string
+                      value: string
+                    }[]
+                    placeholder?: string
                   }
                 | {
-                    id: string;
-                    name: string;
-                    errorMessage?: string;
-                    hidden: boolean;
-                    instructions?: string;
-                    label: string;
-                    required: boolean;
+                    id: string
+                    name: string
+                    errorMessage?: string
+                    hidden: boolean
+                    instructions?: string
+                    label: string
+                    required: boolean
                     conditions?: {
                       conditions: {
-                        field: string;
+                        field: string
                         operator:
                           | 'equals'
                           | 'notEquals'
@@ -902,28 +904,28 @@ export interface Form {
                           | 'isEmpty'
                           | 'isNotEmpty'
                           | 'hasChanged'
-                          | 'hasNotChanged';
-                        value?: string | number;
-                      }[];
-                      logic: 'and' | 'or';
-                    };
-                    type: 'date';
-                    defaultValue?: string;
-                    maxDate?: string;
-                    minDate?: string;
-                    placeholder?: string;
+                          | 'hasNotChanged'
+                        value?: string | number
+                      }[]
+                      logic: 'and' | 'or'
+                    }
+                    type: 'date'
+                    defaultValue?: string
+                    maxDate?: string
+                    minDate?: string
+                    placeholder?: string
                   }
                 | {
-                    id: string;
-                    name: string;
-                    errorMessage?: string;
-                    hidden: boolean;
-                    instructions?: string;
-                    label: string;
-                    required: boolean;
+                    id: string
+                    name: string
+                    errorMessage?: string
+                    hidden: boolean
+                    instructions?: string
+                    label: string
+                    required: boolean
                     conditions?: {
                       conditions: {
-                        field: string;
+                        field: string
                         operator:
                           | 'equals'
                           | 'notEquals'
@@ -935,28 +937,28 @@ export interface Form {
                           | 'isEmpty'
                           | 'isNotEmpty'
                           | 'hasChanged'
-                          | 'hasNotChanged';
-                        value?: string | number;
-                      }[];
-                      logic: 'and' | 'or';
-                    };
-                    type: 'file';
-                    allowedFileTypes?: string;
-                    maxFileSize?: number;
-                    maxFiles?: number;
-                    relationTo?: string;
+                          | 'hasNotChanged'
+                        value?: string | number
+                      }[]
+                      logic: 'and' | 'or'
+                    }
+                    type: 'file'
+                    allowedFileTypes?: string
+                    maxFileSize?: number
+                    maxFiles?: number
+                    relationTo?: string
                   }
                 | {
-                    id: string;
-                    name: string;
-                    errorMessage?: string;
-                    hidden: boolean;
-                    instructions?: string;
-                    label: string;
-                    required: boolean;
+                    id: string
+                    name: string
+                    errorMessage?: string
+                    hidden: boolean
+                    instructions?: string
+                    label: string
+                    required: boolean
                     conditions?: {
                       conditions: {
-                        field: string;
+                        field: string
                         operator:
                           | 'equals'
                           | 'notEquals'
@@ -968,25 +970,25 @@ export interface Form {
                           | 'isEmpty'
                           | 'isNotEmpty'
                           | 'hasChanged'
-                          | 'hasNotChanged';
-                        value?: string | number;
-                      }[];
-                      logic: 'and' | 'or';
-                    };
-                    type: 'toggle';
-                    defaultValue?: boolean;
+                          | 'hasNotChanged'
+                        value?: string | number
+                      }[]
+                      logic: 'and' | 'or'
+                    }
+                    type: 'toggle'
+                    defaultValue?: boolean
                   }
                 | {
-                    id: string;
-                    name: string;
-                    errorMessage?: string;
-                    hidden: boolean;
-                    instructions?: string;
-                    label: string;
-                    required: boolean;
+                    id: string
+                    name: string
+                    errorMessage?: string
+                    hidden: boolean
+                    instructions?: string
+                    label: string
+                    required: boolean
                     conditions?: {
                       conditions: {
-                        field: string;
+                        field: string
                         operator:
                           | 'equals'
                           | 'notEquals'
@@ -998,28 +1000,28 @@ export interface Form {
                           | 'isEmpty'
                           | 'isNotEmpty'
                           | 'hasChanged'
-                          | 'hasNotChanged';
-                        value?: string | number;
-                      }[];
-                      logic: 'and' | 'or';
-                    };
-                    type: 'consent';
-                    defaultValue?: boolean;
+                          | 'hasNotChanged'
+                        value?: string | number
+                      }[]
+                      logic: 'and' | 'or'
+                    }
+                    type: 'consent'
+                    defaultValue?: boolean
                   }
-              )[];
-            }[];
+              )[]
+            }[]
           }
         | {
-            id: string;
-            name: string;
-            errorMessage?: string;
-            hidden: boolean;
-            instructions?: string;
-            label: string;
-            required: boolean;
+            id: string
+            name: string
+            errorMessage?: string
+            hidden: boolean
+            instructions?: string
+            label: string
+            required: boolean
             conditions?: {
               conditions: {
-                field: string;
+                field: string
                 operator:
                   | 'equals'
                   | 'notEquals'
@@ -1031,26 +1033,26 @@ export interface Form {
                   | 'isEmpty'
                   | 'isNotEmpty'
                   | 'hasChanged'
-                  | 'hasNotChanged';
-                value?: string | number;
-              }[];
-              logic: 'and' | 'or';
-            };
-            type: 'group';
+                  | 'hasNotChanged'
+                value?: string | number
+              }[]
+              logic: 'and' | 'or'
+            }
+            type: 'group'
             rows: {
-              id: string;
+              id: string
               columns: (
                 | {
-                    id: string;
-                    name: string;
-                    errorMessage?: string;
-                    hidden: boolean;
-                    instructions?: string;
-                    label: string;
-                    required: boolean;
+                    id: string
+                    name: string
+                    errorMessage?: string
+                    hidden: boolean
+                    instructions?: string
+                    label: string
+                    required: boolean
                     conditions?: {
                       conditions: {
-                        field: string;
+                        field: string
                         operator:
                           | 'equals'
                           | 'notEquals'
@@ -1062,28 +1064,28 @@ export interface Form {
                           | 'isEmpty'
                           | 'isNotEmpty'
                           | 'hasChanged'
-                          | 'hasNotChanged';
-                        value?: string | number;
-                      }[];
-                      logic: 'and' | 'or';
-                    };
-                    type: 'text';
-                    defaultValue?: string;
-                    maxLength?: number;
-                    minLength?: number;
-                    placeholder?: string;
+                          | 'hasNotChanged'
+                        value?: string | number
+                      }[]
+                      logic: 'and' | 'or'
+                    }
+                    type: 'text'
+                    defaultValue?: string
+                    maxLength?: number
+                    minLength?: number
+                    placeholder?: string
                   }
                 | {
-                    id: string;
-                    name: string;
-                    errorMessage?: string;
-                    hidden: boolean;
-                    instructions?: string;
-                    label: string;
-                    required: boolean;
+                    id: string
+                    name: string
+                    errorMessage?: string
+                    hidden: boolean
+                    instructions?: string
+                    label: string
+                    required: boolean
                     conditions?: {
                       conditions: {
-                        field: string;
+                        field: string
                         operator:
                           | 'equals'
                           | 'notEquals'
@@ -1095,29 +1097,29 @@ export interface Form {
                           | 'isEmpty'
                           | 'isNotEmpty'
                           | 'hasChanged'
-                          | 'hasNotChanged';
-                        value?: string | number;
-                      }[];
-                      logic: 'and' | 'or';
-                    };
-                    type: 'textarea';
-                    defaultValue?: string;
-                    maxLength?: number;
-                    minLength?: number;
-                    placeholder?: string;
-                    rows: number;
+                          | 'hasNotChanged'
+                        value?: string | number
+                      }[]
+                      logic: 'and' | 'or'
+                    }
+                    type: 'textarea'
+                    defaultValue?: string
+                    maxLength?: number
+                    minLength?: number
+                    placeholder?: string
+                    rows: number
                   }
                 | {
-                    id: string;
-                    name: string;
-                    errorMessage?: string;
-                    hidden: boolean;
-                    instructions?: string;
-                    label: string;
-                    required: boolean;
+                    id: string
+                    name: string
+                    errorMessage?: string
+                    hidden: boolean
+                    instructions?: string
+                    label: string
+                    required: boolean
                     conditions?: {
                       conditions: {
-                        field: string;
+                        field: string
                         operator:
                           | 'equals'
                           | 'notEquals'
@@ -1129,26 +1131,26 @@ export interface Form {
                           | 'isEmpty'
                           | 'isNotEmpty'
                           | 'hasChanged'
-                          | 'hasNotChanged';
-                        value?: string | number;
-                      }[];
-                      logic: 'and' | 'or';
-                    };
-                    type: 'email';
-                    defaultValue?: string;
-                    placeholder?: string;
+                          | 'hasNotChanged'
+                        value?: string | number
+                      }[]
+                      logic: 'and' | 'or'
+                    }
+                    type: 'email'
+                    defaultValue?: string
+                    placeholder?: string
                   }
                 | {
-                    id: string;
-                    name: string;
-                    errorMessage?: string;
-                    hidden: boolean;
-                    instructions?: string;
-                    label: string;
-                    required: boolean;
+                    id: string
+                    name: string
+                    errorMessage?: string
+                    hidden: boolean
+                    instructions?: string
+                    label: string
+                    required: boolean
                     conditions?: {
                       conditions: {
-                        field: string;
+                        field: string
                         operator:
                           | 'equals'
                           | 'notEquals'
@@ -1160,29 +1162,29 @@ export interface Form {
                           | 'isEmpty'
                           | 'isNotEmpty'
                           | 'hasChanged'
-                          | 'hasNotChanged';
-                        value?: string | number;
-                      }[];
-                      logic: 'and' | 'or';
-                    };
-                    type: 'number';
-                    defaultValue?: number;
-                    max?: number;
-                    min?: number;
-                    placeholder?: string;
-                    step?: number;
+                          | 'hasNotChanged'
+                        value?: string | number
+                      }[]
+                      logic: 'and' | 'or'
+                    }
+                    type: 'number'
+                    defaultValue?: number
+                    max?: number
+                    min?: number
+                    placeholder?: string
+                    step?: number
                   }
                 | {
-                    id: string;
-                    name: string;
-                    errorMessage?: string;
-                    hidden: boolean;
-                    instructions?: string;
-                    label: string;
-                    required: boolean;
+                    id: string
+                    name: string
+                    errorMessage?: string
+                    hidden: boolean
+                    instructions?: string
+                    label: string
+                    required: boolean
                     conditions?: {
                       conditions: {
-                        field: string;
+                        field: string
                         operator:
                           | 'equals'
                           | 'notEquals'
@@ -1194,29 +1196,29 @@ export interface Form {
                           | 'isEmpty'
                           | 'isNotEmpty'
                           | 'hasChanged'
-                          | 'hasNotChanged';
-                        value?: string | number;
-                      }[];
-                      logic: 'and' | 'or';
-                    };
-                    type: 'checkbox';
-                    defaultValue?: string[];
+                          | 'hasNotChanged'
+                        value?: string | number
+                      }[]
+                      logic: 'and' | 'or'
+                    }
+                    type: 'checkbox'
+                    defaultValue?: string[]
                     options: {
-                      label: string;
-                      value: string;
-                    }[];
+                      label: string
+                      value: string
+                    }[]
                   }
                 | {
-                    id: string;
-                    name: string;
-                    errorMessage?: string;
-                    hidden: boolean;
-                    instructions?: string;
-                    label: string;
-                    required: boolean;
+                    id: string
+                    name: string
+                    errorMessage?: string
+                    hidden: boolean
+                    instructions?: string
+                    label: string
+                    required: boolean
                     conditions?: {
                       conditions: {
-                        field: string;
+                        field: string
                         operator:
                           | 'equals'
                           | 'notEquals'
@@ -1228,29 +1230,29 @@ export interface Form {
                           | 'isEmpty'
                           | 'isNotEmpty'
                           | 'hasChanged'
-                          | 'hasNotChanged';
-                        value?: string | number;
-                      }[];
-                      logic: 'and' | 'or';
-                    };
-                    type: 'radio';
-                    defaultValue?: string;
+                          | 'hasNotChanged'
+                        value?: string | number
+                      }[]
+                      logic: 'and' | 'or'
+                    }
+                    type: 'radio'
+                    defaultValue?: string
                     options: {
-                      label: string;
-                      value: string;
-                    }[];
+                      label: string
+                      value: string
+                    }[]
                   }
                 | {
-                    id: string;
-                    name: string;
-                    errorMessage?: string;
-                    hidden: boolean;
-                    instructions?: string;
-                    label: string;
-                    required: boolean;
+                    id: string
+                    name: string
+                    errorMessage?: string
+                    hidden: boolean
+                    instructions?: string
+                    label: string
+                    required: boolean
                     conditions?: {
                       conditions: {
-                        field: string;
+                        field: string
                         operator:
                           | 'equals'
                           | 'notEquals'
@@ -1262,30 +1264,30 @@ export interface Form {
                           | 'isEmpty'
                           | 'isNotEmpty'
                           | 'hasChanged'
-                          | 'hasNotChanged';
-                        value?: string | number;
-                      }[];
-                      logic: 'and' | 'or';
-                    };
-                    type: 'select';
-                    defaultValue?: string;
+                          | 'hasNotChanged'
+                        value?: string | number
+                      }[]
+                      logic: 'and' | 'or'
+                    }
+                    type: 'select'
+                    defaultValue?: string
                     options: {
-                      label: string;
-                      value: string;
-                    }[];
-                    placeholder?: string;
+                      label: string
+                      value: string
+                    }[]
+                    placeholder?: string
                   }
                 | {
-                    id: string;
-                    name: string;
-                    errorMessage?: string;
-                    hidden: boolean;
-                    instructions?: string;
-                    label: string;
-                    required: boolean;
+                    id: string
+                    name: string
+                    errorMessage?: string
+                    hidden: boolean
+                    instructions?: string
+                    label: string
+                    required: boolean
                     conditions?: {
                       conditions: {
-                        field: string;
+                        field: string
                         operator:
                           | 'equals'
                           | 'notEquals'
@@ -1297,28 +1299,28 @@ export interface Form {
                           | 'isEmpty'
                           | 'isNotEmpty'
                           | 'hasChanged'
-                          | 'hasNotChanged';
-                        value?: string | number;
-                      }[];
-                      logic: 'and' | 'or';
-                    };
-                    type: 'date';
-                    defaultValue?: string;
-                    maxDate?: string;
-                    minDate?: string;
-                    placeholder?: string;
+                          | 'hasNotChanged'
+                        value?: string | number
+                      }[]
+                      logic: 'and' | 'or'
+                    }
+                    type: 'date'
+                    defaultValue?: string
+                    maxDate?: string
+                    minDate?: string
+                    placeholder?: string
                   }
                 | {
-                    id: string;
-                    name: string;
-                    errorMessage?: string;
-                    hidden: boolean;
-                    instructions?: string;
-                    label: string;
-                    required: boolean;
+                    id: string
+                    name: string
+                    errorMessage?: string
+                    hidden: boolean
+                    instructions?: string
+                    label: string
+                    required: boolean
                     conditions?: {
                       conditions: {
-                        field: string;
+                        field: string
                         operator:
                           | 'equals'
                           | 'notEquals'
@@ -1330,28 +1332,28 @@ export interface Form {
                           | 'isEmpty'
                           | 'isNotEmpty'
                           | 'hasChanged'
-                          | 'hasNotChanged';
-                        value?: string | number;
-                      }[];
-                      logic: 'and' | 'or';
-                    };
-                    type: 'file';
-                    allowedFileTypes?: string;
-                    maxFileSize?: number;
-                    maxFiles?: number;
-                    relationTo?: string;
+                          | 'hasNotChanged'
+                        value?: string | number
+                      }[]
+                      logic: 'and' | 'or'
+                    }
+                    type: 'file'
+                    allowedFileTypes?: string
+                    maxFileSize?: number
+                    maxFiles?: number
+                    relationTo?: string
                   }
                 | {
-                    id: string;
-                    name: string;
-                    errorMessage?: string;
-                    hidden: boolean;
-                    instructions?: string;
-                    label: string;
-                    required: boolean;
+                    id: string
+                    name: string
+                    errorMessage?: string
+                    hidden: boolean
+                    instructions?: string
+                    label: string
+                    required: boolean
                     conditions?: {
                       conditions: {
-                        field: string;
+                        field: string
                         operator:
                           | 'equals'
                           | 'notEquals'
@@ -1363,25 +1365,25 @@ export interface Form {
                           | 'isEmpty'
                           | 'isNotEmpty'
                           | 'hasChanged'
-                          | 'hasNotChanged';
-                        value?: string | number;
-                      }[];
-                      logic: 'and' | 'or';
-                    };
-                    type: 'toggle';
-                    defaultValue?: boolean;
+                          | 'hasNotChanged'
+                        value?: string | number
+                      }[]
+                      logic: 'and' | 'or'
+                    }
+                    type: 'toggle'
+                    defaultValue?: boolean
                   }
                 | {
-                    id: string;
-                    name: string;
-                    errorMessage?: string;
-                    hidden: boolean;
-                    instructions?: string;
-                    label: string;
-                    required: boolean;
+                    id: string
+                    name: string
+                    errorMessage?: string
+                    hidden: boolean
+                    instructions?: string
+                    label: string
+                    required: boolean
                     conditions?: {
                       conditions: {
-                        field: string;
+                        field: string
                         operator:
                           | 'equals'
                           | 'notEquals'
@@ -1393,69 +1395,74 @@ export interface Form {
                           | 'isEmpty'
                           | 'isNotEmpty'
                           | 'hasChanged'
-                          | 'hasNotChanged';
-                        value?: string | number;
-                      }[];
-                      logic: 'and' | 'or';
-                    };
-                    type: 'consent';
-                    defaultValue?: boolean;
+                          | 'hasNotChanged'
+                        value?: string | number
+                      }[]
+                      logic: 'and' | 'or'
+                    }
+                    type: 'consent'
+                    defaultValue?: boolean
                   }
-              )[];
-            }[];
+              )[]
+            }[]
           }
-      )[];
-    }[];
-    title: string;
-  }[];
+      )[]
+    }[]
+    title: string
+  }[]
   /**
    * Schema path used for rich text content field (message)
    */
   richText?: {
     root: {
-      type: string;
+      type: string
       children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  updatedAt: string;
-  createdAt: string;
-  _status?: ('draft' | 'published') | null;
+        type: any
+        version: number
+        [k: string]: unknown
+      }[]
+      direction: ('ltr' | 'rtl') | null
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | ''
+      indent: number
+      version: number
+    }
+    [k: string]: unknown
+  } | null
+  updatedAt: string
+  createdAt: string
+  _status?: ('draft' | 'published') | null
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "submissions".
  */
 export interface Submission {
-  id: number;
+  id: number
   /**
    * Auto-generated from form title at submission time
    */
-  title: string;
+  title: string
   /**
    * Identifier for the submitter (e.g., email address)
    */
-  from?: string | null;
+  from?: string | null
   /**
    * Reference to parent form (for grouping/queries)
    */
-  form?: (number | null) | Form;
-  submissionData: Record<string, any> | null;
-  formSnapshot?: Record<string, any> | null;
-  userAgent?: string | null;
-  ipAddress?: string | null;
-  fileUploads?: Array<{fieldName: string; ids: string[]; maxFiles: number; relationTo: string}> | null;
-  updatedAt: string;
-  createdAt: string;
-  _status?: ('draft' | 'published') | null;
+  form?: (number | null) | Form
+  submissionData: Record<string, any> | null
+  formSnapshot?: Record<string, any> | null
+  userAgent?: string | null
+  ipAddress?: string | null
+  fileUploads?: Array<{
+    fieldName: string
+    ids: string[]
+    maxFiles: number
+    relationTo: string
+  }> | null
+  updatedAt: string
+  createdAt: string
+  _status?: ('draft' | 'published') | null
 }
 /**
  * Files uploaded via form submissions
@@ -1464,286 +1471,286 @@ export interface Submission {
  * via the `definition` "form-uploads".
  */
 export interface FormUpload {
-  id: number;
+  id: number
   /**
    * The form this file was uploaded through
    */
-  form?: (number | null) | Form;
+  form?: (number | null) | Form
   /**
    * The submission this file belongs to
    */
-  submission?: (number | null) | Submission;
+  submission?: (number | null) | Submission
   /**
    * The form field name this file was uploaded to
    */
-  fieldName?: string | null;
-  updatedAt: string;
-  createdAt: string;
-  url?: string | null;
-  thumbnailURL?: string | null;
-  filename?: string | null;
-  mimeType?: string | null;
-  filesize?: number | null;
-  width?: number | null;
-  height?: number | null;
-  focalX?: number | null;
-  focalY?: number | null;
+  fieldName?: string | null
+  updatedAt: string
+  createdAt: string
+  url?: string | null
+  thumbnailURL?: string | null
+  filename?: string | null
+  mimeType?: string | null
+  filesize?: number | null
+  width?: number | null
+  height?: number | null
+  focalX?: number | null
+  focalY?: number | null
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
-  id: number;
-  key: string;
+  id: number
+  key: string
   data:
     | {
-        [k: string]: unknown;
+        [k: string]: unknown
       }
     | unknown[]
     | string
     | number
     | boolean
-    | null;
+    | null
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".
  */
 export interface User {
-  id: number;
-  updatedAt: string;
-  createdAt: string;
-  email: string;
-  resetPasswordToken?: string | null;
-  resetPasswordExpiration?: string | null;
-  salt?: string | null;
-  hash?: string | null;
-  loginAttempts?: number | null;
-  lockUntil?: string | null;
+  id: number
+  updatedAt: string
+  createdAt: string
+  email: string
+  resetPasswordToken?: string | null
+  resetPasswordExpiration?: string | null
+  salt?: string | null
+  hash?: string | null
+  loginAttempts?: number | null
+  lockUntil?: string | null
   sessions?:
     | {
-        id: string;
-        createdAt?: string | null;
-        expiresAt: string;
+        id: string
+        createdAt?: string | null
+        expiresAt: string
       }[]
-    | null;
-  password?: string | null;
-  collection: 'users';
+    | null
+  password?: string | null
+  collection: 'users'
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-locked-documents".
  */
 export interface PayloadLockedDocument {
-  id: number;
+  id: number
   document?:
     | ({
-        relationTo: 'media';
-        value: number | Media;
+        relationTo: 'media'
+        value: number | Media
       } | null)
     | ({
-        relationTo: 'forms';
-        value: number | Form;
+        relationTo: 'forms'
+        value: number | Form
       } | null)
     | ({
-        relationTo: 'submissions';
-        value: number | Submission;
+        relationTo: 'submissions'
+        value: number | Submission
       } | null)
     | ({
-        relationTo: 'form-uploads';
-        value: number | FormUpload;
+        relationTo: 'form-uploads'
+        value: number | FormUpload
       } | null)
     | ({
-        relationTo: 'users';
-        value: number | User;
-      } | null);
-  globalSlug?: string | null;
+        relationTo: 'users'
+        value: number | User
+      } | null)
+  globalSlug?: string | null
   user: {
-    relationTo: 'users';
-    value: number | User;
-  };
-  updatedAt: string;
-  createdAt: string;
+    relationTo: 'users'
+    value: number | User
+  }
+  updatedAt: string
+  createdAt: string
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-preferences".
  */
 export interface PayloadPreference {
-  id: number;
+  id: number
   user: {
-    relationTo: 'users';
-    value: number | User;
-  };
-  key?: string | null;
+    relationTo: 'users'
+    value: number | User
+  }
+  key?: string | null
   value?:
     | {
-        [k: string]: unknown;
+        [k: string]: unknown
       }
     | unknown[]
     | string
     | number
     | boolean
-    | null;
-  updatedAt: string;
-  createdAt: string;
+    | null
+  updatedAt: string
+  createdAt: string
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-migrations".
  */
 export interface PayloadMigration {
-  id: number;
-  name?: string | null;
-  batch?: number | null;
-  updatedAt: string;
-  createdAt: string;
+  id: number
+  name?: string | null
+  batch?: number | null
+  updatedAt: string
+  createdAt: string
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "media_select".
  */
 export interface MediaSelect<T extends boolean = true> {
-  updatedAt?: T;
-  createdAt?: T;
-  url?: T;
-  thumbnailURL?: T;
-  filename?: T;
-  mimeType?: T;
-  filesize?: T;
-  width?: T;
-  height?: T;
-  focalX?: T;
-  focalY?: T;
+  updatedAt?: T
+  createdAt?: T
+  url?: T
+  thumbnailURL?: T
+  filename?: T
+  mimeType?: T
+  filesize?: T
+  width?: T
+  height?: T
+  focalX?: T
+  focalY?: T
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "forms_select".
  */
 export interface FormsSelect<T extends boolean = true> {
-  title?: T;
-  generateSlug?: T;
-  slug?: T;
-  locked?: T;
-  confirmationType?: T;
-  confirmationMessage?: T;
-  redirectUrl?: T;
-  redirect?: T;
+  title?: T
+  generateSlug?: T
+  slug?: T
+  locked?: T
+  confirmationType?: T
+  confirmationMessage?: T
+  redirectUrl?: T
+  redirect?: T
   notification?:
     | T
     | {
-        email?: T;
-        subject?: T;
-        message?: T;
-        conditions?: T;
-        id?: T;
-      };
-  formSchema?: T;
-  pages?: T;
-  richText?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  _status?: T;
+        email?: T
+        subject?: T
+        message?: T
+        conditions?: T
+        id?: T
+      }
+  formSchema?: T
+  pages?: T
+  richText?: T
+  updatedAt?: T
+  createdAt?: T
+  _status?: T
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "submissions_select".
  */
 export interface SubmissionsSelect<T extends boolean = true> {
-  title?: T;
-  from?: T;
-  form?: T;
-  submissionData?: T;
-  formSnapshot?: T;
-  userAgent?: T;
-  ipAddress?: T;
-  fileUploads?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  _status?: T;
+  title?: T
+  from?: T
+  form?: T
+  submissionData?: T
+  formSnapshot?: T
+  userAgent?: T
+  ipAddress?: T
+  fileUploads?: T
+  updatedAt?: T
+  createdAt?: T
+  _status?: T
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "form-uploads_select".
  */
 export interface FormUploadsSelect<T extends boolean = true> {
-  form?: T;
-  submission?: T;
-  fieldName?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  url?: T;
-  thumbnailURL?: T;
-  filename?: T;
-  mimeType?: T;
-  filesize?: T;
-  width?: T;
-  height?: T;
-  focalX?: T;
-  focalY?: T;
+  form?: T
+  submission?: T
+  fieldName?: T
+  updatedAt?: T
+  createdAt?: T
+  url?: T
+  thumbnailURL?: T
+  filename?: T
+  mimeType?: T
+  filesize?: T
+  width?: T
+  height?: T
+  focalX?: T
+  focalY?: T
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv_select".
  */
 export interface PayloadKvSelect<T extends boolean = true> {
-  key?: T;
-  data?: T;
+  key?: T
+  data?: T
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
-  updatedAt?: T;
-  createdAt?: T;
-  email?: T;
-  resetPasswordToken?: T;
-  resetPasswordExpiration?: T;
-  salt?: T;
-  hash?: T;
-  loginAttempts?: T;
-  lockUntil?: T;
+  updatedAt?: T
+  createdAt?: T
+  email?: T
+  resetPasswordToken?: T
+  resetPasswordExpiration?: T
+  salt?: T
+  hash?: T
+  loginAttempts?: T
+  lockUntil?: T
   sessions?:
     | T
     | {
-        id?: T;
-        createdAt?: T;
-        expiresAt?: T;
-      };
+        id?: T
+        createdAt?: T
+        expiresAt?: T
+      }
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-locked-documents_select".
  */
 export interface PayloadLockedDocumentsSelect<T extends boolean = true> {
-  document?: T;
-  globalSlug?: T;
-  user?: T;
-  updatedAt?: T;
-  createdAt?: T;
+  document?: T
+  globalSlug?: T
+  user?: T
+  updatedAt?: T
+  createdAt?: T
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-preferences_select".
  */
 export interface PayloadPreferencesSelect<T extends boolean = true> {
-  user?: T;
-  key?: T;
-  value?: T;
-  updatedAt?: T;
-  createdAt?: T;
+  user?: T
+  key?: T
+  value?: T
+  updatedAt?: T
+  createdAt?: T
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-migrations_select".
  */
 export interface PayloadMigrationsSelect<T extends boolean = true> {
-  name?: T;
-  batch?: T;
-  updatedAt?: T;
-  createdAt?: T;
+  name?: T
+  batch?: T
+  updatedAt?: T
+  createdAt?: T
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1751,18 +1758,17 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
  */
 export interface CollectionsWidget {
   data?: {
-    [k: string]: unknown;
-  };
-  width: 'full';
+    [k: string]: unknown
+  }
+  width: 'full'
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "auth".
  */
 export interface Auth {
-  [k: string]: unknown;
+  [k: string]: unknown
 }
-
 
 declare module 'payload' {
   export interface GeneratedTypes extends Config {}

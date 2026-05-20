@@ -91,7 +91,8 @@ export function TabItem({
           element: tabEl,
           canDrop: ({ source }) => {
             if (source.data.type === 'page-tab') return acceptsPageTab && source.data.pageId !== id
-            if (source.data.type === 'existing-row') return acceptsRowHover && source.data.pageId !== id
+            if (source.data.type === 'existing-row')
+              return acceptsRowHover && source.data.pageId !== id
             return false
           },
           getData: ({ input, element, source }) => {
@@ -163,7 +164,12 @@ export function TabItem({
     >
       {closestEdge === 'left' && <div className={styles.indicatorLeft} />}
       {closestEdge === 'right' && <div className={styles.indicatorRight} />}
-      <Inline className={cx(styles.tabInline, { [styles.tabInlineActive]: id === tab, [styles.rowHoverTarget]: isRowHoverTarget })}>
+      <Inline
+        className={cx(styles.tabInline, {
+          [styles.tabInlineActive]: id === tab,
+          [styles.rowHoverTarget]: isRowHoverTarget,
+        })}
+      >
         <div
           className={cx(styles.handle, { [styles.hidden]: count <= 1 || id !== tab })}
           data-testid="handle"
