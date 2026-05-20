@@ -1,99 +1,97 @@
 @layer components {
-	:where(.root) {
-		--_checked-bg-color: var(--checked-bg-color, var(--color-primary));
-		--_unchecked-bg-color: var(--unchecked-bg-color, var(--color-input));
-		--_border-color: var(--border-color, transparent);
+  :where(.root) {
+    --_checked-bg-color: var(--checked-bg-color, var(--color-primary));
+    --_unchecked-bg-color: var(--unchecked-bg-color, var(--color-input));
+    --_border-color: var(--border-color, transparent);
 
-		position: relative;
-		display: inline-flex;
-		flex-shrink: 0;
-		align-items: center;
-		border-radius: 9999px;
-		border-width: var(--border-width);
-		border-style: solid;
-		border-color: var(--_border-color);
-		transition: all 150ms;
-		outline: none;
+    position: relative;
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    border-radius: 9999px;
+    border-width: var(--border-width);
+    border-style: solid;
+    border-color: var(--_border-color);
+    transition: all 150ms;
+    outline: none;
 
-		&::after {
-			content: '';
-			position: absolute;
-			inset-inline: calc(var(--spacing) * -3);
-			inset-block: calc(var(--spacing) * -2);
-		}
+    &::after {
+      content: '';
+      position: absolute;
+      inset-inline: calc(var(--spacing) * -3);
+      inset-block: calc(var(--spacing) * -2);
+    }
 
-		&:focus-visible {
-			--border-color: var(--color-ring);
+    &:focus-visible {
+      --border-color: var(--color-ring);
 
-			box-shadow: 0 0 0 3px
-				color-mix(in oklch, var(--color-ring) 50%, transparent);
-		}
+      box-shadow: 0 0 0 3px color-mix(in oklch, var(--color-ring) 50%, transparent);
+    }
 
-		&[aria-invalid='true'] {
-			--border-color: var(--color-destructive);
+    &[aria-invalid='true'] {
+      --border-color: var(--color-destructive);
 
-			box-shadow: 0 0 0 3px
-				color-mix(in oklch, var(--color-destructive) 20%, transparent);
-		}
+      box-shadow: 0 0 0 3px color-mix(in oklch, var(--color-destructive) 20%, transparent);
+    }
 
-		&[data-size='default'] {
-			height: 18.4px;
-			width: 32px;
-		}
+    &[data-size='default'] {
+      height: 18.4px;
+      width: 32px;
+    }
 
-		&[data-size='sm'] {
-			height: 14px;
-			width: 24px;
-		}
+    &[data-size='sm'] {
+      height: 14px;
+      width: 24px;
+    }
 
-		&[data-checked] {
-			background-color: var(--_checked-bg-color);
-		}
+    &[data-checked] {
+      background-color: var(--_checked-bg-color);
+    }
 
-		&[data-unchecked] {
-			background-color: var(--_unchecked-bg-color);
-		}
+    &[data-unchecked] {
+      background-color: var(--_unchecked-bg-color);
+    }
 
-		&[data-disabled] {
-			cursor: not-allowed;
-			opacity: 0.5;
-		}
-	}
+    &[data-disabled] {
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+  }
 
-	:where(.thumb) {
-		--_thumb-color: var(--thumb-color, var(--color-background));
+  :where(.thumb) {
+    --_thumb-color: var(--thumb-color, var(--color-background));
 
-		pointer-events: none;
-		display: block;
-		border-radius: 9999px;
-		background-color: var(--_thumb-color);
-		box-shadow: none;
-		transition: transform 150ms;
-	}
+    pointer-events: none;
+    display: block;
+    border-radius: 9999px;
+    background-color: var(--_thumb-color);
+    box-shadow: none;
+    transition: transform 150ms;
+  }
 
-	:where(.root[data-size='default'] .thumb) {
-		width: calc(var(--spacing) * 4);
-		height: calc(var(--spacing) * 4);
-	}
+  :where(.root[data-size='default'] .thumb) {
+    width: calc(var(--spacing) * 4);
+    height: calc(var(--spacing) * 4);
+  }
 
-	:where(.root[data-size='sm'] .thumb) {
-		width: calc(var(--spacing) * 3);
-		height: calc(var(--spacing) * 3);
-	}
+  :where(.root[data-size='sm'] .thumb) {
+    width: calc(var(--spacing) * 3);
+    height: calc(var(--spacing) * 3);
+  }
 
-	:where(.root[data-size='default'][data-checked] .thumb) {
-		transform: translateX(calc(100% - 2px));
-	}
+  :where(.root[data-size='default'][data-checked] .thumb) {
+    transform: translateX(calc(100% - 2px));
+  }
 
-	:where(.root[data-size='sm'][data-checked] .thumb) {
-		transform: translateX(calc(100% - 2px));
-	}
+  :where(.root[data-size='sm'][data-checked] .thumb) {
+    transform: translateX(calc(100% - 2px));
+  }
 
-	:where(.root[data-size='default'][data-unchecked] .thumb) {
-		transform: translateX(0);
-	}
+  :where(.root[data-size='default'][data-unchecked] .thumb) {
+    transform: translateX(0);
+  }
 
-	:where(.root[data-size='sm'][data-unchecked] .thumb) {
-		transform: translateX(0);
-	}
+  :where(.root[data-size='sm'][data-unchecked] .thumb) {
+    transform: translateX(0);
+  }
 }

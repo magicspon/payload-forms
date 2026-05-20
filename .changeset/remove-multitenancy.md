@@ -1,5 +1,5 @@
 ---
-"@spon/payload-forms": minor
+'@spon/payload-forms': minor
 ---
 
 Remove built-in multitenancy support.

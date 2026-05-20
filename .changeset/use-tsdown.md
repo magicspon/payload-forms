@@ -1,5 +1,5 @@
 ---
-"@spon/payload-forms": patch
+'@spon/payload-forms': patch
 ---
 
 Fix `Module not found` errors caused by unresolved `@/` path aliases in the published package. Switched build tooling from `@swc/cli` + `tsc` + `copyfiles` to `tsdown`, which resolves all TypeScript path aliases to relative imports during compilation.

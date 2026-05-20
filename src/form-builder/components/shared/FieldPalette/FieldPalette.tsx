@@ -2,60 +2,56 @@
 
 import { useDroppableField } from '@/form-builder/hooks/useDroppableField'
 import { fieldTypes } from '@/form-builder/utils/fieldTypes'
-import { useField } from '@payloadcms/ui'
+import { useField, DragHandleIcon } from '@payloadcms/ui'
 import cx from 'clsx'
 import * as React from 'react'
 
 import styles from './FieldPalette.module.css'
 
 type PaletteItemProps = {
-	children: React.ReactNode
-	label: string
-	value: string
+  children: React.ReactNode
+  label: string
+  value: string
 }
 
 function PaletteItem({ children, label, value }: PaletteItemProps) {
-	const { attributes, isDragging, listeners, setNodeRef } = useDroppableField({
-		type: 'new-field',
-		fieldType: value,
-		label,
-	})
+  const { isDragging, rowRef } = useDroppableField({
+    type: 'new-field',
+    fieldType: value,
+    label,
+  })
 
-	return (
-		<div
-			className={cx(styles.paletteItem, { [styles.paletteItemDragging]: isDragging })}
-			data-testid={`palette-item-${value}`}
-			ref={setNodeRef}
-			{...attributes}
-			{...listeners}
-		>
-			<span className={styles.paletteItemIcon}>
-				⋮⋮
-			</span>
-			{children}
-		</div>
-	)
+  return (
+    <div
+      className={cx(styles.paletteItem, { [styles.paletteItemDragging]: isDragging })}
+      data-testid={`palette-item-${value}`}
+      ref={rowRef}
+    >
+      <span className={styles.paletteItemIcon}>
+        <DragHandleIcon />
+      </span>
+      {children}
+    </div>
+  )
 }
 
 export function FieldPalette() {
-	const { value: locked } = useField<boolean>({ path: 'locked' })
+  const { value: locked } = useField<boolean>({ path: 'locked' })
 
-	if (locked) {return null}
+  if (locked) {
+    return null
+  }
 
-	return (
-		<div className={styles.container}>
-			<h4 className={styles.heading}>Add field</h4>
-			<div className={styles.paletteList}>
-				{fieldTypes.map((field) => (
-					<PaletteItem
-						key={field.value}
-						label={field.label}
-						value={field.value}
-					>
-						<span>{field.label}</span>
-					</PaletteItem>
-				))}
-			</div>
-		</div>
-	)
+  return (
+    <div className={styles.container}>
+      <h4 className={styles.heading}>Add field</h4>
+      <div className={styles.paletteList}>
+        {fieldTypes.map((field) => (
+          <PaletteItem key={field.value} label={field.label} value={field.value}>
+            <span>{field.label}</span>
+          </PaletteItem>
+        ))}
+      </div>
+    </div>
+  )
 }

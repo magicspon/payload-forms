@@ -41,9 +41,7 @@ export default buildConfig({
   onInit: async (payload) => {
     await seed(payload)
   },
-  plugins: [
-    formsPlugin({}),
-  ],
+  plugins: [formsPlugin({})],
   secret: process.env.PAYLOAD_SECRET || 'test-secret_key',
   sharp,
   typescript: {

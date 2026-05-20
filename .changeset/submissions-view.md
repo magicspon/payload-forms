@@ -1,5 +1,5 @@
 ---
-"@spon/payload-forms": minor
+'@spon/payload-forms': minor
 ---
 
 Add dedicated submissions view tab to the forms edit view.

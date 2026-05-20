@@ -1,3 +1,27 @@
+.optionWrapper {
+  position: relative;
+}
+
+.indicatorTop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 0.125rem;
+  background-color: #3b82f6;
+  border-radius: 9999px;
+}
+
+.indicatorBottom {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 0.125rem;
+  background-color: #3b82f6;
+  border-radius: 9999px;
+}
+
 .colSpan2 {
   grid-column: span 2 / span 2;
 }

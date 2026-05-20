@@ -9,7 +9,6 @@ import * as React from 'react'
 
 export type FieldMeta = { errors: string[]; isTouched: boolean }
 
- 
 export type AnyFieldApi = {
   handleChange(value: unknown): void
   state: { meta: FieldMeta; value: unknown }
@@ -44,7 +43,9 @@ export const EditorFormCtx = EditorFormContext
 
 function useEditorFormCtx() {
   const ctx = React.use(EditorFormCtx)
-  if (!ctx) {throw new Error('Must be used inside an EditorFormCtxProvider')}
+  if (!ctx) {
+    throw new Error('Must be used inside an EditorFormCtxProvider')
+  }
   return ctx
 }
 
@@ -138,14 +139,20 @@ export function useEditorForm<T extends object>({
   const [isSubmitting, setIsSubmitting] = React.useState(false)
 
   const fieldErrors = React.useMemo(() => {
-    if (!schema) {return {}}
+    if (!schema) {
+      return {}
+    }
     const result = schema.safeParse(values)
-    if (result.success) {return {}}
+    if (result.success) {
+      return {}
+    }
     const errs: Record<string, string[]> = {}
     for (const issue of result.error.issues) {
       const key = String(issue.path[0] ?? '')
-      if (!key) {continue
-      ;}(errs[key] ??= []).push(issue.message)
+      if (!key) {
+        continue
+      }
+      ;(errs[key] ??= []).push(issue.message)
     }
     return errs
   }, [values, schema])
@@ -208,11 +215,7 @@ export function EditorSettingsProvider({
     () => ({ currentFieldId, existingFieldNames }),
     [existingFieldNames, currentFieldId],
   )
-  return (
-    <EditorSettingsContext value={value}>
-      {children}
-    </EditorSettingsContext>
-  )
+  return <EditorSettingsContext value={value}>{children}</EditorSettingsContext>
 }
 
 export function useEditorSettings() {

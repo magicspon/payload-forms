@@ -1,18 +1,42 @@
 'use client'
 
-import { useDraggable } from '@dnd-kit/core'
+import { draggable } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
+import { setCustomNativeDragPreview } from '@atlaskit/pragmatic-drag-and-drop/element/set-custom-native-drag-preview'
+import * as React from 'react'
 
 type UseDroppableFieldProps = {
-	fieldType: string
-	label: string
-	type: 'new-field'
+  fieldType: string
+  label: string
+  type: 'new-field'
 }
 
 export function useDroppableField({ fieldType, label }: UseDroppableFieldProps) {
-	const { attributes, isDragging, listeners, setNodeRef } = useDraggable({
-		id: `palette-${fieldType}`,
-		data: { type: 'new-field', fieldType, label },
-	})
+  const rowRef = React.useRef<HTMLDivElement>(null)
+  const [isDragging, setIsDragging] = React.useState(false)
 
-	return { attributes, isDragging, listeners, setNodeRef }
+  React.useEffect(() => {
+    const el = rowRef.current
+    if (!el) {
+      return
+    }
+
+    return draggable({
+      element: el,
+      getInitialData: () => ({ type: 'new-field', fieldType, label }),
+      onDragStart: () => setIsDragging(true),
+      onDrop: () => setIsDragging(false),
+      onGenerateDragPreview: ({ nativeSetDragImage }) => {
+        setCustomNativeDragPreview({
+          nativeSetDragImage,
+          render: ({ container }) => {
+            const preview = document.createElement('div')
+            preview.textContent = label
+            container.appendChild(preview)
+          },
+        })
+      },
+    })
+  }, [fieldType, label])
+
+  return { isDragging, rowRef }
 }

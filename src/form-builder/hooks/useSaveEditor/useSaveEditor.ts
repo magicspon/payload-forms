@@ -9,39 +9,39 @@ import { useMemo } from 'react'
 import { useSaveFormField } from '../useSaveFormField'
 
 export function useSaveEditor<U extends AllFields>({
-	field,
-	onChangeValidator,
+  field,
+  onChangeValidator,
 }: {
-	field: U
-	onChangeValidator?: ZodType<U>
+  field: U
+  onChangeValidator?: ZodType<U>
 }) {
-	const { saveField, setSelectedField } = useSaveFormField()
-	const { value: pages = [] } = useField<FormPage[]>({ path: 'pages' })
+  const { saveField, setSelectedField } = useSaveFormField()
+  const { value: pages = [] } = useField<FormPage[]>({ path: 'pages' })
 
-	// Get all existing field names except the current field being edited
-	const existingFieldNames = useMemo(() => {
-		const allFields = getAllFields(pages)
-		return new Set(
-			allFields
-				.filter((f): f is Exclude<Field, MessageField> => f.id !== field.id && f.type !== 'message')
-				.map((f) => f.name),
-		)
-	}, [pages, field.id])
+  // Get all existing field names except the current field being edited
+  const existingFieldNames = useMemo(() => {
+    const allFields = getAllFields(pages)
+    return new Set(
+      allFields
+        .filter((f): f is Exclude<Field, MessageField> => f.id !== field.id && f.type !== 'message')
+        .map((f) => f.name),
+    )
+  }, [pages, field.id])
 
-	const { contextValue, form } = useEditorForm({
-		defaultValues: field,
-		onSubmit: (value) => {
-			saveField(value)
-			return Promise.resolve()
-		},
-		schema: onChangeValidator,
-	})
+  const { contextValue, form } = useEditorForm({
+    defaultValues: field,
+    onSubmit: (value) => {
+      saveField(value)
+      return Promise.resolve()
+    },
+    schema: onChangeValidator,
+  })
 
-	return {
-		contextValue,
-		existingFieldNames,
-		form,
-		setSelectedField,
-		submitHandle: form.handleSubmit,
-	}
+  return {
+    contextValue,
+    existingFieldNames,
+    form,
+    setSelectedField,
+    submitHandle: form.handleSubmit,
+  }
 }

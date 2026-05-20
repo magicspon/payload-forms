@@ -1,20 +1,20 @@
 import type { z } from 'zod'
 
 import type {
-	arrayFieldSchema,
-	checkboxFieldSchema,
-	consentFieldSchema,
-	dateFieldSchema,
-	emailFieldSchema,
-	fileFieldSchema,
-	groupFieldSchema,
-	messageFieldSchema,
-	numberFieldSchema,
-	radioFieldSchema,
-	selectFieldSchema,
-	textareaFieldSchema,
-	textFieldSchema,
-	toggleFieldSchema,
+  arrayFieldSchema,
+  checkboxFieldSchema,
+  consentFieldSchema,
+  dateFieldSchema,
+  emailFieldSchema,
+  fileFieldSchema,
+  groupFieldSchema,
+  messageFieldSchema,
+  numberFieldSchema,
+  radioFieldSchema,
+  selectFieldSchema,
+  textareaFieldSchema,
+  textFieldSchema,
+  toggleFieldSchema,
 } from '@/shared/fieldSchema'
 
 export type { Field, FieldConditions } from '@/shared/fieldSchema'
@@ -35,37 +35,34 @@ export type ArrayFieldProps = z.infer<typeof arrayFieldSchema>
 export type GroupFieldProps = z.infer<typeof groupFieldSchema>
 
 export type NamedFieldProps =
-	| TextFieldProps
-	| EmailFieldProps
-	| NumberFieldProps
-	| TextareaFieldProps
-	| CheckboxFieldProps
-	| RadioFieldProps
-	| SelectFieldProps
-	| DateFieldProps
-	| FileFieldProps
-	| ToggleFieldProps
-	| ConsentFieldProps
-	| ArrayFieldProps
-	| GroupFieldProps
+  | TextFieldProps
+  | EmailFieldProps
+  | NumberFieldProps
+  | TextareaFieldProps
+  | CheckboxFieldProps
+  | RadioFieldProps
+  | SelectFieldProps
+  | DateFieldProps
+  | FileFieldProps
+  | ToggleFieldProps
+  | ConsentFieldProps
+  | ArrayFieldProps
+  | GroupFieldProps
 
 export type StoredFileUpload = {
-	name: string
-	size: number
-	type: string
+  name: string
+  size: number
+  type: string
 }
 
-export type ArrayItemValue = Record<
-	string,
-	string | number | boolean | string[] | File[]
->
+export type ArrayItemValue = Record<string, string | number | boolean | string[] | File[]>
 
 export type FormFieldValue =
-	| string
-	| number
-	| boolean
-	| string[]
-	| File[]
-	| StoredFileUpload
-	| ArrayItemValue
-	| ArrayItemValue[]
+  | string
+  | number
+  | boolean
+  | string[]
+  | File[]
+  | StoredFileUpload
+  | ArrayItemValue
+  | ArrayItemValue[]

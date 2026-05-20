@@ -8,9 +8,7 @@ test.describe('Contact form', () => {
     await expect(page.getByLabel('Email Address')).toBeVisible()
     await expect(page.getByLabel('Phone Number')).toBeVisible()
     await expect(page.getByLabel('Message')).toBeVisible()
-    await expect(
-      page.getByLabel('I agree to be contacted about my enquiry'),
-    ).toBeVisible()
+    await expect(page.getByLabel('I agree to be contacted about my enquiry')).toBeVisible()
     await expect(page.getByRole('button', { name: /submit/i })).toBeVisible()
   })
 
@@ -34,9 +32,7 @@ test.describe('Contact form', () => {
     expect(body.doc).toHaveProperty('id')
   })
 
-  test('shows validation errors when required fields are empty on submit', async ({
-    page,
-  }) => {
+  test('shows validation errors when required fields are empty on submit', async ({ page }) => {
     await page.goto('/contact-us')
 
     // Blur through required fields without filling them
