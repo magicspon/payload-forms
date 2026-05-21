@@ -141,8 +141,8 @@ type FieldMeta = {
  * Parse a flat CSV row (keyed by template headers) back to a submissionData
  * object, applying type coercion and reconstructing nested array fields.
  *
- * The `from` key is intentionally omitted from the result — it lives on the
- * submission document itself, not inside submissionData.
+ * Keys not present in the form's field map (e.g. `identifier`) are ignored —
+ * they live on the submission document itself, not inside submissionData.
  */
 export function parseCsvRowToSubmissionData(
   row: Record<string, string>,
@@ -376,7 +376,7 @@ export function formatSubmissionValue(
 
 type ExportSubmission = {
   createdAt?: null | string
-  from?: null | string
+  identifier?: null | string
   submissionData: null | Record<string, unknown>
 }
 
@@ -399,10 +399,10 @@ export function generateSubmissionsCSV(
 ): string {
   const fields = extractFieldsFromPages(pages)
 
-  const headers = ['From', 'Submitted', ...fields.map((f) => f.label)]
+  const headers = ['Identifier', 'Submitted', ...fields.map((f) => f.label)]
 
   const rows = submissions.map((submission) => {
-    const from = submission.from ?? ''
+    const identifier = submission.identifier ?? ''
     const submitted = submission.createdAt
       ? new Date(submission.createdAt).toISOString().replace('T', ' ').slice(0, 19)
       : ''
@@ -412,7 +412,7 @@ export function generateSubmissionsCSV(
       return formatSubmissionValue(value, field.type, field.options)
     })
 
-    return [from, submitted, ...fieldValues].map(escapeCSV).join(',')
+    return [identifier, submitted, ...fieldValues].map(escapeCSV).join(',')
   })
 
   return [headers.map(escapeCSV).join(','), ...rows].join('\n')

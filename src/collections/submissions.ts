@@ -124,7 +124,7 @@ export function buildSubmissionsCollection(
           },
         },
       },
-      defaultColumns: ['title', 'from', 'createdAt'],
+      defaultColumns: ['title', 'identifier', 'createdAt'],
       group: 'Forms',
       useAsTitle: 'title',
     },
@@ -154,10 +154,10 @@ export function buildSubmissionsCollection(
         required: true,
       },
       {
-        name: 'from',
+        name: 'identifier',
         type: 'text',
         admin: {
-          description: 'Identifier for the submitter (e.g., email address)',
+          description: 'Value of the nominated identifier field at submission time',
           readOnly: false,
         },
         required: false,

@@ -102,10 +102,19 @@ export function makeSubmissionImportEndpoint(
       // Cast to unknown[] so parseCsvRowToSubmissionData can narrow it internally.
       const pages = form.pages
       const formTitle = form.title
+      const identifierFieldName = (form.identifierField as null | string) ?? null
 
       let created = 0
       for (const row of rows) {
         const submissionData = parseCsvRowToSubmissionData(row, pages)
+
+        let identifier: null | string = null
+        if (identifierFieldName) {
+          const raw = submissionData[identifierFieldName]
+          if (raw !== null && raw !== undefined) {
+            identifier = Array.isArray(raw) ? raw.join(', ') : String(raw as string)
+          }
+        }
 
         const [createErr] = await attemptAsync(() =>
           req.payload.create({
@@ -114,7 +123,7 @@ export function makeSubmissionImportEndpoint(
             // onBatchComplete fires once below when the full import succeeds.
             context: { isBatchImport: true },
             data: {
-              from: row['from'] ?? '',
+              identifier,
               title: formTitle,
               // Payload generated types expect string; PostgreSQL adapter accepts numbers too.
               form: formId as unknown as number,

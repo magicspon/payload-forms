@@ -29,13 +29,13 @@ const mockSubmissions = {
     {
       id: 'sub-1',
       createdAt: '2024-01-15T10:00:00.000Z',
-      from: 'alice@example.com',
+      identifier: 'alice@example.com',
       submissionData: { email: 'alice@example.com', fullName: 'Alice' },
     },
     {
       id: 'sub-2',
       createdAt: '2024-01-16T12:00:00.000Z',
-      from: 'bob@example.com',
+      identifier: 'bob@example.com',
       submissionData: { email: 'bob@example.com', fullName: 'Bob' },
     },
   ],
@@ -121,7 +121,7 @@ describe('makeSubmissionExportEndpoint', () => {
       const res = await endpoint.handler(req as never)
       const csv = await res.text()
       const firstLine = csv.split('\n')[0]
-      expect(firstLine).toBe('From,Submitted,Full Name,Email')
+      expect(firstLine).toBe('Identifier,Submitted,Full Name,Email')
     })
 
     it('includes one data row per submission', async () => {

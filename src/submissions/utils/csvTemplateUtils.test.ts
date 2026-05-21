@@ -103,15 +103,15 @@ describe('generateTemplateHeaders', () => {
 describe('parseCsvRowToSubmissionData', () => {
   it('maps simple fields directly', () => {
     const pages = [page([field('text', 'name'), field('email', 'email')])]
-    const row = { name: 'Alice', email: 'alice@example.com', from: 'alice' }
+    const row = { name: 'Alice', email: 'alice@example.com' }
     const data = parseCsvRowToSubmissionData(row, pages)
     expect(data).toEqual({ name: 'Alice', email: 'alice@example.com' })
   })
 
-  it('does not include "from" in submissionData', () => {
+  it('does not include unknown keys in submissionData', () => {
     const pages = [page([field('text', 'name')])]
-    const data = parseCsvRowToSubmissionData({ name: 'Y', from: 'x' }, pages)
-    expect(data).not.toHaveProperty('from')
+    const data = parseCsvRowToSubmissionData({ name: 'Y', identifier: 'x' }, pages)
+    expect(data).not.toHaveProperty('identifier')
   })
 
   it('reconstructs array fields from dot-notation keys', () => {
@@ -179,7 +179,7 @@ describe('parseCsvRowToSubmissionData', () => {
 
   it('round-trips simple form headers back to submissionData', () => {
     const pages = [page([field('text', 'name'), field('email', 'email'), field('radio', 'rating')])]
-    const row = { name: 'Alice', email: 'a@b.com', from: 'alice', rating: '5' }
+    const row = { name: 'Alice', email: 'a@b.com', rating: '5' }
     const data = parseCsvRowToSubmissionData(row, pages)
     expect(data).toEqual({ name: 'Alice', email: 'a@b.com', rating: '5' })
   })

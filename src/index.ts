@@ -151,7 +151,6 @@ export interface FormsPluginConfig {
  * export default buildConfig({
  *   plugins: [
  *     formsPlugin({
- *       multitenancy: { enabled: true },
  *       localeOptions: [{ label: 'English', value: 'en' }, { label: 'Spanish', value: 'es' }],
  *       hooks: { registerUser: true },
  *       collections: {

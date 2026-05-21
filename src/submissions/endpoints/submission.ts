@@ -10,8 +10,6 @@ import {
   prepareFileForUpload,
   SUBMISSION_SCALAR_KEYS,
 } from '@/submissions/utils/fileUpload'
-import { z } from 'zod'
-
 import type { CollectionSlugs } from '../..'
 import type { FormPage } from '@/form-builder/utils/formTree'
 
@@ -20,17 +18,9 @@ const MIN_SUBMISSION_TIME_MS =
   process.env.TEST_ENV === 'true' || process.env.NODE_ENV !== 'production' ? 0 : 2000
 
 /**
- * Loose schema for the `from` field — must be a non-empty string that looks
- * like an email address. We use a loose check rather than strict RFC 5321
- * because some forms use phone numbers or usernames in this field.
- */
-const fromSchema = z.string().min(1).max(255)
-
-/**
  * Public submission endpoint: POST /api/submissions/:id
  *
  * Accepts multipart/form-data with:
- *   - `from`           — submitter identifier (validated as non-empty string ≤ 255 chars)
  *   - `submissionData` — JSON-encoded field values
  *   - `_hp`            — honeypot field; non-empty value triggers fake-success spam response
  *   - `_ts`            — submission timestamp; too-fast responses trigger fake-success
@@ -55,7 +45,6 @@ export function makeSubmissionEndpoint(slugs: CollectionSlugs): Endpoint {
       }
 
       const formId = routeParams?.id as string
-      const rawFrom = formData.get('from')
       const submissionDataStr = formData.get('submissionData') as null | string
       const honeypot = formData.get('_hp') as null | string
       const userAgent =
@@ -86,17 +75,6 @@ export function makeSubmissionEndpoint(slugs: CollectionSlugs): Endpoint {
         )
         return Response.json({ id: null, success: true })
       }
-
-      // Validate `from` — must be a non-empty string (email format not enforced
-      // because some integrations use phone numbers or user IDs here).
-      const fromResult = fromSchema.safeParse(rawFrom)
-      if (!fromResult.success) {
-        return errorResponse(
-          'Invalid "from" field: must be a non-empty string up to 255 characters',
-          400,
-        )
-      }
-      const from = fromResult.data
 
       // Validate submissionData — must be parseable JSON object (or empty).
       // We accept anything JSON-parseable here; field-level validation is the
@@ -138,6 +116,7 @@ export function makeSubmissionEndpoint(slugs: CollectionSlugs): Endpoint {
           select: {
             confirmationMessage: true,
             confirmationType: true,
+            identifierField: true,
             pages: true,
             title: true,
           },
@@ -147,6 +126,16 @@ export function makeSubmissionEndpoint(slugs: CollectionSlugs): Endpoint {
       if (formErr || !form) {
         payload.logger.error({ err: formErr, formId }, 'submission: form not found')
         return errorResponse('Form not found', 404)
+      }
+
+      // Derive the submission identifier from the nominated form field.
+      const identifierFieldName = (form.identifierField as null | string) ?? null
+      let identifier: null | string = null
+      if (identifierFieldName) {
+        const raw = submissionData[identifierFieldName]
+        if (raw !== null && raw !== undefined) {
+          identifier = Array.isArray(raw) ? raw.join(', ') : String(raw as string)
+        }
       }
 
       // Build a fieldName → file field config map from the form's pages.
@@ -238,7 +227,7 @@ export function makeSubmissionEndpoint(slugs: CollectionSlugs): Endpoint {
           data: {
             fileUploads,
             form: parsedFormId as number,
-            from,
+            identifier,
             submissionData,
             title: form.title,
             userAgent,

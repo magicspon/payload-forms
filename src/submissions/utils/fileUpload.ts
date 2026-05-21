@@ -16,7 +16,6 @@ export const SUBMISSION_SCALAR_KEYS = new Set([
   '_ts',
   '_userAgent',
   'formId',
-  'from',
   'submissionData',
   'title',
 ])
