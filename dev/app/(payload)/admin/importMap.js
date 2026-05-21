@@ -1,4 +1,5 @@
 import { FieldPalette as FieldPalette_c8089dfdd61aab495c2e271159c58c14 } from '@spon/payload-forms/client'
+import { SlugField as SlugField_2b8867833a34864a02ddf429b0728a40 } from '@payloadcms/next/client'
 import { FormCanvas as FormCanvas_c8089dfdd61aab495c2e271159c58c14 } from '@spon/payload-forms/client'
 import { RscEntryLexicalCell as RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
 import { RscEntryLexicalField as RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
@@ -13,7 +14,6 @@ import { HeadingFeatureClient as HeadingFeatureClient_e70f5e05f09f93e00b997edb1e
 import { EmailNotificationInput as EmailNotificationInput_c8089dfdd61aab495c2e271159c58c14 } from '@spon/payload-forms/client'
 import { NotificationConditionEditor as NotificationConditionEditor_c8089dfdd61aab495c2e271159c58c14 } from '@spon/payload-forms/client'
 import { ImportSchema as ImportSchema_c8089dfdd61aab495c2e271159c58c14 } from '@spon/payload-forms/client'
-import { SlugField as SlugField_2b8867833a34864a02ddf429b0728a40 } from '@payloadcms/next/client'
 import { IdentifierFieldSelect as IdentifierFieldSelect_c8089dfdd61aab495c2e271159c58c14 } from '@spon/payload-forms/client'
 import { FormCSVTemplateButton as FormCSVTemplateButton_c8089dfdd61aab495c2e271159c58c14 } from '@spon/payload-forms/client'
 import { SubmissionsView as SubmissionsView_8728a1875e90f641ef97e4755c7bd358 } from '@spon/payload-forms/rsc'
@@ -26,6 +26,7 @@ import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } f
 /** @type import('payload').ImportMap */
 export const importMap = {
   "@spon/payload-forms/client#FieldPalette": FieldPalette_c8089dfdd61aab495c2e271159c58c14,
+  "@payloadcms/next/client#SlugField": SlugField_2b8867833a34864a02ddf429b0728a40,
   "@spon/payload-forms/client#FormCanvas": FormCanvas_c8089dfdd61aab495c2e271159c58c14,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalCell": RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalField": RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e,
@@ -40,7 +41,6 @@ export const importMap = {
   "@spon/payload-forms/client#EmailNotificationInput": EmailNotificationInput_c8089dfdd61aab495c2e271159c58c14,
   "@spon/payload-forms/client#NotificationConditionEditor": NotificationConditionEditor_c8089dfdd61aab495c2e271159c58c14,
   "@spon/payload-forms/client#ImportSchema": ImportSchema_c8089dfdd61aab495c2e271159c58c14,
-  "@payloadcms/next/client#SlugField": SlugField_2b8867833a34864a02ddf429b0728a40,
   "@spon/payload-forms/client#IdentifierFieldSelect": IdentifierFieldSelect_c8089dfdd61aab495c2e271159c58c14,
   "@spon/payload-forms/client#FormCSVTemplateButton": FormCSVTemplateButton_c8089dfdd61aab495c2e271159c58c14,
   "@spon/payload-forms/rsc#SubmissionsView": SubmissionsView_8728a1875e90f641ef97e4755c7bd358,

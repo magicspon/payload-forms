@@ -134,6 +134,11 @@ export function buildFormsCollection(opts: FormsCollectionOptions = {}): Collect
         type: 'text',
         required: true,
       },
+
+      slugField({
+        useAsSlug: 'title',
+        position: 'sidebar',
+      }),
       {
         name: 'locked',
         type: 'checkbox',
@@ -317,10 +322,6 @@ export function buildFormsCollection(opts: FormsCollectionOptions = {}): Collect
           {
             label: tabLabels?.settings ?? 'Settings',
             fields: [
-              slugField({
-                useAsSlug: 'title',
-                position: 'main',
-              }),
               {
                 name: 'identifierField',
                 type: 'text',

@@ -1,6 +1,4 @@
 import { withPayload } from '@payloadcms/next/withPayload'
-import { fileURLToPath } from 'url'
-import path from 'path'
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -13,11 +11,13 @@ const nextConfig = {
 
     return webpackConfig
   },
-	serverExternalPackages: ['mongodb-memory-server'],
+  serverExternalPackages: ['mongodb-memory-server'],
 
-	typescript: {
-  	ignoreBuildErrors: true,
-	},
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+
+  devIndicators: false,
 }
 
 export default withPayload(nextConfig, { devBundleServerPackages: false })
