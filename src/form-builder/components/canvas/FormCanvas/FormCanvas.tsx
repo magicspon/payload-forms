@@ -183,25 +183,14 @@ function Multipage({ activeTab, setActiveTab }: MultipageProps) {
   )
 }
 
-function SinglePage() {
-  const { pages } = useFormPages()
-  const [page] = pages
-
-  if (!page) {
-    return null
-  }
-
-  return <PageTab pageId={page.id} rows={page.rows} />
-}
-
 // ─── Public export ────────────────────────────────────────────────────────────
 
-export function FormCanvas({ multipage = true }: { multipage?: boolean }) {
+export function FormCanvas() {
   const [activeTab, setActiveTab] = React.useState<string | undefined>()
 
   return (
     <FormCanvasInner onCrossPageDrop={setActiveTab}>
-      {multipage ? <Multipage activeTab={activeTab} setActiveTab={setActiveTab} /> : <SinglePage />}
+      <Multipage activeTab={activeTab} setActiveTab={setActiveTab} />
     </FormCanvasInner>
   )
 }

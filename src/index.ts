@@ -5,7 +5,10 @@ import { mergeCollection } from '@/shared/utils/mergeCollection'
 import { buildFormUploadsCollection } from './collections/form-uploads'
 import { buildFormsCollection } from './collections/forms'
 import { buildSubmissionsCollection } from './collections/submissions'
-import { makeSubmissionNotifications } from './notifications/hooks/submissionNotifications'
+import {
+  makeSubmissionNotifications,
+  type BeforeEmailHook,
+} from './notifications/hooks/submissionNotifications'
 import { makeSubmissionExportEndpoint } from './submissions/endpoints/submissionExport'
 import {
   makeSubmissionImportEndpoint,
@@ -16,6 +19,7 @@ export type { FormsCollectionOptions } from './collections/forms'
 export type { SubmissionsCollectionOptions } from './collections/submissions'
 export { FormFieldReferenceFeature } from './form-builder/components/lexical/FormFieldReference'
 /** Re-export types and utilities the host app may need */
+export type { BeforeEmailHook } from './notifications/hooks/submissionNotifications'
 export type { OnBatchImportComplete } from './submissions/endpoints/submissionImport'
 export { buildFormSchema } from '@/form-builder/utils/buildFormSchema'
 export { getAllFields } from '@/form-builder/utils/formTree'
@@ -46,6 +50,14 @@ export interface CollectionSlugs {
 
 export interface FormsPluginConfig {
   /**
+   * Called once per notification item, after token resolution and content
+   * conversion, with the fully resolved email data. Return `false` to skip
+   * `payload.sendEmail()` for that item (e.g. to handle sending yourself).
+   * If the hook throws, the error is logged and the send proceeds.
+   */
+  beforeEmail?: BeforeEmailHook
+
+  /**
    * Collection config overrides, deep-merged into the plugin defaults.
    * Use this to inject access control, extra fields, hooks, etc.
    */
@@ -62,14 +74,6 @@ export interface FormsPluginConfig {
    * Defaults to allowing all requests (no-op). Override to enforce auth.
    */
   exportAccessCheck?: (req: PayloadRequest) => boolean
-
-  features?: {
-    confirmations: boolean
-    fieldPalette: boolean
-    importSchema: boolean
-    multipage: boolean
-    notifications: boolean
-  }
 
   /**
    * Access check used by the CSV import endpoint.
@@ -165,16 +169,10 @@ export const formsPlugin =
   (pluginOptions: FormsPluginConfig = {}) =>
   (config: Config): Config => {
     const {
+      beforeEmail,
       collections: collectionOverrides = {},
       disabled = false,
       exportAccessCheck = () => true,
-      features = {
-        confirmations: true,
-        fieldPalette: true,
-        importSchema: false,
-        multipage: true,
-        notifications: true,
-      },
       importAccessCheck = () => true,
       livePreviewUrl,
       localeOptions,
@@ -197,7 +195,7 @@ export const formsPlugin =
     // --- Hooks ---
     // submissionNotifications is always-on: sends direct emails based on the
     // form's built-in "Notifications" tab configuration.
-    const submissionBeforeChange = [makeSubmissionNotifications(slugs)]
+    const submissionBeforeChange = [makeSubmissionNotifications(slugs, beforeEmail)]
     const submissionAfterChange: never[] = []
 
     const importEndpoint = makeSubmissionImportEndpoint(
@@ -212,7 +210,6 @@ export const formsPlugin =
     const formsBase = buildFormsCollection({
       slug: slugs.forms,
       submissionsSlug: slugs.submissions,
-      features,
       livePreviewUrl,
       localeOptions,
       settings,
@@ -254,14 +251,12 @@ export const formsPlugin =
       return config
     }
 
-    if (features?.fieldPalette) {
-      config.admin ??= {}
-      config.admin.components ??= {}
-      config.admin.components.providers ??= []
-      config.admin.components.providers.push({
-        path: '@spon/payload-forms/client#FormBuilderProvider',
-      })
-    }
+    config.admin ??= {}
+    config.admin.components ??= {}
+    config.admin.components.providers ??= []
+    config.admin.components.providers.push({
+      path: '@spon/payload-forms/client#FormBuilderProvider',
+    })
 
     return config
   }

@@ -64,14 +64,23 @@ function Chip({ onRemove, value }: ChipProps) {
 
 // ---- Main component ------------------------------------------------------
 
-export function EmailNotificationInput({ path }: TextFieldClientProps) {
+type EmailNotificationInputProps = TextFieldClientProps & {
+  label?: string
+  required?: boolean
+}
+
+export function EmailNotificationInput({
+  path,
+  label = 'Email',
+  required = false,
+}: EmailNotificationInputProps) {
   const { setValue, value = '' } = useField<string>({ path: path ?? 'email' })
   const { value: pages = [] } = useField<FormPage[]>({ path: 'pages' })
 
   const [inputValue, setInputValue] = React.useState('')
   const [inputError, setInputError] = React.useState<null | string>(null)
 
-  const tokens = React.useMemo(() => parseTokens(value), [value])
+  const tokens = React.useMemo(() => (value ? parseTokens(value) : []), [value])
 
   const formFields = React.useMemo(() => {
     if (!pages?.length) {
@@ -138,10 +147,10 @@ export function EmailNotificationInput({ path }: TextFieldClientProps) {
   )
 
   return (
-    <div className="field-type text">
+    <div className="field-type text" style={{ flex: '1 1 auto' }}>
       <label className="field-label" htmlFor="notification-email-input">
-        Email
-        <span className="required">*</span>
+        {label}
+        {required && <span className="required">*</span>}
       </label>
 
       <div className={styles.inputWrapper}>
@@ -152,7 +161,7 @@ export function EmailNotificationInput({ path }: TextFieldClientProps) {
       <div className={styles.inputWrapper}>
         <input
           aria-invalid={!!inputError}
-          aria-label="Email"
+          aria-label={label}
           className={styles.input}
           id="notification-email-input"
           onBlur={commitInput}

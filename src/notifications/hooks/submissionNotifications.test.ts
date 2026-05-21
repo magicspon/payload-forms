@@ -290,6 +290,58 @@ describe('submissionNotifications', () => {
     expect(req.payload.logger.error).toHaveBeenCalledOnce()
   })
 
+  it('passes resolved cc and bcc to sendEmail', async () => {
+    const req = makeReq(
+      makeForm([makeNotification({ cc: 'cc@example.com', bcc: 'bcc@example.com' })]),
+    )
+    await submissionNotifications({
+      collection: {} as never,
+      context: {},
+      data: baseData,
+      operation: 'create',
+      req: req as never,
+    })
+    expect(req.payload.sendEmail).toHaveBeenCalledWith(
+      expect.objectContaining({
+        cc: ['cc@example.com'],
+        bcc: ['bcc@example.com'],
+      }),
+    )
+  })
+
+  it('resolves {{token}} in cc and bcc from submissionData', async () => {
+    const req = makeReq(
+      makeForm([makeNotification({ cc: '{{manager}}', bcc: '{{director}}' })]),
+    )
+    await submissionNotifications({
+      collection: {} as never,
+      context: {},
+      data: { ...baseData, submissionData: { manager: 'mgr@example.com', director: 'dir@example.com' } },
+      operation: 'create',
+      req: req as never,
+    })
+    expect(req.payload.sendEmail).toHaveBeenCalledWith(
+      expect.objectContaining({
+        cc: ['mgr@example.com'],
+        bcc: ['dir@example.com'],
+      }),
+    )
+  })
+
+  it('passes empty cc and bcc arrays when not set on notification item', async () => {
+    const req = makeReq()
+    await submissionNotifications({
+      collection: {} as never,
+      context: {},
+      data: baseData,
+      operation: 'create',
+      req: req as never,
+    })
+    expect(req.payload.sendEmail).toHaveBeenCalledWith(
+      expect.objectContaining({ cc: [], bcc: [] }),
+    )
+  })
+
   it('logs error and returns data when form fetch fails', async () => {
     // If findByID throws, the hook must not crash — it must log and return data
     const req = makeReq()
@@ -308,5 +360,106 @@ describe('submissionNotifications', () => {
     expect(result).toBe(baseData)
     expect(req.payload.logger.error).toHaveBeenCalledOnce()
     expect(req.payload.sendEmail).not.toHaveBeenCalled()
+  })
+})
+
+describe('submissionNotifications — beforeEmail hook', () => {
+  it('calls beforeEmail with the fully resolved email data', async () => {
+    const beforeEmail = vi.fn().mockResolvedValue(undefined)
+    const hook = makeSubmissionNotifications(defaultSlugs, beforeEmail)
+    const req = makeReq(makeForm([makeNotification({ subject: 'Hello {{name}}' })]))
+
+    await hook({
+      collection: {} as never,
+      context: {},
+      data: { ...baseData, submissionData: { name: 'Alice' } },
+      operation: 'create',
+      req: req as never,
+    })
+
+    expect(beforeEmail).toHaveBeenCalledOnce()
+    expect(beforeEmail).toHaveBeenCalledWith(
+      expect.objectContaining({
+        to: ['notify@example.com'],
+        cc: [],
+        bcc: [],
+        subject: 'Hello Alice',
+      }),
+    )
+  })
+
+  it('skips sendEmail when beforeEmail returns false', async () => {
+    const beforeEmail = vi.fn().mockResolvedValue(false)
+    const hook = makeSubmissionNotifications(defaultSlugs, beforeEmail)
+    const req = makeReq()
+
+    await hook({
+      collection: {} as never,
+      context: {},
+      data: baseData,
+      operation: 'create',
+      req: req as never,
+    })
+
+    expect(beforeEmail).toHaveBeenCalledOnce()
+    expect(req.payload.sendEmail).not.toHaveBeenCalled()
+  })
+
+  it('sends email when beforeEmail returns void', async () => {
+    const beforeEmail = vi.fn().mockResolvedValue(undefined)
+    const hook = makeSubmissionNotifications(defaultSlugs, beforeEmail)
+    const req = makeReq()
+
+    await hook({
+      collection: {} as never,
+      context: {},
+      data: baseData,
+      operation: 'create',
+      req: req as never,
+    })
+
+    expect(req.payload.sendEmail).toHaveBeenCalledOnce()
+  })
+
+  it('logs error and still sends when beforeEmail throws', async () => {
+    const beforeEmail = vi.fn().mockRejectedValue(new Error('hook error'))
+    const hook = makeSubmissionNotifications(defaultSlugs, beforeEmail)
+    const req = makeReq()
+
+    await hook({
+      collection: {} as never,
+      context: {},
+      data: baseData,
+      operation: 'create',
+      req: req as never,
+    })
+
+    expect(req.payload.logger.error).toHaveBeenCalledOnce()
+    expect(req.payload.sendEmail).toHaveBeenCalledOnce()
+  })
+
+  it('calls beforeEmail once per notification item and can cancel selectively', async () => {
+    const beforeEmail = vi
+      .fn()
+      .mockResolvedValueOnce(false)
+      .mockResolvedValueOnce(undefined)
+    const hook = makeSubmissionNotifications(defaultSlugs, beforeEmail)
+    const req = makeReq(
+      makeForm([makeNotification(), makeNotification({ email: 'second@example.com' })]),
+    )
+
+    await hook({
+      collection: {} as never,
+      context: {},
+      data: baseData,
+      operation: 'create',
+      req: req as never,
+    })
+
+    expect(beforeEmail).toHaveBeenCalledTimes(2)
+    expect(req.payload.sendEmail).toHaveBeenCalledOnce()
+    expect(req.payload.sendEmail).toHaveBeenCalledWith(
+      expect.objectContaining({ to: ['second@example.com'] }),
+    )
   })
 })
