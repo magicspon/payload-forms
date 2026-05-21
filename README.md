@@ -245,26 +245,35 @@ import type {
 
 `buildFormSchema` (available from both the main entry and `/client`) converts the stored `pages` structure into a flat Zod schema keyed by field name, which you can use to validate the `submissionData` payload before sending.
 
+### Screenshots
+
+#### Drag and drop rows, columns and pages
+
 <img width="1366" height="768" alt="PixelSnap 2026-05-21 at 13 14 34" src="https://github.com/user-attachments/assets/ce01a091-a3bf-43b1-8853-5cbb89d089bf" />
+
+#### Inject dynamic values into confirmation messages
 
 <img width="1366" height="768" alt="PixelSnap 2026-05-21 at 13 17 25" src="https://github.com/user-attachments/assets/544b1f7a-2d7c-4bac-806e-698006f408ce" />
 
+#### Inject dynamic values into email notifications
+
 <img width="1366" height="768" alt="PixelSnap 2026-05-21 at 13 18 11" src="https://github.com/user-attachments/assets/2fdb818f-c86e-4f75-a3e9-30b5d0fe9ba6" />
+
+#### Conditional notifications
 
 <img width="1366" height="768" alt="PixelSnap 2026-05-21 at 13 19 03" src="https://github.com/user-attachments/assets/0968519c-5584-4042-bf46-6a2bd765cf21" />
 
+#### Auto generated JSON schema to use for client side validation
+
 <img width="1366" height="768" alt="PixelSnap 2026-05-21 at 13 19 26" src="https://github.com/user-attachments/assets/eb124f2d-ac09-4bee-9ced-d594672ede86" />
+
+#### Import a CSV file to automatically generate form fields
 
 <img width="1366" height="768" alt="PixelSnap 2026-05-21 at 13 19 41" src="https://github.com/user-attachments/assets/ec579a1c-13ef-44bf-bbf0-7c2c0e9148f6" />
 
+#### Field settings draw
+
 <img width="1366" height="768" alt="PixelSnap 2026-05-21 at 13 20 13" src="https://github.com/user-attachments/assets/eead416f-68dd-4615-b6cb-c4ecfce6e415" />
-
-
-
-
-
-
-
 ## License
 
 MIT
