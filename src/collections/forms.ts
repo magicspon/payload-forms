@@ -109,6 +109,18 @@ export function buildFormsCollection(opts: FormsCollectionOptions = {}): Collect
     })
   }
 
+  settingsFields.push({
+    name: 'identifierField',
+    type: 'text',
+    admin: {
+      description:
+        'The form field whose value is stored as the submission identifier, shown in the submissions list.',
+      components: {
+        Field: '@spon/payload-forms/client#IdentifierFieldSelect',
+      },
+    },
+  })
+
   settingsFields.push(...settings)
 
   const tabs: Tab[] = [
@@ -130,6 +142,10 @@ export function buildFormsCollection(opts: FormsCollectionOptions = {}): Collect
         },
       ],
       label: tabLabels?.canvas ?? 'Canvas',
+    },
+    {
+      fields: settingsFields,
+      label: tabLabels?.settings ?? 'Settings',
     },
     ...(opts?.tabs ?? []),
   ]

@@ -45,7 +45,6 @@ function makeReq({
 /** Minimal valid form data for a text-only submission. */
 function validFormData(overrides: Record<string, File | string> = {}): FormData {
   const fd = new FormData()
-  fd.set('from', 'alice@example.com')
   fd.set('submissionData', JSON.stringify({ name: 'Alice' }))
   fd.set('_ts', String(Date.now() - 5000)) // submitted 5 s ago — passes timing check
   for (const [k, v] of Object.entries(overrides)) {
@@ -73,25 +72,6 @@ describe('makeSubmissionEndpoint', () => {
       expect(res.status).toBe(400)
       const body = await res.json()
       expect(body).toMatchObject({ error: 'No form data provided', success: false })
-    })
-
-    it('returns 400 when `from` is missing', async () => {
-      const endpoint = makeSubmissionEndpoint(defaultSlugs)
-      const fd = validFormData()
-      fd.delete('from')
-      const req = makeReq({ formData: fd })
-      const res = await endpoint.handler(req as never)
-      expect(res.status).toBe(400)
-      const body = await res.json()
-      expect(body.error).toContain('"from"')
-    })
-
-    it('returns 400 when `from` exceeds 255 characters', async () => {
-      const endpoint = makeSubmissionEndpoint(defaultSlugs)
-      const fd = validFormData({ from: 'a'.repeat(256) })
-      const req = makeReq({ formData: fd })
-      const res = await endpoint.handler(req as never)
-      expect(res.status).toBe(400)
     })
 
     it('returns 404 when the form is not found', async () => {
@@ -180,12 +160,21 @@ describe('makeSubmissionEndpoint', () => {
       expect(call.data.title).toBe('Test Form')
     })
 
-    it('stores the `from` value on the submission', async () => {
+    it('stores null identifier when no identifierField is configured', async () => {
       const endpoint = makeSubmissionEndpoint(defaultSlugs)
       const req = makeReq({ formData: validFormData() })
       await endpoint.handler(req as never)
       const call = req.payload.create.mock.calls[0][0]
-      expect(call.data.from).toBe('alice@example.com')
+      expect(call.data.identifier).toBeNull()
+    })
+
+    it('derives identifier from submissionData when identifierField is configured', async () => {
+      const formWithIdentifier = { ...mockForm, identifierField: 'name' }
+      const endpoint = makeSubmissionEndpoint(defaultSlugs)
+      const req = makeReq({ form: formWithIdentifier, formData: validFormData() })
+      await endpoint.handler(req as never)
+      const call = req.payload.create.mock.calls[0][0]
+      expect(call.data.identifier).toBe('Alice')
     })
 
     it('uses attemptAsync for submission creation — returns error response on DB failure', async () => {

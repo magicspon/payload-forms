@@ -1,6 +1,7 @@
 import { FieldPalette as FieldPalette_c8089dfdd61aab495c2e271159c58c14 } from '@spon/payload-forms/client'
 import { SlugField as SlugField_2b8867833a34864a02ddf429b0728a40 } from '@payloadcms/next/client'
 import { FormCanvas as FormCanvas_c8089dfdd61aab495c2e271159c58c14 } from '@spon/payload-forms/client'
+import { IdentifierFieldSelect as IdentifierFieldSelect_c8089dfdd61aab495c2e271159c58c14 } from '@spon/payload-forms/client'
 import { RscEntryLexicalCell as RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
 import { RscEntryLexicalField as RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
 import { LexicalDiffComponent as LexicalDiffComponent_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
@@ -26,6 +27,7 @@ export const importMap = {
   "@spon/payload-forms/client#FieldPalette": FieldPalette_c8089dfdd61aab495c2e271159c58c14,
   "@payloadcms/next/client#SlugField": SlugField_2b8867833a34864a02ddf429b0728a40,
   "@spon/payload-forms/client#FormCanvas": FormCanvas_c8089dfdd61aab495c2e271159c58c14,
+  "@spon/payload-forms/client#IdentifierFieldSelect": IdentifierFieldSelect_c8089dfdd61aab495c2e271159c58c14,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalCell": RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalField": RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e,
   "@payloadcms/richtext-lexical/rsc#LexicalDiffComponent": LexicalDiffComponent_44fe37237e0ebf4470c9990d8cb7b07e,

@@ -75,7 +75,7 @@ export function makeSubmissionExportEndpoint(
 
       const submissions = result.docs as unknown as Array<{
         createdAt?: null | string
-        from?: null | string
+        identifier?: null | string
         submissionData: null | Record<string, unknown>
       }>
 
