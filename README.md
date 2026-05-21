@@ -245,6 +245,15 @@ import type {
 
 `buildFormSchema` (available from both the main entry and `/client`) converts the stored `pages` structure into a flat Zod schema keyed by field name, which you can use to validate the `submissionData` payload before sending.
 
+### To do:
+
+- [ ] Improve accessibility
+- [ ] Improve submissions view, add search and filtering
+- [ ] Test mongodb and graphql
+- [ ] Add custom widgets for the dashboard
+- [ ] Add some nice charts
+- [ ] More tests covering import/export
+
 ### Screenshots
 
 #### Drag and drop rows, columns and pages
