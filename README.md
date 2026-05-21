@@ -183,7 +183,7 @@ Content-Type: multipart/form-data
 
 | Field | Required | Description |
 | ----- | -------- | ----------- |
-| `from` | yes | Submitter identifier (≤ 255 chars) |
+| `identifier` | yes | Submitter identifier (≤ 255 chars) |
 | `submissionData` | yes | JSON-encoded `Record<string, FormFieldValue>` |
 | `_hp` | — | Honeypot (leave empty) |
 | `_ts` | — | ISO timestamp of when the form was first rendered |
