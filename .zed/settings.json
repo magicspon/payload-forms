@@ -1,0 +1,44 @@
+{
+  "formatter": "prettier",
+  "format_on_save": "on",
+  "hard_tabs": true, // ← use real tabs
+  "tab_size": 2,
+  "prettier": {
+    "allowed": true,
+  },
+  "languages": {
+    "TypeScript": {
+      "formatter": "prettier",
+      "format_on_save": "on",
+    },
+    "TSX": {
+      "formatter": "prettier",
+      "format_on_save": "on",
+    },
+    "JavaScript": {
+      "formatter": "prettier",
+      "format_on_save": "on",
+    },
+    "JSON": {
+      "formatter": "prettier",
+      "format_on_save": "on",
+    },
+    "CSS": {
+      "formatter": "prettier",
+      "format_on_save": "on",
+      "language_servers": [
+        "tailwindcss-intellisense-css",
+        "!vscode-css-language-server",
+        "...",
+      ],
+    },
+    "Markdown": {
+      "formatter": "prettier",
+      "format_on_save": "on",
+    },
+    "Astro": {
+      "formatter": "prettier",
+      "format_on_save": "on",
+    },
+  },
+}

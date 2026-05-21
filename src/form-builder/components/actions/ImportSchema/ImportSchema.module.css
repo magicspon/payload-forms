@@ -1,0 +1,10 @@
+.table {
+  width: 100%;
+}
+
+.options_row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 2rem;
+  align-items: center;
+  gap: var(--base);
+}

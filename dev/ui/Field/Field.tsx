@@ -89,9 +89,6 @@ function FieldError({
 }: React.ComponentProps<'div'> & {
   errors?: Array<{ message?: string } | undefined>
 }) {
-  if (!errors || errors.length === 0) {
-    return null
-  }
 
   const content = useMemo(() => {
     if (children) {
@@ -111,7 +108,12 @@ function FieldError({
         {errors.map((error, index) => error?.message && <li key={index}>{error.message}</li>)}
       </ul>
     )
-  }, [children, errors])
+	}, [children, errors])
+
+  if (!errors || errors.length === 0) {
+    return null
+  }
+
 
   if (!content) {
     return null
@@ -132,12 +134,12 @@ function FieldError({
 
 export {
   Field,
-  FieldLabel,
+  FieldContent,
   FieldDescription,
   FieldError,
   FieldGroup,
+  FieldLabel,
   FieldLegend,
   FieldSet,
-  FieldContent,
   FieldTitle,
 }

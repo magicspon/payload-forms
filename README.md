@@ -42,20 +42,20 @@ export default buildConfig({
 
 ## Plugin options
 
-| Option                  | Type                       | Default                                      | Description                                                                                               |
-| ----------------------- | -------------------------- | -------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
-| `disabled`              | `boolean`                  | `false`                                      | Disables the plugin while keeping the DB schema intact                                                    |
-| `slugs`                 | `Partial<CollectionSlugs>` | —                                            | Override the default collection slugs (`forms`, `submissions`, `form-uploads`)                            |
-| `collections`           | `object`                   | —                                            | Deep-merged overrides for `forms`, `submissions`, and `formUploads` collection configs                    |
-| `features`              | `object`                   | all `true`                                   | Toggle individual features: `confirmations`, `fieldPalette`, `importSchema`, `multipage`, `notifications` |
-| `localeOptions`         | `{ label, value }[]`       | English only                                 | Languages available in the form editor                                                                    |
-| `livePreviewUrl`        | `function`                 | —                                            | Returns the preview URL for a form; omit to disable live preview                                          |
-| `exportAccessCheck`     | `(req) => boolean`         | `() => true`                                 | Guards the CSV export endpoint                                                                            |
-| `importAccessCheck`     | `(req) => boolean`         | `() => true`                                 | Guards the CSV import endpoint                                                                            |
-| `onBatchImportComplete` | `function`                 | —                                            | Called once after a successful batch CSV import                                                           |
-| `settings`              | `Field[]`                  | `[]`                                         | Extra fields injected into the form settings tab                                                          |
-| `tabs`                  | `Tab[]`                    | `[]`                                         | Extra tabs added to the form editor                                                                       |
-| `tabLabels`             | `{ canvas, settings }`     | `{ canvas: 'Canvas', settings: 'Settings' }` | Override the default tab labels                                                                           |
+| Option                  | Type                       | Default                                      | Description                                                                            |
+| ----------------------- | -------------------------- | -------------------------------------------- | -------------------------------------------------------------------------------------- |
+| `disabled`              | `boolean`                  | `false`                                      | Disables the plugin while keeping the DB schema intact                                 |
+| `slugs`                 | `Partial<CollectionSlugs>` | —                                            | Override the default collection slugs (`forms`, `submissions`, `form-uploads`)         |
+| `collections`           | `object`                   | —                                            | Deep-merged overrides for `forms`, `submissions`, and `formUploads` collection configs |
+| `localeOptions`         | `{ label, value }[]`       | English only                                 | Languages available in the form editor                                                 |
+| `livePreviewUrl`        | `function`                 | —                                            | Returns the preview URL for a form; omit to disable live preview                       |
+| `exportAccessCheck`     | `(req) => boolean`         | `() => true`                                 | Guards the CSV export endpoint                                                         |
+| `importAccessCheck`     | `(req) => boolean`         | `() => true`                                 | Guards the CSV import endpoint                                                         |
+| `beforeEmail`           | `BeforeEmailHook`          | —                                            | Called before each notification email is sent; return `false` to suppress sending      |
+| `onBatchImportComplete` | `function`                 | —                                            | Called once after a successful batch CSV import                                        |
+| `settings`              | `Field[]`                  | `[]`                                         | Extra fields injected into the form settings tab                                       |
+| `tabs`                  | `Tab[]`                    | `[]`                                         | Extra tabs added to the form editor                                                    |
+| `tabLabels`             | `{ canvas, settings }`     | `{ canvas: 'Canvas', settings: 'Settings' }` | Override the default tab labels                                                        |
 
 ## Exports
 
@@ -78,22 +78,22 @@ The plugin adds three collections to your Payload config:
 
 All fields share a common set of base properties (`name`, `label`, `required`, `hidden`, `instructions`, `errorMessage`, `conditions`) unless noted.
 
-| Type | Description | Key options |
-| -------- | -------------------------------------------------- | ----------------------------------------------- |
-| `text` | Single-line text input | `placeholder`, `defaultValue`, `minLength`, `maxLength` |
-| `textarea` | Multi-line text input | `placeholder`, `defaultValue`, `minLength`, `maxLength`, `rows` |
-| `email` | Email address input with format validation | `placeholder`, `defaultValue` |
-| `number` | Numeric input | `placeholder`, `defaultValue`, `min`, `max`, `step` |
-| `radio` | Single-select radio buttons | `options[]`, `defaultValue` |
-| `checkbox` | Multi-select checkboxes | `options[]`, `defaultValue[]` |
-| `select` | Dropdown select | `options[]`, `placeholder`, `defaultValue` |
-| `date` | Date picker | `placeholder`, `defaultValue`, `minDate`, `maxDate` |
-| `file` | File upload (stored in form-uploads collection) | `maxFiles`, `maxFileSize`, `allowedFileTypes`, `relationTo` |
-| `toggle` | Boolean toggle switch | `defaultValue` |
-| `consent` | Consent/agreement checkbox | `defaultValue` |
-| `group` | Groups sub-fields into a single named object | `rows[]` |
-| `array` (Repeater) | Repeatable group of sub-fields | `rows[]`, `minRows`, `maxRows` |
-| `message` | Display-only rich text block (no data captured) | `richText` (Lexical), `conditions` |
+| Type               | Description                                     | Key options                                                     |
+| ------------------ | ----------------------------------------------- | --------------------------------------------------------------- |
+| `text`             | Single-line text input                          | `placeholder`, `defaultValue`, `minLength`, `maxLength`         |
+| `textarea`         | Multi-line text input                           | `placeholder`, `defaultValue`, `minLength`, `maxLength`, `rows` |
+| `email`            | Email address input with format validation      | `placeholder`, `defaultValue`                                   |
+| `number`           | Numeric input                                   | `placeholder`, `defaultValue`, `min`, `max`, `step`             |
+| `radio`            | Single-select radio buttons                     | `options[]`, `defaultValue`                                     |
+| `checkbox`         | Multi-select checkboxes                         | `options[]`, `defaultValue[]`                                   |
+| `select`           | Dropdown select                                 | `options[]`, `placeholder`, `defaultValue`                      |
+| `date`             | Date picker                                     | `placeholder`, `defaultValue`, `minDate`, `maxDate`             |
+| `file`             | File upload (stored in form-uploads collection) | `maxFiles`, `maxFileSize`, `allowedFileTypes`, `relationTo`     |
+| `toggle`           | Boolean toggle switch                           | `defaultValue`                                                  |
+| `consent`          | Consent/agreement checkbox                      | `defaultValue`                                                  |
+| `group`            | Groups sub-fields into a single named object    | `rows[]`                                                        |
+| `array` (Repeater) | Repeatable group of sub-fields                  | `rows[]`, `minRows`, `maxRows`                                  |
+| `message`          | Display-only rich text block (no data captured) | `richText` (Lexical), `conditions`                              |
 
 ## Conditional visibility
 
@@ -120,21 +120,56 @@ When the `multipage` feature is enabled (default), a form can contain multiple p
 
 ## Confirmations
 
-When `features.confirmations` is enabled (default), a **Confirmation** tab appears on each form with two options:
-
 - **Message** — display a rich text message after submission (supports `{{fieldName}}` tokens)
 - **Redirect** — redirect the user to a specified URL after submission
 
 ## Email notifications
 
-When `features.notifications` is enabled (default), a **Notifications** tab lets editors configure one or more email rules per form. Each rule has:
-
 - **To** — a comma-separated list of plain addresses and/or `{{fieldName}}` tokens that resolve to submission values
+- **CC** — optional comma-separated addresses/tokens copied on the email
+- **BCC** — optional comma-separated addresses/tokens blind-copied on the email
 - **Subject** — plain text
 - **Message** — rich text editor with `FormFieldReferenceFeature` for inserting live field values
 - **Conditions** — optional rule-level conditions; the email is only sent when all conditions match the submission data
 
+`{{fieldName}}` tokens in To, CC, and BCC are resolved from the submission data at send time. The token must resolve to a valid email address or it is dropped.
+
 Email failures never roll back the submission.
+
+### `beforeEmail` hook
+
+Use `beforeEmail` to intercept each outgoing notification email. The hook receives the fully resolved email data — tokens already substituted, Lexical content already converted to HTML and plain text — and can either let the plugin send it or take over delivery itself.
+
+```ts
+import { formsPlugin, type BeforeEmailHook } from '@spon/payload-forms'
+
+const beforeEmail: BeforeEmailHook = async ({ to, cc, bcc, subject, html, text }) => {
+  // Return false to suppress payload.sendEmail() for this notification.
+  // Useful when routing through a transactional email service directly.
+  await myEmailService.send({ to, cc, bcc, subject, html, text })
+  return false
+}
+
+export default buildConfig({
+  plugins: [formsPlugin({ beforeEmail })],
+})
+```
+
+The hook is called once per notification item. Returning `false` skips `payload.sendEmail()` for that item only — other notification rules still fire. If the hook throws, the error is logged and the send proceeds normally.
+
+| Argument  | Type       | Description                           |
+| --------- | ---------- | ------------------------------------- |
+| `to`      | `string[]` | Resolved recipient addresses          |
+| `cc`      | `string[]` | Resolved CC addresses (may be empty)  |
+| `bcc`     | `string[]` | Resolved BCC addresses (may be empty) |
+| `subject` | `string`   | Rendered subject line                 |
+| `html`    | `string`   | Rendered HTML body                    |
+| `text`    | `string`   | Rendered plain-text body              |
+
+| Return value | Effect                                         |
+| ------------ | ---------------------------------------------- |
+| `false`      | Suppresses `payload.sendEmail()` for this item |
+| `void`       | Plugin sends the email as normal               |
 
 ## Spam protection
 
@@ -147,10 +182,10 @@ The public submission endpoint includes two built-in spam defences:
 
 The submissions collection exposes two extra endpoints on top of the standard Payload REST API:
 
-| Endpoint | Method | Description |
-| -------- | ------ | ----------- |
-| `/api/submissions/:id/export` | `GET` | Downloads a CSV of all submissions for a form |
-| `/api/submissions/import` | `POST` | Bulk-imports submissions from a CSV file |
+| Endpoint                      | Method | Description                                   |
+| ----------------------------- | ------ | --------------------------------------------- |
+| `/api/submissions/:id/export` | `GET`  | Downloads a CSV of all submissions for a form |
+| `/api/submissions/import`     | `POST` | Bulk-imports submissions from a CSV file      |
 
 Guarded by `exportAccessCheck` and `importAccessCheck` respectively (defaults to public). The CSV template matches the form schema and can be downloaded from the admin UI via **FormCSVTemplateButton**.
 
@@ -158,7 +193,7 @@ When a batch import completes, `onBatchImportComplete` is called once with `{ pa
 
 ## Schema import
 
-Setting `features.importSchema: true` adds an **Import** tab to the form editor. Editors can paste or upload a JSON document that matches the form schema and it will be loaded directly into the canvas — useful for seeding forms programmatically or migrating from another tool.
+Editors can upload a CSV file with headers to create form fields — useful for seeding forms programmatically or migrating from another tool.
 
 ## Lexical feature
 
@@ -181,15 +216,15 @@ POST /api/submissions/:formId
 Content-Type: multipart/form-data
 ```
 
-| Field | Required | Description |
-| ----- | -------- | ----------- |
-| `identifier` | yes | Submitter identifier (≤ 255 chars) |
-| `submissionData` | yes | JSON-encoded `Record<string, FormFieldValue>` |
-| `_hp` | — | Honeypot (leave empty) |
-| `_ts` | — | ISO timestamp of when the form was first rendered |
-| `_userAgent` | — | Client user agent (falls back to request header) |
-| `_ipAddress` | — | Client IP (falls back to `x-forwarded-for`) |
-| `<file fields>` | — | One `File` entry per upload, keyed by field name |
+| Field            | Required | Description                                       |
+| ---------------- | -------- | ------------------------------------------------- |
+| `identifier`     | yes      | Submitter identifier (≤ 255 chars)                |
+| `submissionData` | yes      | JSON-encoded `Record<string, FormFieldValue>`     |
+| `_hp`            | —        | Honeypot (leave empty)                            |
+| `_ts`            | —        | ISO timestamp of when the form was first rendered |
+| `_userAgent`     | —        | Client user agent (falls back to request header)  |
+| `_ipAddress`     | —        | Client IP (falls back to `x-forwarded-for`)       |
+| `<file fields>`  | —        | One `File` entry per upload, keyed by field name  |
 
 On success the endpoint returns `{ id: string, success: true }` plus the resolved confirmation (message or redirect URL).
 

@@ -12,7 +12,8 @@ import { nanoid } from '@/shared/utils/nanoid'
 import { Button, SelectInput, TextInput, toast } from '@payloadcms/ui'
 import Papa from 'papaparse'
 import * as React from 'react'
-
+import styles from './ImportSchema.module.css'
+import { Stack } from '@/shared/layout'
 // 'message' has no name/label; 'array' requires sub-field authoring — exclude both
 const importableFieldTypes = fieldTypes.filter((t) => t.value !== 'message' && t.value !== 'array')
 
@@ -297,7 +298,7 @@ export function ImportSchema() {
       {/* ── Mapping table ── */}
       {hasMappings && (
         <div className="import-schema__mappings">
-          <table className="import-schema__table">
+          <table className={styles.table}>
             <thead>
               <tr>
                 <th>Column</th>
@@ -330,6 +331,7 @@ export function ImportSchema() {
                     </td>
                     <td className="import-schema__type-cell">
                       <SelectInput
+                        isClearable={false}
                         name={`mapping-type-${i}`}
                         onChange={(option) => {
                           const val = option ? (option as { value: string }).value : ''
@@ -345,51 +347,56 @@ export function ImportSchema() {
                   {/* ── Options editor (checkbox / radio / select) ── */}
                   {isOptionsType(m.fieldType) && (
                     <tr aria-label="Field options">
-                      <td className="import-schema__options-cell" colSpan={3}>
+                      <td className="import-schema__options-cell" colSpan={3} aria-labelledby="row">
                         <div className="import-schema__options">
-                          <p className="import-schema__options-label">Options</p>
-                          {m.options.map((opt, oi) => (
-                            <div className="import-schema__option-row" key={oi}>
-                              <TextInput
-                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                  const next = [...m.options]
-                                  next[oi] = {
-                                    // Auto-fill value from label when value is still empty
-                                    label: e.target.value,
-                                    value: next[oi].value || camelCase(e.target.value),
+                          <p aria-label="row" className="import-schema__options-label">
+                            Options
+                          </p>
+                          <Stack>
+                            {m.options.map((opt, oi) => (
+                              <div className={styles.options_row} key={oi}>
+                                <TextInput
+                                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                    const next = [...m.options]
+                                    next[oi] = {
+                                      // Auto-fill value from label when value is still empty
+                                      label: e.target.value,
+                                      value: next[oi].value || camelCase(e.target.value),
+                                    }
+                                    setMappingOptions(i, next)
+                                  }}
+                                  path={`option-label-${i}-${oi}`}
+                                  placeholder="Label"
+                                  value={opt.label}
+                                />
+                                <TextInput
+                                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                    const next = [...m.options]
+                                    next[oi] = {
+                                      ...next[oi],
+                                      value: e.target.value,
+                                    }
+                                    setMappingOptions(i, next)
+                                  }}
+                                  path={`option-value-${i}-${oi}`}
+                                  placeholder="Value"
+                                  value={opt.value}
+                                />
+                                <Button
+                                  margin={false}
+                                  buttonStyle="icon-label"
+                                  disabled={m.options.length === 1}
+                                  icon="x"
+                                  onClick={() =>
+                                    setMappingOptions(
+                                      i,
+                                      m.options.filter((_, j) => j !== oi),
+                                    )
                                   }
-                                  setMappingOptions(i, next)
-                                }}
-                                path={`option-label-${i}-${oi}`}
-                                placeholder="Label"
-                                value={opt.label}
-                              />
-                              <TextInput
-                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                  const next = [...m.options]
-                                  next[oi] = {
-                                    ...next[oi],
-                                    value: e.target.value,
-                                  }
-                                  setMappingOptions(i, next)
-                                }}
-                                path={`option-value-${i}-${oi}`}
-                                placeholder="Value"
-                                value={opt.value}
-                              />
-                              <Button
-                                buttonStyle="icon-label"
-                                disabled={m.options.length === 1}
-                                icon="x"
-                                onClick={() =>
-                                  setMappingOptions(
-                                    i,
-                                    m.options.filter((_, j) => j !== oi),
-                                  )
-                                }
-                              />
-                            </div>
-                          ))}
+                                />
+                              </div>
+                            ))}
+                          </Stack>
                           <Button
                             buttonStyle="secondary"
                             onClick={() =>

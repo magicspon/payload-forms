@@ -10,6 +10,19 @@ import { z } from 'zod'
 
 import type { CollectionSlugs } from '../..'
 
+export type BeforeEmailData = {
+  bcc: string[]
+  cc: string[]
+  html: string
+  subject: string
+  text: string
+  to: string[]
+}
+
+export type BeforeEmailHook = (
+  args: BeforeEmailData,
+) => false | Promise<false | void> | void
+
 /** Matches a bare `{{token}}` entry — strict so partial tokens aren't resolved. */
 const TOKEN_RE = /^\{\{\s*(\w+)\s*\}\}$/
 
@@ -56,7 +69,10 @@ function resolveRecipients(emailField: string, submissionData: Record<string, un
  * Email failures are caught individually and logged — a failed notification
  * must never roll back the submission itself.
  */
-export function makeSubmissionNotifications(slugs: CollectionSlugs): CollectionBeforeChangeHook {
+export function makeSubmissionNotifications(
+  slugs: CollectionSlugs,
+  beforeEmail?: BeforeEmailHook,
+): CollectionBeforeChangeHook {
   return async ({ context, data, operation, req: { payload } }) => {
     // Skip individual emails during a batch import — the caller is responsible
     // for queuing a single post-batch notification via onBatchImportComplete.
@@ -65,6 +81,8 @@ export function makeSubmissionNotifications(slugs: CollectionSlugs): CollectionB
     }
 
     type NotificationItem = {
+      bcc?: string
+      cc?: string
       conditions?: unknown
       email: string
       message: unknown
@@ -126,12 +144,38 @@ export function makeSubmissionNotifications(slugs: CollectionSlugs): CollectionB
     // Send each notification individually so a single failure doesn't
     // prevent other recipients from receiving their emails
     for (const { item, rawHtml, rawText, recipients, templateParser } of sends) {
+      const cc = item.cc ? resolveRecipients(item.cc, submissionData) : []
+      const bcc = item.bcc ? resolveRecipients(item.bcc, submissionData) : []
+
+      const emailData: BeforeEmailData = {
+        bcc,
+        cc,
+        html: templateParser(rawHtml),
+        subject: templateParser(item.subject),
+        text: templateParser(rawText),
+        to: recipients,
+      }
+
+      if (beforeEmail) {
+        const [hookErr, hookResult] = await attemptAsync(() => Promise.resolve(beforeEmail(emailData)))
+        if (hookErr) {
+          payload.logger.error(
+            { err: hookErr, formId: data.form, subject: item.subject },
+            'submissionNotifications: beforeEmail hook threw — send will proceed',
+          )
+        } else if (hookResult === false) {
+          continue
+        }
+      }
+
       const [sendErr] = await attemptAsync(() =>
         payload.sendEmail({
-          html: templateParser(rawHtml),
-          subject: templateParser(item.subject),
-          text: templateParser(rawText),
-          to: recipients,
+          bcc: emailData.bcc,
+          cc: emailData.cc,
+          html: emailData.html,
+          subject: emailData.subject,
+          text: emailData.text,
+          to: emailData.to,
         }),
       )
 
