@@ -7,6 +7,7 @@ export default defineConfig({
     './src/exports/client.ts',
     './src/exports/rsc.ts',
     './src/exports/form.ts',
+    './src/exports/builder.ts',
   ],
   outDir: 'dist',
   format: 'esm',
