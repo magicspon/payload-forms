@@ -24,6 +24,11 @@
       "import": "./src/exports/form.ts",
       "types": "./src/exports/form.ts",
       "default": "./src/exports/form.ts"
+    },
+    "./builder": {
+      "import": "./src/exports/builder.ts",
+      "types": "./src/exports/builder.ts",
+      "default": "./src/exports/builder.ts"
     }
   },
   "main": "./src/index.ts",
@@ -131,6 +136,11 @@
         "import": "./dist/exports/form.js",
         "types": "./dist/exports/form.d.ts",
         "default": "./dist/exports/form.js"
+      },
+      "./builder": {
+        "import": "./dist/exports/builder.js",
+        "types": "./dist/exports/builder.d.ts",
+        "default": "./dist/exports/builder.js"
       }
     },
     "main": "./dist/index.js",
