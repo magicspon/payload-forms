@@ -41,7 +41,21 @@ export default buildConfig({
   onInit: async (payload) => {
     await seed(payload)
   },
-  plugins: [formsPlugin({})],
+  plugins: [
+    formsPlugin({
+      collections: {
+        submissions: {
+          fields: [
+            {
+              type: 'relationship',
+              name: 'user',
+              relationTo: 'users',
+            },
+          ],
+        },
+      },
+    }),
+  ],
   secret: process.env.PAYLOAD_SECRET || 'test-secret_key',
   sharp,
   typescript: {

@@ -14,6 +14,9 @@ export type { FieldTypeValue } from '../form-builder/utils/fieldTypes'
 // Pure tree-manipulation utils + FormPage / FormRow types
 export * from '../form-builder/utils/formTree'
 
+// Field schemas, types, and factory function
+export * from '../shared/fieldSchema'
+
 // Convenience field prop aliases + form value types
 export type {
   ArrayFieldProps,
@@ -37,6 +40,3 @@ export type {
   TextFieldProps,
   ToggleFieldProps,
 } from './form'
-
-// Field schemas, types, and factory function
-export * from '@/shared/fieldSchema'

@@ -15,9 +15,9 @@ import type {
   textareaFieldSchema,
   textFieldSchema,
   toggleFieldSchema,
-} from '@/shared/fieldSchema'
+} from '../shared/fieldSchema'
 
-export type { Field, FieldConditions } from '@/shared/fieldSchema'
+export type { Field, FieldConditions } from '../shared/fieldSchema'
 
 export type TextFieldProps = z.infer<typeof textFieldSchema>
 export type EmailFieldProps = z.infer<typeof emailFieldSchema>
