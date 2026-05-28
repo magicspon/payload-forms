@@ -178,12 +178,14 @@ export function makeSubmissionEndpoint(slugs: CollectionSlugs): Endpoint {
       )
 
       // Strip keys that don't correspond to a real form field. The client can
-      // POST arbitrary JSON, so we only persist values for known fields (keyed
-      // by camelCase name, matching the form renderer). File-field values are
-      // populated from uploads on read, so they're not expected here.
+      // POST arbitrary JSON, so we only persist values for known fields. The
+      // form renderer keys by the raw field name while the CSV tooling uses the
+      // camelCase form, so accept either to avoid dropping legitimate data.
+      // File-field values are populated from uploads on read, not sent here.
       const allowedKeys = new Set<string>()
       for (const f of allFields) {
         if (f.type !== 'message' && f.name) {
+          allowedKeys.add(f.name)
           allowedKeys.add(camelCase(f.name))
         }
       }
