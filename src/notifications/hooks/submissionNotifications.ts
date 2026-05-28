@@ -3,7 +3,7 @@ import type { CollectionBeforeChangeHook } from 'payload'
 
 import { shouldSendNotification } from '@/notifications/utils/notifications'
 import { attemptAsync } from '@/shared/utils/attemptAsync'
-import { replaceTemplatePlaceholders } from '@/shared/utils/replaceDataPlaceholders'
+import { escapeHtml, replaceTemplatePlaceholders } from '@/shared/utils/replaceDataPlaceholders'
 import { convertLexicalToHTML } from '@payloadcms/richtext-lexical/html'
 import { convertLexicalToPlaintext } from '@payloadcms/richtext-lexical/plaintext'
 import { z } from 'zod'
@@ -135,22 +135,32 @@ export function makeSubmissionNotifications(
 
         const rawText = convertLexicalToPlaintext({ data: item.message as never })
         const rawHtml = convertLexicalToHTML({ data: item.message as never })
+        // Plain-text/subject substitution is verbatim; HTML substitution
+        // escapes each value so attacker-controlled fields can't inject markup.
         const templateParser = replaceTemplatePlaceholders(submissionData)
+        const htmlTemplateParser = replaceTemplatePlaceholders(submissionData, escapeHtml)
 
-        return { item, rawHtml, rawText, recipients, templateParser }
+        return { htmlTemplateParser, item, rawHtml, rawText, recipients, templateParser }
       })
       .filter((p): p is NonNullable<typeof p> => p !== null)
 
     // Send each notification individually so a single failure doesn't
     // prevent other recipients from receiving their emails
-    for (const { item, rawHtml, rawText, recipients, templateParser } of sends) {
+    for (const {
+      htmlTemplateParser,
+      item,
+      rawHtml,
+      rawText,
+      recipients,
+      templateParser,
+    } of sends) {
       const cc = item.cc ? resolveRecipients(item.cc, submissionData) : []
       const bcc = item.bcc ? resolveRecipients(item.bcc, submissionData) : []
 
       const emailData: BeforeEmailData = {
         bcc,
         cc,
-        html: templateParser(rawHtml),
+        html: htmlTemplateParser(rawHtml),
         subject: templateParser(item.subject),
         text: templateParser(rawText),
         to: recipients,

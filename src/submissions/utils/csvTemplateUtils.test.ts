@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest'
 
-import { generateTemplateHeaders, parseCsvRowToSubmissionData } from './csvTemplateUtils'
+import {
+  generateSubmissionsCSV,
+  generateTemplateHeaders,
+  parseCsvRowToSubmissionData,
+} from './csvTemplateUtils'
 
 // Minimal page factory helpers
 const page = (columns: unknown[]) => ({
@@ -182,5 +186,40 @@ describe('parseCsvRowToSubmissionData', () => {
     const row = { name: 'Alice', email: 'a@b.com', rating: '5' }
     const data = parseCsvRowToSubmissionData(row, pages)
     expect(data).toEqual({ name: 'Alice', email: 'a@b.com', rating: '5' })
+  })
+})
+
+// ---------------------------------------------------------------------------
+
+describe('generateSubmissionsCSV — formula injection (CWE-1236)', () => {
+  const pages = [page([field('text', 'note')])]
+
+  const csvFor = (note: string) =>
+    generateSubmissionsCSV([{ submissionData: { note } }], pages)
+
+  it.each(['=cmd', '+1+1', '-2+3', '@SUM(A1)', '\tnote', '\rnote'])(
+    'prefixes a quote to neutralise leading %j',
+    (value) => {
+      const csv = csvFor(value)
+      // Row layout is `identifier,submitted,note` — both leading cells empty.
+      const noteCell = (csv.split('\n')[1] ?? '').replace(/^,,/, '')
+      expect(noteCell.startsWith("'")).toBe(true)
+    },
+  )
+
+  it('neutralises a classic =cmd formula', () => {
+    const csv = csvFor("=cmd|'/c calc'!A1")
+    // No comma/quote/newline → not wrapped, but the leading = is defused.
+    expect(csv).toContain(`,,'=cmd|'/c calc'!A1`)
+  })
+
+  it('quotes and neutralises a formula that also contains a comma', () => {
+    const csv = csvFor('=SUM(1,2)')
+    expect(csv).toContain(`"'=SUM(1,2)"`)
+  })
+
+  it('leaves safe values untouched', () => {
+    const csv = csvFor('Alice')
+    expect(csv.split('\n')[1]).toBe(',,Alice')
   })
 })

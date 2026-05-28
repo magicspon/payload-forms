@@ -3,6 +3,7 @@ import type { Endpoint, PayloadRequest } from 'payload'
 
 import { getAllFields } from '@/form-builder/utils/formTree'
 import { attemptAsync } from '@/shared/utils/attemptAsync'
+import { camelCase } from '@/shared/utils/camelCase'
 import { replaceDataPlaceholders } from '@/shared/utils/replaceDataPlaceholders'
 import { errorResponse } from '@/submissions/utils/errorResponse'
 import {
@@ -16,6 +17,18 @@ import type { FormPage } from '@/form-builder/utils/formTree'
 // Skip timing check in test or non-production environments
 const MIN_SUBMISSION_TIME_MS =
   process.env.TEST_ENV === 'true' || process.env.NODE_ENV !== 'production' ? 0 : 2000
+
+/**
+ * Caps on the public submission endpoint. This route runs with
+ * `overrideAccess: true` and accepts unauthenticated input, so it bounds the
+ * size/shape of every request to prevent memory-exhaustion / storage abuse.
+ */
+/** Maximum byte length of the JSON-encoded `submissionData` payload (1 MB). */
+const MAX_SUBMISSION_DATA_BYTES = 1024 * 1024
+/** Maximum number of file attachments accepted in a single submission. */
+const MAX_FILES_PER_SUBMISSION = 20
+/** Maximum combined size of all file attachments in a single submission (25 MB). */
+const MAX_TOTAL_UPLOAD_BYTES = 25 * 1024 * 1024
 
 /**
  * Public submission endpoint: POST /api/submissions/:id
@@ -76,10 +89,18 @@ export function makeSubmissionEndpoint(slugs: CollectionSlugs): Endpoint {
         return Response.json({ id: null, success: true })
       }
 
-      // Validate submissionData — must be parseable JSON object (or empty).
-      // We accept anything JSON-parseable here; field-level validation is the
-      // form's responsibility. Downstream code treats this as Record<string, unknown>.
-      const [, submissionData = {}] = await attemptAsync(() => {
+      // Reject oversized payloads before parsing to avoid memory exhaustion.
+      if (
+        submissionDataStr &&
+        Buffer.byteLength(submissionDataStr, 'utf8') > MAX_SUBMISSION_DATA_BYTES
+      ) {
+        return errorResponse('Submission data exceeds the maximum allowed size', 413)
+      }
+
+      // Parse submissionData — must be a JSON object (or empty). Unknown keys
+      // are stripped below once the form's field set is known; field-level
+      // value validation remains the form renderer's responsibility.
+      const [parseErr, submissionData = {}] = await attemptAsync(() => {
         if (!submissionDataStr) {
           return Promise.resolve({} as Record<string, unknown>)
         }
@@ -90,9 +111,15 @@ export function makeSubmissionEndpoint(slugs: CollectionSlugs): Endpoint {
         return Promise.resolve(parsed as Record<string, unknown>)
       })
 
+      if (parseErr) {
+        return errorResponse('submissionData must be a valid JSON object', 400)
+      }
+
       // Collect File entries, excluding reserved scalar keys.
-      // Check each file's size before reading it into memory.
+      // Bound per-file size, file count, and total upload size before reading
+      // anything into memory.
       const filesToUpload: { fieldName: string; file: File }[] = []
+      let totalUploadBytes = 0
       for (const [key, value] of formData.entries()) {
         if (!(value instanceof File) || SUBMISSION_SCALAR_KEYS.has(key)) {
           continue
@@ -101,6 +128,21 @@ export function makeSubmissionEndpoint(slugs: CollectionSlugs): Endpoint {
         if (value.size > MAX_FILE_SIZE_BYTES) {
           return errorResponse(
             `File "${key}" exceeds the maximum allowed size of ${MAX_FILE_SIZE_BYTES / (1024 * 1024)} MB`,
+            413,
+          )
+        }
+
+        if (filesToUpload.length >= MAX_FILES_PER_SUBMISSION) {
+          return errorResponse(
+            `A submission may include at most ${MAX_FILES_PER_SUBMISSION} files`,
+            413,
+          )
+        }
+
+        totalUploadBytes += value.size
+        if (totalUploadBytes > MAX_TOTAL_UPLOAD_BYTES) {
+          return errorResponse(
+            `Total upload size exceeds the maximum allowed size of ${MAX_TOTAL_UPLOAD_BYTES / (1024 * 1024)} MB`,
             413,
           )
         }
@@ -128,22 +170,41 @@ export function makeSubmissionEndpoint(slugs: CollectionSlugs): Endpoint {
         return errorResponse('Form not found', 404)
       }
 
-      // Derive the submission identifier from the nominated form field.
-      const identifierFieldName = (form.identifierField as null | string) ?? null
-      let identifier: null | string = null
-      if (identifierFieldName) {
-        const raw = submissionData[identifierFieldName]
-        if (raw !== null && raw !== undefined) {
-          identifier = Array.isArray(raw) ? raw.join(', ') : String(raw as string)
-        }
-      }
-
       // Build a fieldName → file field config map from the form's pages.
       // Used to look up per-field relationTo (upload collection slug).
       const allFields = getAllFields((form.pages as FormPage[] | null) ?? [])
       const fileFieldMap = new Map(
         allFields.filter((f) => f.type === 'file').map((f) => [f.name, f]),
       )
+
+      // Strip keys that don't correspond to a real form field. The client can
+      // POST arbitrary JSON, so we only persist values for known fields. The
+      // form renderer keys by the raw field name while the CSV tooling uses the
+      // camelCase form, so accept either to avoid dropping legitimate data.
+      // File-field values are populated from uploads on read, not sent here.
+      const allowedKeys = new Set<string>()
+      for (const f of allFields) {
+        if (f.type !== 'message' && f.name) {
+          allowedKeys.add(f.name)
+          allowedKeys.add(camelCase(f.name))
+        }
+      }
+      const cleanData: Record<string, unknown> = {}
+      for (const [key, value] of Object.entries(submissionData)) {
+        if (allowedKeys.has(key)) {
+          cleanData[key] = value
+        }
+      }
+
+      // Derive the submission identifier from the nominated form field.
+      const identifierFieldName = (form.identifierField as null | string) ?? null
+      let identifier: null | string = null
+      if (identifierFieldName) {
+        const raw = cleanData[identifierFieldName]
+        if (raw !== null && raw !== undefined) {
+          identifier = Array.isArray(raw) ? raw.join(', ') : String(raw as string)
+        }
+      }
 
       // Upload files to their target collection (per-field relationTo or default)
       const uploadedFiles: {
@@ -228,7 +289,7 @@ export function makeSubmissionEndpoint(slugs: CollectionSlugs): Endpoint {
             fileUploads,
             form: parsedFormId as number,
             identifier,
-            submissionData,
+            submissionData: cleanData,
             title: form.title,
             userAgent,
             // (NFR-012) IP stored for fraud investigation only; purge after 90 days
@@ -250,7 +311,7 @@ export function makeSubmissionEndpoint(slugs: CollectionSlugs): Endpoint {
 
       const message =
         form.confirmationType === 'message'
-          ? replaceDataPlaceholders(submissionData)(form.confirmationMessage)
+          ? replaceDataPlaceholders(cleanData)(form.confirmationMessage)
           : null
 
       return Response.json({ doc: submission, message, success: true }, { status: 201 })

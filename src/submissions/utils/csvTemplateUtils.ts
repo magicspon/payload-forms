@@ -380,11 +380,24 @@ type ExportSubmission = {
   submissionData: null | Record<string, unknown>
 }
 
+/**
+ * Characters that, when leading a cell, are interpreted as a formula by
+ * spreadsheet software (Excel, Google Sheets, LibreOffice). Submission values
+ * are attacker-controlled, so a cell like `=cmd|'/c calc'!A1` would execute on
+ * open. We defuse these by prefixing a single quote (CWE-1236, CSV injection).
+ */
+const FORMULA_TRIGGER_RE = /^[=+\-@\t\r]/
+
 function escapeCSV(value: string): string {
-  if (value.includes(',') || value.includes('"') || value.includes('\n')) {
-    return `"${value.replace(/"/g, '""')}"`
+  // Neutralise formula injection before quoting.
+  let safe = value
+  if (FORMULA_TRIGGER_RE.test(safe)) {
+    safe = `'${safe}`
   }
-  return value
+  if (safe.includes(',') || safe.includes('"') || safe.includes('\n')) {
+    return `"${safe.replace(/"/g, '""')}"`
+  }
+  return safe
 }
 
 /**

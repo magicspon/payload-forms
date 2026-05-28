@@ -70,14 +70,18 @@ export interface FormsPluginConfig {
   disabled?: boolean
 
   /**
-   * Access check used by the CSV export endpoint.
-   * Defaults to allowing all requests (no-op). Override to enforce auth.
+   * Access check used by the CSV export endpoint, which streams every
+   * submission for a form. Defaults to allowing only authenticated requests
+   * (`req.user` present). Override to apply your own authorization rules, or
+   * return `true` to make the endpoint public (not recommended).
    */
   exportAccessCheck?: (req: PayloadRequest) => boolean
 
   /**
-   * Access check used by the CSV import endpoint.
-   * Defaults to allowing all requests (no-op). Override to enforce auth.
+   * Access check used by the CSV import endpoint, which bulk-creates
+   * submissions. Defaults to allowing only authenticated requests
+   * (`req.user` present). Override to apply your own authorization rules, or
+   * return `true` to make the endpoint public (not recommended).
    */
   importAccessCheck?: (req: PayloadRequest) => boolean
 
@@ -172,8 +176,11 @@ export const formsPlugin =
       beforeEmail,
       collections: collectionOverrides = {},
       disabled = false,
-      exportAccessCheck = () => true,
-      importAccessCheck = () => true,
+      // Default to authenticated-only. These endpoints expose/ingest every
+      // submission for a form, so an open default would leak data. Hosts can
+      // override with their own rules (or `() => true` to opt into public).
+      exportAccessCheck = (req: PayloadRequest) => Boolean(req.user),
+      importAccessCheck = (req: PayloadRequest) => Boolean(req.user),
       livePreviewUrl,
       localeOptions,
       onBatchImportComplete,
