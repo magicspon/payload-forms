@@ -49,8 +49,8 @@ export default buildConfig({
 | `collections`           | `object`                   | —                                            | Deep-merged overrides for `forms`, `submissions`, and `formUploads` collection configs |
 | `localeOptions`         | `{ label, value }[]`       | English only                                 | Languages available in the form editor                                                 |
 | `livePreviewUrl`        | `function`                 | —                                            | Returns the preview URL for a form; omit to disable live preview                       |
-| `exportAccessCheck`     | `(req) => boolean`         | `() => true`                                 | Guards the CSV export endpoint                                                         |
-| `importAccessCheck`     | `(req) => boolean`         | `() => true`                                 | Guards the CSV import endpoint                                                         |
+| `exportAccessCheck`     | `(req) => boolean`         | `(req) => Boolean(req.user)`                 | Guards the CSV export endpoint (authenticated-only by default)                         |
+| `importAccessCheck`     | `(req) => boolean`         | `(req) => Boolean(req.user)`                 | Guards the CSV import endpoint (authenticated-only by default)                         |
 | `beforeEmail`           | `BeforeEmailHook`          | —                                            | Called before each notification email is sent; return `false` to suppress sending      |
 | `onBatchImportComplete` | `function`                 | —                                            | Called once after a successful batch CSV import                                        |
 | `settings`              | `Field[]`                  | `[]`                                         | Extra fields injected into the form settings tab                                       |
@@ -187,7 +187,7 @@ The submissions collection exposes two extra endpoints on top of the standard Pa
 | `/api/submissions/:id/export` | `GET`  | Downloads a CSV of all submissions for a form |
 | `/api/submissions/import`     | `POST` | Bulk-imports submissions from a CSV file      |
 
-Guarded by `exportAccessCheck` and `importAccessCheck` respectively (defaults to public). The CSV template matches the form schema and can be downloaded from the admin UI via **FormCSVTemplateButton**.
+Guarded by `exportAccessCheck` and `importAccessCheck` respectively (authenticated-only by default; override to apply your own rules). The CSV template matches the form schema and can be downloaded from the admin UI via **FormCSVTemplateButton**.
 
 When a batch import completes, `onBatchImportComplete` is called once with `{ payload, formId, count }` — use this to trigger a single consolidated notification instead of per-row emails.
 

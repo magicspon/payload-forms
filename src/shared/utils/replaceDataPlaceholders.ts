@@ -25,15 +25,34 @@ function formatValue(value: unknown): string {
 }
 
 /**
+ * Escape a string for safe interpolation into an HTML context. Submission
+ * values are attacker-controlled, so substituting them raw into an email's
+ * HTML body allows markup/script/phishing injection into the recipient's
+ * inbox. Apply this to substituted values when the template is HTML.
+ */
+export function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+}
+
+/**
  * Replace {{ fieldName }} placeholders with submission values.
  * Handles whitespace variations: {{name}}, {{ name }}, {{  name  }}
+ *
+ * Pass `escapeValue` (e.g. {@link escapeHtml}) to sanitise each substituted
+ * value for the target context. Defaults to no escaping (plain text / subject).
  */
 export function replaceTemplatePlaceholders(
   submissionData: Record<string, unknown>,
+  escapeValue: (value: string) => string = (v) => v,
 ): (template: string) => string {
   return (template: string) =>
     template.replace(/\{\{\s*(\w+)\s*\}\}/g, (_, fieldName) =>
-      formatValue(submissionData[fieldName]),
+      escapeValue(formatValue(submissionData[fieldName])),
     )
 }
 

@@ -1,6 +1,39 @@
 import { describe, expect, it } from 'vitest'
 
-import { replaceDataPlaceholders, replaceTemplatePlaceholders } from './replaceDataPlaceholders'
+import {
+  escapeHtml,
+  replaceDataPlaceholders,
+  replaceTemplatePlaceholders,
+} from './replaceDataPlaceholders'
+
+describe('escapeHtml', () => {
+  it('escapes the five significant HTML characters', () => {
+    expect(escapeHtml(`<a href="x" onclick='y'>& z`)).toBe(
+      '&lt;a href=&quot;x&quot; onclick=&#39;y&#39;&gt;&amp; z',
+    )
+  })
+
+  it('leaves plain text untouched', () => {
+    expect(escapeHtml('Alice Smith')).toBe('Alice Smith')
+  })
+})
+
+describe('replaceTemplatePlaceholders with escapeHtml', () => {
+  it('escapes injected markup from submission values', () => {
+    const replace = replaceTemplatePlaceholders(
+      { name: '<img src=x onerror=alert(1)>' },
+      escapeHtml,
+    )
+    expect(replace('<p>Hi {{ name }}</p>')).toBe(
+      '<p>Hi &lt;img src=x onerror=alert(1)&gt;</p>',
+    )
+  })
+
+  it('does not escape the surrounding template, only substituted values', () => {
+    const replace = replaceTemplatePlaceholders({ name: 'Bob' }, escapeHtml)
+    expect(replace('<b>{{ name }}</b>')).toBe('<b>Bob</b>')
+  })
+})
 
 describe('replaceTemplatePlaceholders', () => {
   it('replaces a simple placeholder', () => {

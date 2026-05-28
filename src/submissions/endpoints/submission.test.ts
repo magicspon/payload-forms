@@ -14,6 +14,14 @@ const mockForm = {
   campaign: 'camp-1',
   confirmationMessage: null,
   confirmationType: 'message',
+  // Field schema — submissionData keys not present here are stripped on submit.
+  pages: [
+    {
+      id: 'p1',
+      title: 'Page 1',
+      rows: [{ id: 'r1', columns: [{ id: 'f-name', type: 'text', name: 'name' }] }],
+    },
+  ],
   team: 'team-1',
   title: 'Test Form',
 }
@@ -227,15 +235,37 @@ describe('makeSubmissionEndpoint', () => {
       expect(call.data.submissionData).toEqual({})
     })
 
-    it('uses empty object when submissionData is invalid JSON', async () => {
+    it('rejects invalid JSON submissionData with 400', async () => {
       const endpoint = makeSubmissionEndpoint(defaultSlugs)
       const fd = validFormData({ submissionData: '{not valid json' })
       const req = makeReq({ formData: fd })
       const res = await endpoint.handler(req as never)
-      // Malformed JSON falls back to {} — submission still created
+      // Malformed JSON is rejected rather than silently stored as {}
+      expect(res.status).toBe(400)
+      expect(req.payload.create).not.toHaveBeenCalled()
+    })
+
+    it('strips submissionData keys that are not defined form fields', async () => {
+      const endpoint = makeSubmissionEndpoint(defaultSlugs)
+      const fd = validFormData({
+        submissionData: JSON.stringify({ name: 'Alice', evil: 'injected', extra: 42 }),
+      })
+      const req = makeReq({ formData: fd })
+      const res = await endpoint.handler(req as never)
       expect(res.status).toBe(201)
       const call = req.payload.create.mock.calls[0][0]
-      expect(call.data.submissionData).toEqual({})
+      // Only the known `name` field survives; unknown keys are dropped.
+      expect(call.data.submissionData).toEqual({ name: 'Alice' })
+    })
+
+    it('rejects submissionData larger than the size cap with 413', async () => {
+      const endpoint = makeSubmissionEndpoint(defaultSlugs)
+      const huge = JSON.stringify({ name: 'a'.repeat(1024 * 1024 + 1) })
+      const fd = validFormData({ submissionData: huge })
+      const req = makeReq({ formData: fd })
+      const res = await endpoint.handler(req as never)
+      expect(res.status).toBe(413)
+      expect(req.payload.create).not.toHaveBeenCalled()
     })
   })
 })
