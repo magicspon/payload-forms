@@ -1,5 +1,5 @@
 import type { FieldConditions } from '@/shared/fieldSchema'
-import type { CollectionBeforeChangeHook } from 'payload'
+import type { CollectionBeforeChangeHook, Payload } from 'payload'
 
 import { shouldSendNotification } from '@/notifications/utils/notifications'
 import { attemptAsync } from '@/shared/utils/attemptAsync'
@@ -60,6 +60,115 @@ function resolveRecipients(emailField: string, submissionData: Record<string, un
   return [...new Set(resolved)]
 }
 
+type NotificationItem = {
+  bcc?: string
+  cc?: string
+  conditions?: unknown
+  email: string
+  message: unknown
+  subject: string
+}
+
+type FormResult = {
+  formSchema: unknown
+  notification?: NotificationItem[] | null
+}
+
+type TemplateParser = ReturnType<typeof replaceTemplatePlaceholders>
+
+type PreparedSend = {
+  htmlTemplateParser: TemplateParser
+  item: NotificationItem
+  rawHtml: string
+  rawText: string
+  recipients: string[]
+  templateParser: TemplateParser
+}
+
+/**
+ * Filter notifications down to those whose conditions match and that resolve to
+ * at least one recipient, pre-rendering their templates for dispatch.
+ */
+function prepareSends(
+  notification: NotificationItem[],
+  submissionData: Record<string, unknown>,
+): PreparedSend[] {
+  return notification
+    .filter((item) =>
+      shouldSendNotification(item.conditions as FieldConditions | null | undefined, submissionData),
+    )
+    .map((item): null | PreparedSend => {
+      const recipients = resolveRecipients(item.email, submissionData)
+      if (recipients.length === 0) {
+        return null
+      }
+
+      const rawText = convertLexicalToPlaintext({ data: item.message as never })
+      const rawHtml = convertLexicalToHTML({ data: item.message as never })
+      // Plain-text/subject substitution is verbatim; HTML substitution
+      // escapes each value so attacker-controlled fields can't inject markup.
+      const templateParser = replaceTemplatePlaceholders(submissionData)
+      const htmlTemplateParser = replaceTemplatePlaceholders(submissionData, escapeHtml)
+
+      return { htmlTemplateParser, item, rawHtml, rawText, recipients, templateParser }
+    })
+    .filter((p): p is PreparedSend => p !== null)
+}
+
+/**
+ * Send a single prepared notification. Errors are logged and swallowed — losing
+ * a notification must never roll back the submission. The beforeEmail hook may
+ * cancel the send by returning `false`.
+ */
+async function dispatchNotification(
+  payload: Payload,
+  formId: unknown,
+  submissionData: Record<string, unknown>,
+  prepared: PreparedSend,
+  beforeEmail?: BeforeEmailHook,
+): Promise<void> {
+  const { htmlTemplateParser, item, rawHtml, rawText, recipients, templateParser } = prepared
+
+  const emailData: BeforeEmailData = {
+    bcc: item.bcc ? resolveRecipients(item.bcc, submissionData) : [],
+    cc: item.cc ? resolveRecipients(item.cc, submissionData) : [],
+    html: htmlTemplateParser(rawHtml),
+    subject: templateParser(item.subject),
+    text: templateParser(rawText),
+    to: recipients,
+  }
+
+  if (beforeEmail) {
+    const [hookErr, hookResult] = await attemptAsync(() => Promise.resolve(beforeEmail(emailData)))
+    if (hookErr) {
+      payload.logger.error(
+        { err: hookErr, formId, subject: item.subject },
+        'submissionNotifications: beforeEmail hook threw — send will proceed',
+      )
+    } else if (hookResult === false) {
+      return
+    }
+  }
+
+  const [sendErr] = await attemptAsync(() =>
+    payload.sendEmail({
+      bcc: emailData.bcc,
+      cc: emailData.cc,
+      html: emailData.html,
+      subject: emailData.subject,
+      text: emailData.text,
+      to: emailData.to,
+    }),
+  )
+
+  if (sendErr) {
+    payload.logger.error(
+      { err: sendErr, formId, subject: item.subject, to: recipients },
+      'submissionNotifications: failed to send notification email',
+    )
+  }
+}
+
 /**
  * Factory that returns the beforeChange hook on submissions.
  *
@@ -78,20 +187,6 @@ export function makeSubmissionNotifications(
     // for queuing a single post-batch notification via onBatchImportComplete.
     if (operation !== 'create' || context?.isBatchImport) {
       return data
-    }
-
-    type NotificationItem = {
-      bcc?: string
-      cc?: string
-      conditions?: unknown
-      email: string
-      message: unknown
-      subject: string
-    }
-
-    type FormResult = {
-      formSchema: unknown
-      notification?: NotificationItem[] | null
     }
 
     const [fetchErr, result] = await attemptAsync(() =>
@@ -120,89 +215,10 @@ export function makeSubmissionNotifications(
       return data
     }
 
-    // Build the list of send promises, filtering out items whose conditions
-    // don't match or that resolve to an empty recipient list
-    const sends = notification
-      .filter((item: NotificationItem) => {
-        const conditions = item.conditions as FieldConditions | null | undefined
-        return shouldSendNotification(conditions, submissionData)
-      })
-      .map((item: NotificationItem) => {
-        const recipients = resolveRecipients(item.email, submissionData)
-        if (recipients.length === 0) {
-          return null
-        }
-
-        const rawText = convertLexicalToPlaintext({ data: item.message as never })
-        const rawHtml = convertLexicalToHTML({ data: item.message as never })
-        // Plain-text/subject substitution is verbatim; HTML substitution
-        // escapes each value so attacker-controlled fields can't inject markup.
-        const templateParser = replaceTemplatePlaceholders(submissionData)
-        const htmlTemplateParser = replaceTemplatePlaceholders(submissionData, escapeHtml)
-
-        return { htmlTemplateParser, item, rawHtml, rawText, recipients, templateParser }
-      })
-      .filter((p): p is NonNullable<typeof p> => p !== null)
-
     // Send each notification individually so a single failure doesn't
     // prevent other recipients from receiving their emails
-    for (const {
-      htmlTemplateParser,
-      item,
-      rawHtml,
-      rawText,
-      recipients,
-      templateParser,
-    } of sends) {
-      const cc = item.cc ? resolveRecipients(item.cc, submissionData) : []
-      const bcc = item.bcc ? resolveRecipients(item.bcc, submissionData) : []
-
-      const emailData: BeforeEmailData = {
-        bcc,
-        cc,
-        html: htmlTemplateParser(rawHtml),
-        subject: templateParser(item.subject),
-        text: templateParser(rawText),
-        to: recipients,
-      }
-
-      if (beforeEmail) {
-        const [hookErr, hookResult] = await attemptAsync(() => Promise.resolve(beforeEmail(emailData)))
-        if (hookErr) {
-          payload.logger.error(
-            { err: hookErr, formId: data.form, subject: item.subject },
-            'submissionNotifications: beforeEmail hook threw — send will proceed',
-          )
-        } else if (hookResult === false) {
-          continue
-        }
-      }
-
-      const [sendErr] = await attemptAsync(() =>
-        payload.sendEmail({
-          bcc: emailData.bcc,
-          cc: emailData.cc,
-          html: emailData.html,
-          subject: emailData.subject,
-          text: emailData.text,
-          to: emailData.to,
-        }),
-      )
-
-      if (sendErr) {
-        // Log the failure but continue — losing a notification must not
-        // cause the submission to fail or be rolled back. Callers that
-        // require guaranteed delivery should use an async job queue.
-        payload.logger.error(
-          {
-            err: sendErr,
-            formId: data.form,
-            subject: item.subject,
-            to: recipients,
-          },
-          'submissionNotifications: failed to send notification email',
-        )
-      }
+    for (const prepared of prepareSends(notification, submissionData)) {
+      await dispatchNotification(payload, data.form, submissionData, prepared, beforeEmail)
     }
 
     return data

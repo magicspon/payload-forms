@@ -15,6 +15,7 @@ type Column = {
   label?: string
   maxRows?: number
   name?: string
+  options?: Array<{ label: string; value: string }>
   rows?: ArrayRow[]
   type: string
 }
@@ -37,6 +38,20 @@ type FormPage = {
  */
 const EXCLUDED_TYPES = new Set(['file', 'message'])
 
+/** Iterate every column across all pages/rows of a form, in document order. */
+function* iterColumns(pages: FormPage[] | null | undefined): Generator<Column> {
+  if (!pages || !Array.isArray(pages)) {
+    return
+  }
+  for (const page of pages) {
+    for (const row of page.rows ?? []) {
+      for (const col of row.columns ?? []) {
+        yield col
+      }
+    }
+  }
+}
+
 /**
  * Generate flat CSV template headers from a form's pages structure.
  *
@@ -50,46 +65,40 @@ export function generateTemplateHeaders(pages: null | undefined | unknown[]): st
 
 function _generateTemplateHeaders(pages: FormPage[] | null | undefined): string[] {
   const headers: string[] = []
-
-  if (!pages || !Array.isArray(pages)) {
-    return headers
+  for (const col of iterColumns(pages)) {
+    if (EXCLUDED_TYPES.has(col.type) || !col.name) {
+      continue
+    }
+    headers.push(...columnHeaders(col))
   }
+  return headers
+}
 
-  for (const page of pages) {
-    for (const row of page.rows ?? []) {
-      for (const col of row.columns ?? []) {
-        if (EXCLUDED_TYPES.has(col.type)) {
-          continue
-        }
-        if (!col.name) {
-          continue
-        }
+/** Expand a single column into its flat CSV header keys. */
+function columnHeaders(col: Column): string[] {
+  const name = col.name as string
 
-        if (col.type === 'array') {
-          const subFields = collectArraySubFields(col.rows ?? [])
-          // Cap at 100 rows to avoid generating a template with tens of thousands
-          // of columns when maxRows is misconfigured or extremely large.
-          const count = Math.min(Math.max(1, col.maxRows ?? 1), 100)
-          const arrayKey = camelCase(col.name)
-          for (let i = 0; i < count; i++) {
-            for (const sf of subFields) {
-              headers.push(`${arrayKey}.[${i}].${camelCase(sf)}`)
-            }
-          }
-        } else if (col.type === 'group') {
-          const subFields = collectArraySubFields(col.rows ?? [])
-          const groupKey = camelCase(col.name)
-          for (const sf of subFields) {
-            headers.push(`${groupKey}.${sf}`)
-          }
-        } else {
-          headers.push(camelCase(col.name))
-        }
+  if (col.type === 'array') {
+    const subFields = collectArraySubFields(col.rows ?? [])
+    // Cap at 100 rows to avoid generating a template with tens of thousands
+    // of columns when maxRows is misconfigured or extremely large.
+    const count = Math.min(Math.max(1, col.maxRows ?? 1), 100)
+    const arrayKey = camelCase(name)
+    const out: string[] = []
+    for (let i = 0; i < count; i++) {
+      for (const sf of subFields) {
+        out.push(`${arrayKey}.[${i}].${camelCase(sf)}`)
       }
     }
+    return out
   }
 
-  return headers
+  if (col.type === 'group') {
+    const groupKey = camelCase(name)
+    return collectArraySubFields(col.rows ?? []).map((sf) => `${groupKey}.${sf}`)
+  }
+
+  return [camelCase(name)]
 }
 
 /** Collect unique sub-field names from all template rows of an array field */
@@ -152,79 +161,77 @@ export function parseCsvRowToSubmissionData(
   const result: Record<string, unknown> = {}
 
   for (const meta of fieldMap.values()) {
-    if (meta.isArray) {
-      const count = Math.max(1, meta.maxRows ?? 1)
-      const instances: Record<string, unknown>[] = []
-      for (let i = 0; i < count; i++) {
-        const obj: Record<string, unknown> = {}
-        for (const sf of meta.arraySubFields ?? []) {
-          const csvKey = `${meta.key}.[${i}].${sf}`
-          obj[sf] = row[csvKey] ?? ''
-        }
-        instances.push(obj)
-      }
-      result[meta.key] = instances
-    } else if (meta.isGroup) {
-      const obj: Record<string, unknown> = {}
-      for (const sf of meta.groupSubFields ?? []) {
-        const csvKey = `${meta.key}.${sf}`
-        obj[sf] = row[csvKey] ?? ''
-      }
-      result[meta.key] = obj
-    } else {
-      const raw = row[meta.key] ?? ''
-      result[meta.key] = coerce(raw, meta.type)
-    }
+    result[meta.key] = reconstructField(meta, row)
   }
 
   return result
 }
 
+/** Rebuild a single submissionData value from its flat CSV cells. */
+function reconstructField(meta: FieldMeta, row: Record<string, string>): unknown {
+  if (meta.isArray) {
+    const count = Math.max(1, meta.maxRows ?? 1)
+    const instances: Record<string, unknown>[] = []
+    for (let i = 0; i < count; i++) {
+      const obj: Record<string, unknown> = {}
+      for (const sf of meta.arraySubFields ?? []) {
+        obj[sf] = row[`${meta.key}.[${i}].${sf}`] ?? ''
+      }
+      instances.push(obj)
+    }
+    return instances
+  }
+
+  if (meta.isGroup) {
+    const obj: Record<string, unknown> = {}
+    for (const sf of meta.groupSubFields ?? []) {
+      obj[sf] = row[`${meta.key}.${sf}`] ?? ''
+    }
+    return obj
+  }
+
+  return coerce(row[meta.key] ?? '', meta.type)
+}
+
 /** Build an ordered map of camelCase field key → FieldMeta from all pages */
 function buildFieldMap(pages: FormPage[] | null | undefined): Map<string, FieldMeta> {
   const map = new Map<string, FieldMeta>()
-
-  if (!pages || !Array.isArray(pages)) {
-    return map
+  for (const col of iterColumns(pages)) {
+    if (EXCLUDED_TYPES.has(col.type) || !col.name) {
+      continue
+    }
+    const meta = columnToFieldMeta(col)
+    map.set(meta.key, meta)
   }
+  return map
+}
 
-  for (const page of pages) {
-    for (const row of page.rows ?? []) {
-      for (const col of row.columns ?? []) {
-        if (EXCLUDED_TYPES.has(col.type)) {
-          continue
-        }
-        if (!col.name) {
-          continue
-        }
+/** Derive the FieldMeta describing how to import/export a single column. */
+function columnToFieldMeta(col: Column): FieldMeta {
+  const key = camelCase(col.name as string)
 
-        const key = camelCase(col.name)
-
-        if (col.type === 'array') {
-          map.set(key, {
-            type: 'array',
-            arraySubFields: collectArraySubFields(col.rows ?? []),
-            isArray: true,
-            isGroup: false,
-            key,
-            maxRows: col.maxRows,
-          })
-        } else if (col.type === 'group') {
-          map.set(key, {
-            type: 'group',
-            groupSubFields: collectArraySubFields(col.rows ?? []),
-            isArray: false,
-            isGroup: true,
-            key,
-          })
-        } else {
-          map.set(key, { type: col.type as FieldType, isArray: false, isGroup: false, key })
-        }
-      }
+  if (col.type === 'array') {
+    return {
+      type: 'array',
+      arraySubFields: collectArraySubFields(col.rows ?? []),
+      isArray: true,
+      isGroup: false,
+      key,
+      maxRows: col.maxRows,
     }
   }
 
-  return map
+  if (col.type === 'group') {
+    return {
+      type: 'group',
+      groupSubFields: collectArraySubFields(col.rows ?? []),
+      isArray: false,
+      isGroup: true,
+      key,
+    }
+  }
+
+  return { type: col.type as FieldType, isArray: false, isGroup: false, key }
 }
 
 function coerce(value: string, type: FieldType): unknown {
@@ -264,42 +271,83 @@ export type FieldDefinition = {
  * Skips message fields — they produce no submission data.
  */
 export function extractFieldsFromPages(pages: null | undefined | unknown[]): FieldDefinition[] {
-  type ColumnDef = {
-    id: string
-    label?: string
-    name?: string
-    options?: Array<{ label: string; value: string }>
-    type: string
-  }
-  type RowDef = { columns: ColumnDef[]; id: string }
-  type PageDef = { id: string; rows: RowDef[]; title: string }
-
-  if (!pages || !Array.isArray(pages)) {
-    return []
-  }
-
   const fields: FieldDefinition[] = []
+  for (const col of iterColumns(pages as FormPage[] | null | undefined)) {
+    if (col.type === 'message' || !col.name) {
+      continue
+    }
+    fields.push({
+      type: col.type,
+      key: camelCase(col.name),
+      label: col.label || col.name,
+      options: col.options,
+    })
+  }
+  return fields
+}
 
-  for (const page of pages as PageDef[]) {
-    for (const row of page.rows ?? []) {
-      for (const col of row.columns ?? []) {
-        if (col.type === 'message') {
-          continue
-        }
-        if (!col.name) {
-          continue
-        }
-        fields.push({
-          type: col.type,
-          key: camelCase(col.name),
-          label: col.label || col.name,
-          options: col.options,
-        })
-      }
+type FieldOption = { label: string; value: string }
+type ValueFormatter = (value: unknown, options?: FieldOption[]) => string
+
+function formatCheckbox(value: unknown, options?: FieldOption[]): string {
+  if (Array.isArray(value)) {
+    if (options?.length) {
+      return value.map((v) => options.find((o) => o.value === v)?.label ?? v).join(', ')
+    }
+    return value.join(', ')
+  }
+  return String(value as boolean | number | string)
+}
+
+function formatBoolean(value: unknown): string {
+  return value === true ? 'Yes' : value === false ? 'No' : ''
+}
+
+function formatDate(value: unknown): string {
+  if (typeof value === 'string' && value) {
+    try {
+      return new Date(value).toISOString().split('T')[0] ?? value
+    } catch {
+      return value
     }
   }
+  return String(value as boolean | number | string)
+}
 
-  return fields
+function formatFile(value: unknown): string {
+  if (Array.isArray(value)) {
+    return value.map((f: { name?: string }) => f?.name ?? 'File').join(', ')
+  }
+  return String(value as string)
+}
+
+function formatOption(value: unknown, options?: FieldOption[]): string {
+  const opt = options?.find((o) => o.value === value)
+  return opt ? opt.label : String(value as string)
+}
+
+function formatDefault(value: unknown): string {
+  if (Array.isArray(value)) {
+    return value.join(', ')
+  }
+  if (typeof value === 'object') {
+    return JSON.stringify(value)
+  }
+  return String(value as bigint | boolean | number | string)
+}
+
+const VALUE_FORMATTERS: Record<string, ValueFormatter> = {
+  checkbox: formatCheckbox,
+  consent: formatBoolean,
+  date: formatDate,
+  email: (v) => String(v as string),
+  file: formatFile,
+  number: (v) => String(v as number),
+  radio: formatOption,
+  select: formatOption,
+  text: (v) => String(v as string),
+  textarea: (v) => String(v as string),
+  toggle: formatBoolean,
 }
 
 /**
@@ -309,69 +357,12 @@ export function extractFieldsFromPages(pages: null | undefined | unknown[]): Fie
 export function formatSubmissionValue(
   value: unknown,
   type: string,
-  options?: Array<{ label: string; value: string }>,
+  options?: FieldOption[],
 ): string {
   if (value === null || value === undefined) {
     return ''
   }
-
-  switch (type) {
-    case 'checkbox':
-      if (Array.isArray(value)) {
-        if (options?.length) {
-          return value.map((v) => options.find((o) => o.value === v)?.label ?? v).join(', ')
-        }
-        return value.join(', ')
-      }
-      return String(value as boolean | number | string)
-    case 'consent':
-    case 'toggle':
-      return value === true ? 'Yes' : value === false ? 'No' : ''
-
-    case 'date':
-      if (typeof value === 'string' && value) {
-        try {
-          return new Date(value).toISOString().split('T')[0] ?? value
-        } catch {
-          return value
-        }
-      }
-      return String(value as boolean | number | string)
-
-    case 'email':
-    case 'text':
-    case 'textarea':
-      return String(value as string)
-
-    case 'file':
-      if (Array.isArray(value)) {
-        return value.map((f: { name?: string }) => f?.name ?? 'File').join(', ')
-      }
-      return String(value as string)
-
-    case 'number':
-      return String(value as number)
-
-    case 'radio':
-    case 'select': {
-      if (options?.length) {
-        const opt = options.find((o) => o.value === value)
-        if (opt) {
-          return opt.label
-        }
-      }
-      return String(value as string)
-    }
-
-    default:
-      if (Array.isArray(value)) {
-        return value.join(', ')
-      }
-      if (typeof value === 'object') {
-        return JSON.stringify(value)
-      }
-      return String(value as bigint | boolean | number | string)
-  }
+  return (VALUE_FORMATTERS[type] ?? formatDefault)(value, options)
 }
 
 type ExportSubmission = {

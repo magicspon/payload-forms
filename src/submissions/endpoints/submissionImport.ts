@@ -37,6 +37,51 @@ const ImportBodySchema = z.object({
     .max(MAX_IMPORT_ROWS),
 })
 
+type ImportBody = z.infer<typeof ImportBodySchema>
+
+/** Read and validate the request body, returning the parsed data or an error response. */
+async function readImportBody(
+  req: PayloadRequest,
+): Promise<{ data: ImportBody } | { error: Response }> {
+  const [parseErr, rawBody] = await attemptAsync(async () => {
+    if (!req.json) {
+      throw new Error('json() not available')
+    }
+    return req.json() as Promise<unknown>
+  })
+
+  if (parseErr || !rawBody) {
+    return { error: errorResponse('Invalid JSON body', 400) }
+  }
+
+  const parsed = ImportBodySchema.safeParse(rawBody)
+  if (!parsed.success) {
+    return {
+      error: Response.json(
+        { error: 'Invalid request body', issues: parsed.error.issues, success: false },
+        { status: 422 },
+      ),
+    }
+  }
+
+  return { data: parsed.data }
+}
+
+/** Resolve the submission identifier from the configured identifier field, if any. */
+function deriveIdentifier(
+  submissionData: Record<string, unknown>,
+  identifierFieldName: null | string,
+): null | string {
+  if (!identifierFieldName) {
+    return null
+  }
+  const raw = submissionData[identifierFieldName]
+  if (raw === null || raw === undefined) {
+    return null
+  }
+  return Array.isArray(raw) ? raw.join(', ') : String(raw as string)
+}
+
 /**
  * POST /api/submissions/import-csv
  *
@@ -61,30 +106,12 @@ export function makeSubmissionImportEndpoint(
         return errorResponse('Forbidden', 403)
       }
 
-      const [parseErr, rawBody] = await attemptAsync(async () => {
-        if (!req.json) {
-          throw new Error('json() not available')
-        }
-        return req.json() as Promise<unknown>
-      })
-
-      if (parseErr || !rawBody) {
-        return errorResponse('Invalid JSON body', 400)
+      const body = await readImportBody(req)
+      if ('error' in body) {
+        return body.error
       }
 
-      const parsed = ImportBodySchema.safeParse(rawBody)
-      if (!parsed.success) {
-        return Response.json(
-          {
-            error: 'Invalid request body',
-            issues: parsed.error.issues,
-            success: false,
-          },
-          { status: 422 },
-        )
-      }
-
-      const { formId, rows, teamId } = parsed.data
+      const { formId, rows, teamId } = body.data
 
       const [formErr, form] = await attemptAsync(() =>
         req.payload.findByID({
@@ -107,14 +134,7 @@ export function makeSubmissionImportEndpoint(
       let created = 0
       for (const row of rows) {
         const submissionData = parseCsvRowToSubmissionData(row, pages)
-
-        let identifier: null | string = null
-        if (identifierFieldName) {
-          const raw = submissionData[identifierFieldName]
-          if (raw !== null && raw !== undefined) {
-            identifier = Array.isArray(raw) ? raw.join(', ') : String(raw as string)
-          }
-        }
+        const identifier = deriveIdentifier(submissionData, identifierFieldName)
 
         const [createErr] = await attemptAsync(() =>
           req.payload.create({

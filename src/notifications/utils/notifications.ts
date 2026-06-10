@@ -53,63 +53,79 @@ function evaluateCondition(
     )
   }
 
-  const compareValues = (a: unknown, b: unknown, operator: ConditionOperator): boolean => {
-    if (Array.isArray(a)) {
-      if (operator === 'equals') {
-        return a.includes(b)
-      }
-      if (operator === 'notEquals') {
-        return !a.includes(b)
-      }
-      if (operator === 'contains') {
-        return a.some(
-          (item) =>
-            typeof item === 'string' &&
-            typeof b === 'string' &&
-            item.toLowerCase().includes(b.toLowerCase()),
-        )
-      }
+  return compareValues(fieldValue, conditionValue, condition.operator)
+}
+
+/** Compare an array field value against a condition value. */
+function compareArray(a: unknown[], b: unknown, operator: ConditionOperator): boolean {
+  switch (operator) {
+    case 'contains':
+      return a.some(
+        (item) =>
+          typeof item === 'string' &&
+          typeof b === 'string' &&
+          item.toLowerCase().includes(b.toLowerCase()),
+      )
+    case 'equals':
+      return a.includes(b)
+    case 'notEquals':
+      return !a.includes(b)
+    default:
       return false
-    }
+  }
+}
 
-    if (typeof a === 'string' && typeof b === 'string') {
-      switch (operator) {
-        case 'contains':
-          return a.toLowerCase().includes(b.toLowerCase())
-        case 'equals':
-          return a === b
-        case 'notEquals':
-          return a !== b
-        default:
-          return false
-      }
-    }
+/** Compare two string values. */
+function compareStrings(a: string, b: string, operator: ConditionOperator): boolean {
+  switch (operator) {
+    case 'contains':
+      return a.toLowerCase().includes(b.toLowerCase())
+    case 'equals':
+      return a === b
+    case 'notEquals':
+      return a !== b
+    default:
+      return false
+  }
+}
 
-    const numA = Number(a)
-    const numB = Number(b)
-    if (!Number.isNaN(numA) && !Number.isNaN(numB)) {
-      switch (operator) {
-        case 'equals':
-          return numA === numB
-        case 'greaterThan':
-          return numA > numB
-        case 'greaterThanOrEquals':
-          return numA >= numB
-        case 'lessThan':
-          return numA < numB
-        case 'lessThanOrEquals':
-          return numA <= numB
-        case 'notEquals':
-          return numA !== numB
-        default:
-          return false
-      }
-    }
+/** Compare two numeric values. */
+function compareNumbers(a: number, b: number, operator: ConditionOperator): boolean {
+  switch (operator) {
+    case 'equals':
+      return a === b
+    case 'greaterThan':
+      return a > b
+    case 'greaterThanOrEquals':
+      return a >= b
+    case 'lessThan':
+      return a < b
+    case 'lessThanOrEquals':
+      return a <= b
+    case 'notEquals':
+      return a !== b
+    default:
+      return false
+  }
+}
 
-    return operator === 'equals' ? String(a) === String(b) : String(a) !== String(b)
+/** Compare a field value against a condition value, coercing by runtime type. */
+function compareValues(a: unknown, b: unknown, operator: ConditionOperator): boolean {
+  if (Array.isArray(a)) {
+    return compareArray(a, b, operator)
   }
 
-  return compareValues(fieldValue, conditionValue, condition.operator)
+  if (typeof a === 'string' && typeof b === 'string') {
+    return compareStrings(a, b, operator)
+  }
+
+  const numA = Number(a)
+  const numB = Number(b)
+  if (!Number.isNaN(numA) && !Number.isNaN(numB)) {
+    return compareNumbers(numA, numB, operator)
+  }
+
+  return operator === 'equals' ? String(a) === String(b) : String(a) !== String(b)
 }
 
 /**

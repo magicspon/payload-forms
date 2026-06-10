@@ -46,34 +46,53 @@ export function mergeCollection(
 
   // hooks — merge per lifecycle key
   if (hooks) {
-    merged.hooks = { ...base.hooks }
-    for (const key of Object.keys(hooks) as Array<keyof typeof hooks>) {
-      const overrideHooks = hooks[key]
-      const baseHooks = base.hooks?.[key]
-      if (Array.isArray(overrideHooks)) {
-        merged.hooks[key] = [
-          ...(Array.isArray(baseHooks) ? baseHooks : []),
-          ...overrideHooks,
-        ] as CollectionConfig['hooks'][keyof CollectionConfig['hooks']]
-      }
-    }
+    merged.hooks = mergeHooks(base.hooks, hooks)
   }
 
   // admin — shallow spread, then merge components
   if (admin) {
-    merged.admin = {
-      ...base.admin,
-      ...(admin as Partial<CollectionConfig['admin']>),
+    merged.admin = mergeAdmin(base.admin, admin)
+  }
+
+  return merged
+}
+
+/** Append override hook arrays onto the base hooks, per lifecycle key. */
+function mergeHooks(
+  baseHooks: CollectionConfig['hooks'],
+  overrideHooks: NonNullable<DeepPartial<CollectionConfig>['hooks']>,
+): CollectionConfig['hooks'] {
+  const merged: CollectionConfig['hooks'] = { ...baseHooks }
+  for (const key of Object.keys(overrideHooks) as Array<keyof typeof overrideHooks>) {
+    const overrideForKey = overrideHooks[key]
+    if (!Array.isArray(overrideForKey)) {
+      continue
     }
+    const baseForKey = baseHooks?.[key]
+    merged[key] = [
+      ...(Array.isArray(baseForKey) ? baseForKey : []),
+      ...overrideForKey,
+    ] as CollectionConfig['hooks'][keyof CollectionConfig['hooks']]
+  }
+  return merged
+}
 
-    const adminComponents = (admin as CollectionConfig['admin'])?.components
-    const baseComponents = base.admin?.components
+/** Shallow-spread admin config, then shallow-merge its `components`. */
+function mergeAdmin(
+  baseAdmin: CollectionConfig['admin'],
+  overrideAdmin: NonNullable<DeepPartial<CollectionConfig>['admin']>,
+): CollectionConfig['admin'] {
+  const merged: CollectionConfig['admin'] = {
+    ...baseAdmin,
+    ...(overrideAdmin as Partial<CollectionConfig['admin']>),
+  }
 
-    if (adminComponents || baseComponents) {
-      merged.admin.components = {
-        ...baseComponents,
-        ...adminComponents,
-      }
+  const overrideComponents = (overrideAdmin as CollectionConfig['admin'])?.components
+  const baseComponents = baseAdmin?.components
+  if (overrideComponents || baseComponents) {
+    merged.components = {
+      ...baseComponents,
+      ...overrideComponents,
     }
   }
 

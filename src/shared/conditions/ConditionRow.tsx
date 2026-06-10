@@ -22,6 +22,82 @@ function optionValue(option: unknown): string {
   return !Array.isArray(option) && option ? String((option as { value: unknown }).value) : ''
 }
 
+type ConditionValueInputProps = {
+  condition: Condition
+  fieldOptions: null | { label: string; value: string }[]
+  index: number
+  onUpdate: (index: number, condition: Condition) => void
+  selectedFieldType?: Field['type']
+  showValueInput: boolean
+  valueName: string
+}
+
+/**
+ * Renders the value control for a condition row, picking the input by field
+ * shape: option-backed select, number input, or plain text. Renders a spacer
+ * when the operator takes no value (e.g. isEmpty).
+ */
+function ConditionValueInput({
+  condition,
+  fieldOptions,
+  index,
+  onUpdate,
+  selectedFieldType,
+  showValueInput,
+  valueName,
+}: ConditionValueInputProps) {
+  if (!showValueInput) {
+    return <div className={index === 0 ? styles.spacer : undefined} />
+  }
+
+  const label = index === 0 ? 'Value' : undefined
+  const currentValue = String(condition.value ?? '')
+
+  if (fieldOptions) {
+    return (
+      <SelectInput
+        isClearable
+        label={label}
+        name={valueName}
+        onChange={(option) => {
+          onUpdate(index, { ...condition, value: optionValue(option) })
+        }}
+        options={fieldOptions.map((opt) => ({ label: opt.label || opt.value, value: opt.value }))}
+        path={valueName}
+        placeholder="Select value..."
+        value={currentValue}
+      />
+    )
+  }
+
+  if (selectedFieldType === 'number') {
+    return (
+      <TextInput
+        label={label}
+        onChange={(e: ChangeEvent<HTMLInputElement>) => {
+          const numValue = e.target.value ? Number(e.target.value) : undefined
+          onUpdate(index, { ...condition, value: numValue })
+        }}
+        path={valueName}
+        placeholder="Enter number..."
+        value={currentValue}
+      />
+    )
+  }
+
+  return (
+    <TextInput
+      label={label}
+      onChange={(e: ChangeEvent<HTMLInputElement>) => {
+        onUpdate(index, { ...condition, value: e.target.value })
+      }}
+      path={valueName}
+      placeholder="Enter value..."
+      value={currentValue}
+    />
+  )
+}
+
 export function ConditionRow({
   allowChangeOperators,
   availableFields,
@@ -78,45 +154,15 @@ export function ConditionRow({
         value={condition.operator}
       />
 
-      {showValueInput ? (
-        fieldOptions ? (
-          <SelectInput
-            isClearable
-            label={index === 0 ? 'Value' : undefined}
-            name={valueName}
-            onChange={(option) => {
-              onUpdate(index, { ...condition, value: optionValue(option) })
-            }}
-            options={fieldOptions.map((opt) => ({ label: opt.label || opt.value, value: opt.value }))}
-            path={valueName}
-            placeholder="Select value..."
-            value={String(condition.value ?? '')}
-          />
-        ) : selectedField?.type === 'number' ? (
-          <TextInput
-            label={index === 0 ? 'Value' : undefined}
-            onChange={(e: ChangeEvent<HTMLInputElement>) => {
-              const numValue = e.target.value ? Number(e.target.value) : undefined
-              onUpdate(index, { ...condition, value: numValue })
-            }}
-            path={valueName}
-            placeholder="Enter number..."
-            value={String(condition.value ?? '')}
-          />
-        ) : (
-          <TextInput
-            label={index === 0 ? 'Value' : undefined}
-            onChange={(e: ChangeEvent<HTMLInputElement>) => {
-              onUpdate(index, { ...condition, value: e.target.value })
-            }}
-            path={valueName}
-            placeholder="Enter value..."
-            value={String(condition.value ?? '')}
-          />
-        )
-      ) : (
-        <div className={index === 0 ? styles.spacer : undefined} />
-      )}
+      <ConditionValueInput
+        condition={condition}
+        fieldOptions={fieldOptions}
+        index={index}
+        onUpdate={onUpdate}
+        selectedFieldType={selectedField?.type}
+        showValueInput={showValueInput}
+        valueName={valueName}
+      />
 
       <div className={styles.removeButtonWrap}>
         <button
