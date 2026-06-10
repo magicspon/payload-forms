@@ -19,13 +19,7 @@ import * as React from 'react'
 
 import type { FormOption } from './FormImportButton'
 
-interface ImportResult {
-  count?: number
-  error?: string
-  success: boolean
-}
-
-const BATCH_SIZE = 50
+import { BATCH_SIZE, chunkRows, importBatches } from './formImport.utils'
 
 export function FormImportButtonClient({ forms }: { forms: FormOption[] }) {
   const drawerSlug = useDrawerSlug('submission-import')
@@ -90,32 +84,15 @@ export function FormImportButtonClient({ forms }: { forms: FormOption[] }) {
     setIsPending(true)
     setImportError(null)
 
-    const batches: Record<string, string>[][] = []
-    for (let i = 0; i < parsedRows.length; i += BATCH_SIZE) {
-      batches.push(parsedRows.slice(i, i + BATCH_SIZE))
-    }
-
+    const batches = chunkRows(parsedRows, BATCH_SIZE)
     setProgress({ done: 0, total: batches.length })
-    let totalCreated = 0
 
     try {
-      for (let i = 0; i < batches.length; i++) {
-        const res = await fetch(`/api/submissions/import-csv`, {
-          body: JSON.stringify({ formId, rows: batches[i] }),
-          credentials: 'include',
-          headers: { 'Content-Type': 'application/json' },
-          method: 'POST',
-        })
-
-        const json = (await res.json()) as ImportResult
-        setProgress({ done: i + 1, total: batches.length })
-
-        if (!json.success) {
-          throw new Error(json.error ?? 'Import failed')
-        }
-        totalCreated += json.count ?? 0
-      }
-
+      const totalCreated = await importBatches({
+        batches,
+        formId,
+        onProgress: (done, total) => setProgress({ done, total }),
+      })
       toast.success(`Successfully imported ${totalCreated} submission(s).`)
       setParsedRows([])
       setProgress(null)

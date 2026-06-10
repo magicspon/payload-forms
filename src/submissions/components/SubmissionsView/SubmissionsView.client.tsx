@@ -5,6 +5,7 @@ import type { FieldType } from '@/shared/fieldSchema'
 import { Gutter, Pagination } from '@payloadcms/ui'
 import * as React from 'react'
 
+import { formatCellValue } from './formatCellValue'
 import styles from './SubmissionsView.module.css'
 
 export type ColumnDef = {
@@ -34,41 +35,14 @@ function Badge({ children }: { children: React.ReactNode }) {
 }
 
 function renderCell(value: unknown, type: FieldType): React.ReactNode {
-  if (value === undefined || value === null) return '—'
-
-  switch (type) {
-    case 'array': {
-      const count = Array.isArray(value) ? value.length : 0
-      return (
-        <Badge>
-          {count} {count === 1 ? 'item' : 'items'}
-        </Badge>
-      )
-    }
-    case 'group':
-      return <Badge>Group</Badge>
-    case 'file': {
-      if (Array.isArray(value)) {
-        const count = value.length
-        return (
-          <Badge>
-            {count} {count === 1 ? 'file' : 'files'}
-          </Badge>
-        )
-      }
-      if (typeof value === 'object' && value !== null) {
-        const filename = (value as Record<string, unknown>).filename as string
-        return filename ? filename : <Badge>1 file</Badge>
-      }
-      return '—'
-    }
-    case 'toggle':
-    case 'consent':
-      return value ? 'Yes' : 'No'
-    case 'checkbox':
-      return Array.isArray(value) ? value.join(', ') || '—' : '—'
+  const display = formatCellValue(value, type)
+  switch (display.kind) {
+    case 'badge':
+      return <Badge>{display.text}</Badge>
+    case 'text':
+      return display.text
     default:
-      return value as string
+      return display.value as string
   }
 }
 

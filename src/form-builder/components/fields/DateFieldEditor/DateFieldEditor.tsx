@@ -11,58 +11,47 @@ import { DatePicker } from '@payloadcms/ui'
 
 import { EditorTabs } from '../../canvas/EditorTabs'
 
-export function DateFieldEditorContent() {
+type DateFieldName = 'defaultValue' | 'maxDate' | 'minDate'
+
+/** A labeled DatePicker bound to a `YYYY-MM-DD` string field on the date editor form. */
+function DateFieldInput({
+  label,
+  name,
+  placeholder,
+}: {
+  label: string
+  name: DateFieldName
+  placeholder: string
+}) {
   const form = useFormContext<DateField>()
 
+  return (
+    <form.Field name={name}>
+      {(f) => (
+        <div className="field-type date">
+          <p className="field-label">{label}</p>
+          <DatePicker
+            onChange={(date: Date) => {
+              f.handleChange(date ? date.toISOString().split('T')[0] : '')
+            }}
+            placeholder={placeholder}
+            value={f.state.value ? new Date(f.state.value) : undefined}
+          />
+        </div>
+      )}
+    </form.Field>
+  )
+}
+
+export function DateFieldEditorContent() {
   return (
     <>
       <GeneralFields />
       <Divider />
       <AdvancedFields exclude={['defaultValue']}>
-        <form.Field name="defaultValue">
-          {(f) => (
-            <div className="field-type date">
-              <p className="field-label">Default Value</p>
-              <DatePicker
-                onChange={(date: Date) => {
-                  f.handleChange(date ? date.toISOString().split('T')[0] : '')
-                }}
-                placeholder="Select date..."
-                value={f.state.value ? new Date(f.state.value) : undefined}
-              />
-            </div>
-          )}
-        </form.Field>
-
-        <form.Field name="minDate">
-          {(f) => (
-            <div className="field-type date">
-              <p className="field-label">Min Date</p>
-              <DatePicker
-                onChange={(date: Date) => {
-                  f.handleChange(date ? date.toISOString().split('T')[0] : '')
-                }}
-                placeholder="Select min date..."
-                value={f.state.value ? new Date(f.state.value) : undefined}
-              />
-            </div>
-          )}
-        </form.Field>
-
-        <form.Field name="maxDate">
-          {(f) => (
-            <div className="field-type date">
-              <p className="field-label">Max Date</p>
-              <DatePicker
-                onChange={(date: Date) => {
-                  f.handleChange(date ? date.toISOString().split('T')[0] : '')
-                }}
-                placeholder="Select max date..."
-                value={f.state.value ? new Date(f.state.value) : undefined}
-              />
-            </div>
-          )}
-        </form.Field>
+        <DateFieldInput label="Default Value" name="defaultValue" placeholder="Select date..." />
+        <DateFieldInput label="Min Date" name="minDate" placeholder="Select min date..." />
+        <DateFieldInput label="Max Date" name="maxDate" placeholder="Select max date..." />
       </AdvancedFields>
     </>
   )

@@ -373,6 +373,92 @@ describe('buildFormSchema', () => {
     expect(schema.properties?.['attachments']?.type).toBe('array')
   })
 
+  // ── group field ──────────────────────────────────────────────────────────
+
+  it('group field produces an object type with nested camelCased properties', () => {
+    const groupField = field('g1', {
+      name: 'address',
+      type: 'group',
+      required: true,
+      rows: [
+        {
+          id: 'r1',
+          columns: [
+            field('s1', { name: 'street_name', type: 'text', required: true }),
+            field('s2', { name: 'postcode', type: 'text', required: true }),
+          ] as ArrayItemField[],
+        },
+      ],
+    })
+    const schema = buildFormSchema({ fields: [groupField] }) as {
+      properties?: Record<string, { properties?: Record<string, unknown>; type?: string }>
+    }
+    expect(schema.properties?.['address']?.type).toBe('object')
+    expect(schema.properties?.['address']?.properties).toHaveProperty('streetName')
+    expect(schema.properties?.['address']?.properties).toHaveProperty('postcode')
+  })
+
+  it('group field collects sub-fields from multiple rows', () => {
+    const groupField = field('g1', {
+      name: 'profile',
+      type: 'group',
+      required: true,
+      rows: [
+        {
+          id: 'r1',
+          columns: [field('s1', { name: 'age', type: 'number', required: true })] as ArrayItemField[],
+        },
+        {
+          id: 'r2',
+          columns: [
+            field('s2', { name: 'is_active', type: 'toggle', required: true }),
+          ] as ArrayItemField[],
+        },
+      ],
+    })
+    const schema = buildFormSchema({ fields: [groupField] }) as {
+      properties?: Record<string, { properties?: Record<string, { type?: string }> }>
+    }
+    const props = schema.properties?.['profile']?.properties ?? {}
+    expect(props['age']?.type).toBe('number')
+    expect(props['isActive']?.type).toBe('boolean')
+  })
+
+  it('group field skips nested message fields', () => {
+    const groupField = field('g1', {
+      name: 'section',
+      type: 'group',
+      required: true,
+      rows: [
+        {
+          id: 'r1',
+          columns: [
+            field('m1', { type: 'message' }),
+            field('s1', { name: 'real_field', type: 'text', required: true }),
+          ] as ArrayItemField[],
+        },
+      ],
+    })
+    const schema = buildFormSchema({ fields: [groupField] }) as {
+      properties?: Record<string, { properties?: Record<string, unknown> }>
+    }
+    expect(Object.keys(schema.properties?.['section']?.properties ?? {})).toEqual(['realField'])
+  })
+
+  it('group field with no rows produces empty object properties', () => {
+    const groupField = field('g1', { name: 'empty', type: 'group', required: true, rows: [] })
+    const schema = buildFormSchema({ fields: [groupField] }) as {
+      properties?: Record<string, { properties?: Record<string, unknown> }>
+    }
+    expect(schema.properties?.['empty']?.properties ?? {}).toEqual({})
+  })
+
+  it('optional group field is not in required list', () => {
+    const groupField = field('g1', { name: 'meta', type: 'group', required: false, rows: [] })
+    const schema = buildFormSchema({ fields: [groupField] }) as { required?: string[] }
+    expect(schema.required ?? []).not.toContain('meta')
+  })
+
   it('unknown field type is skipped silently', () => {
     const schema = buildFormSchema({
       fields: [

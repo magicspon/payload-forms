@@ -2,40 +2,20 @@
 
 import payloadEsLintConfig from '@payloadcms/eslint-config'
 
-export const defaultESLintIgnores = [
-  '**/.temp',
-  '**/.*', // ignore all dotfiles
-  '**/.git',
-  '**/.hg',
-  '**/.pnp.*',
-  '**/.svn',
-  '**/playwright.config.ts',
-  '**/vitest.config.js',
-  '**/tsconfig.tsbuildinfo',
-  '**/README.md',
-  '**/eslint.config.js',
-  '**/payload-types.ts',
-  '**/dist/',
-  '**/.yarn/',
-  '**/build/',
-  '**/node_modules/',
-  '**/temp/',
-]
-
 export default [
   ...payloadEsLintConfig,
   {
     rules: {
-			'curly': 'off',
-			'no-restricted-exports': 'off',
-			'perfectionist/sort-object-types': 'off',
+      curly: 'off',
+      'no-restricted-exports': 'off',
+      'perfectionist/sort-object-types': 'off',
       'perfectionist/sort-union-types': 'off',
-			'perfectionist/sort-objects': 'off',
-			'perfectionist/sort-jsx-props': 'off',
-			'perfectionist/sort-imports': 'off',
-			'perfectionist/sort-interfaces': 'off',
-			'perfectionist/sort-intersection-types': 'off',
-			'perfectionist/sort-switch-case': 'off',
+      'perfectionist/sort-objects': 'off',
+      'perfectionist/sort-jsx-props': 'off',
+      'perfectionist/sort-imports': 'off',
+      'perfectionist/sort-interfaces': 'off',
+      'perfectionist/sort-intersection-types': 'off',
+      'perfectionist/sort-switch-case': 'off',
       'perfectionist/sort-named-imports': 'off',
     },
   },

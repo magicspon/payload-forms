@@ -148,6 +148,42 @@ describe('makeSubmissionEndpoint', () => {
       // payload.create should be called once for the submission, never for a file
       expect(req.payload.create).toHaveBeenCalledTimes(1)
     })
+
+    it('uploads file entries and records them under fileUploads', async () => {
+      const endpoint = makeSubmissionEndpoint(defaultSlugs)
+      const fd = validFormData()
+      fd.set('attachment', new File([new Uint8Array(10)], 'doc.pdf', { type: 'application/pdf' }))
+      const req = makeReq({ formData: fd })
+      // Order: file upload is created first, then the submission record.
+      req.payload.create.mockReset()
+      req.payload.create
+        .mockResolvedValueOnce({ id: 'upload-99' })
+        .mockResolvedValueOnce({ id: 'sub-new' })
+      const res = await endpoint.handler(req as never)
+      expect(res.status).toBe(201)
+      expect(req.payload.create).toHaveBeenCalledTimes(2)
+      const submissionCall = req.payload.create.mock.calls[1][0]
+      // Unknown file field falls back to the default uploads collection.
+      expect(submissionCall.data.fileUploads).toEqual([
+        { fieldName: 'attachment', ids: ['upload-99'], maxFiles: 1, relationTo: 'form-uploads' },
+      ])
+    })
+
+    it('returns 500 when a file upload fails', async () => {
+      const endpoint = makeSubmissionEndpoint(defaultSlugs)
+      const fd = validFormData()
+      fd.set('attachment', new File([new Uint8Array(10)], 'doc.pdf', { type: 'application/pdf' }))
+      const req = makeReq({ formData: fd })
+      req.payload.create.mockReset()
+      req.payload.create.mockRejectedValue(new Error('storage down'))
+      const res = await endpoint.handler(req as never)
+      expect(res.status).toBe(500)
+      // No submission record should be created when an upload fails.
+      expect(req.payload.create).not.toHaveBeenCalledWith(
+        expect.objectContaining({ collection: 'submissions' }),
+      )
+      expect(req.payload.logger.error).toHaveBeenCalled()
+    })
   })
 
   describe('successful submission', () => {
