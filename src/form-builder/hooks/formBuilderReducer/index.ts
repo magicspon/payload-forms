@@ -1,1 +1,1 @@
-export { formBuilderReducer } from './formBuilderReducer'
+export { reducer } from './formBuilderReducer'

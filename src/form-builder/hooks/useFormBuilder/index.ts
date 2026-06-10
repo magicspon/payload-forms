@@ -1,1 +1,1 @@
-export { useFormBuilder } from './useFormBuilder'
+export { useFormBuilder, type UseFormBuilderReturn } from './useFormBuilder'

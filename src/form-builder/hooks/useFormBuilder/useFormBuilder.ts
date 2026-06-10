@@ -3,7 +3,7 @@ import type { Field, FieldType } from '@/shared/fieldSchema'
 import { type FormPage, getAllFields } from '@/form-builder/utils/formTree'
 import * as React from 'react'
 
-import { reducer } from './formBuilderReducer'
+import { reducer } from '../formBuilderReducer'
 
 export interface UseFormBuilderReturn {
   addField: (rowId: string, fieldType: FieldType) => void
