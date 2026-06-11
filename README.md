@@ -1,3 +1,5 @@
+[![CI](https://github.com/magicspon/payload-forms/actions/workflows/ci.yml/badge.svg)](https://github.com/magicspon/payload-forms/actions/workflows/ci.yml) [![Release](https://github.com/magicspon/payload-forms/actions/workflows/release.yml/badge.svg)](https://github.com/magicspon/payload-forms/actions/workflows/release.yml)
+
 # @spon/payload-forms
 
 > **Under active development — not ready for production use.**
