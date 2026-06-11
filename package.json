@@ -1,6 +1,6 @@
 {
   "name": "@spon/payload-forms",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "description": "Payload CMS plugin — visual form builder with drag-drop editor, submissions, notifications, and optional multitenancy",
   "license": "MIT",
   "type": "module",
