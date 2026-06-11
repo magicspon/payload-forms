@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
 import {
+  formatSubmissionValue,
   generateSubmissionsCSV,
   generateTemplateHeaders,
   parseCsvRowToSubmissionData,
@@ -221,5 +222,127 @@ describe('generateSubmissionsCSV — formula injection (CWE-1236)', () => {
   it('leaves safe values untouched', () => {
     const csv = csvFor('Alice')
     expect(csv.split('\n')[1]).toBe(',,Alice')
+  })
+})
+
+describe('formatSubmissionValue', () => {
+  it('returns empty string for null', () => {
+    expect(formatSubmissionValue(null, 'text')).toBe('')
+  })
+
+  it('returns empty string for undefined', () => {
+    expect(formatSubmissionValue(undefined, 'text')).toBe('')
+  })
+
+  describe('checkbox', () => {
+    it('maps array values to option labels when options are provided', () => {
+      const options = [
+        { label: 'Apple', value: 'a' },
+        { label: 'Banana', value: 'b' },
+      ]
+      expect(formatSubmissionValue(['a', 'b'], 'checkbox', options)).toBe('Apple, Banana')
+    })
+
+    it('falls back to the raw value when an option has no matching label', () => {
+      const options = [{ label: 'Apple', value: 'a' }]
+      expect(formatSubmissionValue(['a', 'z'], 'checkbox', options)).toBe('Apple, z')
+    })
+
+    it('joins array values when no options are provided', () => {
+      expect(formatSubmissionValue(['x', 'y'], 'checkbox')).toBe('x, y')
+    })
+
+    it('stringifies a non-array checkbox value', () => {
+      expect(formatSubmissionValue(true, 'checkbox')).toBe('true')
+    })
+  })
+
+  describe('consent / toggle', () => {
+    it('renders true as "Yes"', () => {
+      expect(formatSubmissionValue(true, 'toggle')).toBe('Yes')
+      expect(formatSubmissionValue(true, 'consent')).toBe('Yes')
+    })
+
+    it('renders false as "No"', () => {
+      expect(formatSubmissionValue(false, 'toggle')).toBe('No')
+    })
+
+    it('renders a non-boolean as empty string', () => {
+      expect(formatSubmissionValue('maybe', 'toggle')).toBe('')
+    })
+  })
+
+  describe('date', () => {
+    it('formats a valid ISO string to YYYY-MM-DD', () => {
+      expect(formatSubmissionValue('2024-03-15T10:30:00.000Z', 'date')).toBe('2024-03-15')
+    })
+
+    it('returns the original string when the date is unparseable', () => {
+      expect(formatSubmissionValue('not-a-date', 'date')).toBe('not-a-date')
+    })
+
+    it('stringifies a non-string date value', () => {
+      expect(formatSubmissionValue(0, 'date')).toBe('0')
+    })
+  })
+
+  describe('text-like types', () => {
+    it.each(['email', 'text', 'textarea'])('stringifies %s values', (type) => {
+      expect(formatSubmissionValue('hello', type)).toBe('hello')
+    })
+  })
+
+  describe('file', () => {
+    it('joins file names from an array', () => {
+      expect(formatSubmissionValue([{ name: 'a.pdf' }, { name: 'b.png' }], 'file')).toBe(
+        'a.pdf, b.png',
+      )
+    })
+
+    it('uses "File" for entries missing a name', () => {
+      expect(formatSubmissionValue([{ name: 'a.pdf' }, {}], 'file')).toBe('a.pdf, File')
+    })
+
+    it('stringifies a non-array file value', () => {
+      expect(formatSubmissionValue('single.pdf', 'file')).toBe('single.pdf')
+    })
+  })
+
+  it('stringifies number values', () => {
+    expect(formatSubmissionValue(42, 'number')).toBe('42')
+  })
+
+  describe('radio / select', () => {
+    it('maps the value to its option label', () => {
+      const options = [
+        { label: 'Active', value: 'active' },
+        { label: 'Inactive', value: 'inactive' },
+      ]
+      expect(formatSubmissionValue('active', 'select', options)).toBe('Active')
+      expect(formatSubmissionValue('inactive', 'radio', options)).toBe('Inactive')
+    })
+
+    it('stringifies the value when no option matches', () => {
+      const options = [{ label: 'Active', value: 'active' }]
+      expect(formatSubmissionValue('archived', 'select', options)).toBe('archived')
+    })
+
+    it('stringifies the value when no options are provided', () => {
+      expect(formatSubmissionValue('active', 'radio')).toBe('active')
+    })
+  })
+
+  describe('default / unknown type', () => {
+    it('joins array values', () => {
+      expect(formatSubmissionValue(['one', 'two'], 'mystery')).toBe('one, two')
+    })
+
+    it('JSON-stringifies object values', () => {
+      expect(formatSubmissionValue({ a: 1 }, 'mystery')).toBe('{"a":1}')
+    })
+
+    it('stringifies primitive values', () => {
+      expect(formatSubmissionValue(99, 'mystery')).toBe('99')
+    })
   })
 })

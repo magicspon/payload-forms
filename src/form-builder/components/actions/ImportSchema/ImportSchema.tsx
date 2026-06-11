@@ -1,19 +1,27 @@
 'use client'
 
-import type { FormPage, FormRow } from '@/form-builder/utils/formTree'
-import type { Field, FieldType } from '@/shared/fieldSchema'
+import type { FieldType } from '@/shared/fieldSchema'
 
 import { useFormPages } from '@/form-builder/hooks/useFormPages/useFormPages'
 import { fieldTypes } from '@/form-builder/utils/fieldTypes'
-import { appendRowToPage, getAllFields } from '@/form-builder/utils/formTree'
-import { createDefaultField } from '@/shared/fieldSchema'
+import { getAllFields } from '@/form-builder/utils/formTree'
 import { camelCase } from '@/shared/utils/camelCase'
-import { nanoid } from '@/shared/utils/nanoid'
 import { Button, SelectInput, TextInput, toast } from '@payloadcms/ui'
 import Papa from 'papaparse'
 import * as React from 'react'
 import styles from './ImportSchema.module.css'
 import { Stack } from '@/shared/layout'
+import {
+  applyInsertMode,
+  buildFieldsFromMappings,
+  buildMappingsFromHeaders,
+  computeNameErrors,
+  type InsertMode,
+  isOptionsType,
+  type Mapping,
+  type Option,
+} from './importSchema.utils'
+
 // 'message' has no name/label; 'array' requires sub-field authoring — exclude both
 const importableFieldTypes = fieldTypes.filter((t) => t.value !== 'message' && t.value !== 'array')
 
@@ -21,85 +29,6 @@ const fieldTypeSelectOptions = [
   { label: '— skip —', value: '' },
   ...importableFieldTypes.map((t) => ({ label: t.label, value: t.value })),
 ]
-
-type InsertMode = 'append' | 'new-page' | 'replace'
-
-interface Option {
-  label: string
-  value: string
-}
-
-interface Mapping {
-  fieldType: FieldType | null
-  header: string
-  /** Editable field name (camelCase of header by default) */
-  name: string
-  /** Only populated when fieldType is checkbox, radio, or select */
-  options: Option[]
-}
-
-const OPTIONS_TYPES = new Set<FieldType>(['checkbox', 'radio', 'select'])
-
-function isOptionsType(t: FieldType | null): t is 'checkbox' | 'radio' | 'select' {
-  return t !== null && OPTIONS_TYPES.has(t)
-}
-
-/** Guess a sensible default field type from a column header name. */
-function inferFieldType(header: string): FieldType {
-  const h = header.toLowerCase()
-  if (h.includes('email')) {
-    return 'email'
-  }
-  if (h.includes('date')) {
-    return 'date'
-  }
-  if (
-    h.includes('number') ||
-    h.includes('age') ||
-    h.includes('count') ||
-    h.includes('amount') ||
-    h.includes('score')
-  ) {
-    return 'number'
-  }
-  if (h.includes('consent') || h.includes('agree') || h.includes('accept')) {
-    return 'consent'
-  }
-  if (h.includes('toggle') || h.includes('enabled') || h.includes('active')) {
-    return 'toggle'
-  }
-  return 'text'
-}
-
-/** Returns a map of index → error message for active mappings with name conflicts. */
-function computeNameErrors(mappings: Mapping[], existingNames: Set<string>): Map<number, string> {
-  const errors = new Map<number, string>()
-  const seen = new Map<string, number>() // name → first active index
-
-  for (let i = 0; i < mappings.length; i++) {
-    const m = mappings[i]
-    if (m.fieldType === null) {
-      continue
-    } // skipped rows don't participate
-    const n = m.name.trim()
-    if (!n) {
-      errors.set(i, 'Name is required')
-      continue
-    }
-    if (existingNames.has(n)) {
-      errors.set(i, `"${n}" already exists in the form`)
-      continue
-    }
-    const prev = seen.get(n)
-    if (prev !== undefined) {
-      errors.set(prev, `"${n}" is used more than once`)
-      errors.set(i, `"${n}" is used more than once`)
-    } else {
-      seen.set(n, i)
-    }
-  }
-  return errors
-}
 
 export function ImportSchema() {
   const { pages, setPages } = useFormPages()
@@ -124,17 +53,7 @@ export function ImportSchema() {
           toast.error('No column headers found in this CSV.')
           return
         }
-        setMappings(
-          headers.map<Mapping>((h) => {
-            const fieldType = inferFieldType(h)
-            return {
-              name: camelCase(h),
-              fieldType,
-              header: h,
-              options: isOptionsType(fieldType) ? [{ label: '', value: '' }] : [],
-            }
-          }),
-        )
+        setMappings(buildMappingsFromHeaders(headers))
       },
       error: (err) => {
         toast.error(`Could not parse CSV: ${err.message}`)
@@ -206,64 +125,26 @@ export function ImportSchema() {
   )
 
   function handleGenerate() {
-    const active = mappings.filter((m) => m.fieldType !== null)
-    if (active.length === 0) {
+    // Guard — button is disabled in these states, but be safe.
+    if (!hasActiveMapping || nameErrors.size > 0) {
       return
     }
-    if (nameErrors.size > 0) {
-      return
-    } // guard — button is disabled, but be safe
 
-    const newFields: Field[] = active.map((m) => {
-      const base = createDefaultField(nanoid(), m.fieldType!)
-      const validOptions = m.options.filter((o) => o.label.trim())
-      const field = {
-        ...base,
-        name: m.name.trim(),
-        label: m.header,
-      }
-      if (isOptionsType(m.fieldType) && validOptions.length > 0) {
-        Object.assign(field, { options: validOptions })
-      }
-      return field as Field
+    const newFields = buildFieldsFromMappings(mappings)
+    const result = applyInsertMode({
+      fields: newFields,
+      mode: insertMode,
+      newPageTitle,
+      pages,
+      targetPageId,
     })
 
-    const newRows: FormRow[] = newFields.map((f) => ({
-      id: nanoid(),
-      columns: [f],
-    }))
-
-    if (insertMode === 'replace') {
-      const page: FormPage = {
-        id: nanoid(),
-        backButton: 'Back',
-        nextButton: 'Next',
-        rows: newRows,
-        title: 'Page 1',
-      }
-      setPages([page])
-    } else if (insertMode === 'append') {
-      const pageId = targetPageId || pages[0]?.id || ''
-      if (!pageId) {
-        toast.error('No page available to append to.')
-        return
-      }
-      let updated = pages
-      for (const row of newRows) {
-        updated = appendRowToPage(updated, pageId, row)
-      }
-      setPages(updated)
-    } else {
-      const page: FormPage = {
-        id: nanoid(),
-        backButton: 'Back',
-        nextButton: 'Next',
-        rows: newRows,
-        title: newPageTitle.trim() || 'Imported Fields',
-      }
-      setPages([...pages, page])
+    if (!result.ok) {
+      toast.error(result.error)
+      return
     }
 
+    setPages(result.pages)
     setMappings([])
     setNewPageTitle('')
     toast.success(

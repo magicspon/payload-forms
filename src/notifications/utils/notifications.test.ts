@@ -320,4 +320,50 @@ describe('shouldSendNotification', () => {
       expect(shouldSendNotification(conds, data)).toBe(false)
     })
   })
+
+  describe('array field comparisons', () => {
+    it('notEquals returns true when array does not include value', () => {
+      const conds: FieldConditions = {
+        conditions: [{ field: 'tags', operator: 'notEquals', value: 'z' }],
+        logic: 'and',
+      }
+      expect(shouldSendNotification(conds, { tags: ['a', 'b'] })).toBe(true)
+    })
+
+    it('notEquals returns false when array includes value', () => {
+      const conds: FieldConditions = {
+        conditions: [{ field: 'tags', operator: 'notEquals', value: 'a' }],
+        logic: 'and',
+      }
+      expect(shouldSendNotification(conds, { tags: ['a', 'b'] })).toBe(false)
+    })
+
+    it('unsupported operator on an array field returns false', () => {
+      const conds: FieldConditions = {
+        conditions: [{ field: 'tags', operator: 'greaterThan', value: 'a' }],
+        logic: 'and',
+      }
+      expect(shouldSendNotification(conds, { tags: ['a', 'b'] })).toBe(false)
+    })
+  })
+
+  describe('mixed-type fallback comparison', () => {
+    // When sides are neither both-string nor both-numeric (e.g. boolean vs string,
+    // or non-numeric string vs number), comparison falls back to String(a) === String(b).
+    it('equals matches a boolean field against its string representation', () => {
+      const conds: FieldConditions = {
+        conditions: [{ field: 'agreed', operator: 'equals', value: 'true' }],
+        logic: 'and',
+      }
+      expect(shouldSendNotification(conds, { agreed: true })).toBe(true)
+    })
+
+    it('notEquals returns true when a non-numeric string differs from a numeric value', () => {
+      const conds: FieldConditions = {
+        conditions: [{ field: 'code', operator: 'notEquals', value: 5 }],
+        logic: 'and',
+      }
+      expect(shouldSendNotification(conds, { code: 'abc' })).toBe(true)
+    })
+  })
 })

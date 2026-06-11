@@ -40,7 +40,7 @@ export function getDefaultValues(pages?: FormPage[]): FormValues {
               } else if (subField.type === 'toggle' || subField.type === 'consent') {
                 groupValue[subField.name] = (subField.defaultValue as boolean) ?? false
               } else if ('defaultValue' in subField && subField.defaultValue !== undefined) {
-                groupValue[subField.name] = subField.defaultValue as string | number
+                groupValue[subField.name] = subField.defaultValue
               } else {
                 groupValue[subField.name] = ''
               }
@@ -68,7 +68,7 @@ export function getDefaultValues(pages?: FormPage[]): FormValues {
                 subField.defaultValue !== undefined &&
                 subField.defaultValue !== ''
               ) {
-                itemDefaults[subField.name] = subField.defaultValue as string | number
+                itemDefaults[subField.name] = subField.defaultValue
                 hasDefaults = true
               } else {
                 itemDefaults[subField.name] = ''
