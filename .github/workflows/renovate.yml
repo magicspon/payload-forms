@@ -38,7 +38,10 @@ jobs:
         if: ${{ inputs.dryRun }}
         run: echo 'RENOVATE_DRY_RUN=full' >> "$GITHUB_ENV"
 
-      - uses: renovatebot/github-action@v46
+      # This action publishes only full semver tags — there is no floating `v46`,
+      # so the patch version must be pinned. Renovate keeps it current via the
+      # github-actions group in renovate.json.
+      - uses: renovatebot/github-action@v46.2.1
         with:
           token: ${{ secrets.RENOVATE_TOKEN }}
         env:
