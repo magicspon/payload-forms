@@ -1,0 +1,96 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended", "helpers:disableTypesNodeMajor"],
+  "ignorePresets": ["group:monorepos"],
+  "timezone": "Europe/London",
+  "rebaseWhen": "conflicted",
+  "prConcurrentLimit": 4,
+  "prHourlyLimit": 0,
+  "minimumReleaseAge": "3 days",
+  "internalChecksFilter": "strict",
+  "automerge": false,
+  "lockFileMaintenance": {
+    "enabled": true,
+    "commitMessageAction": "Refresh"
+  },
+  "vulnerabilityAlerts": {
+    "enabled": true,
+    "minimumReleaseAge": null,
+    "dependencyDashboardApproval": false,
+    "labels": ["security"]
+  },
+  "packageRules": [
+    {
+      "description": "Peer ranges are the published compatibility contract — raised by hand only",
+      "matchDepTypes": ["peerDependencies"],
+      "enabled": false
+    },
+    {
+      "description": "Majors are listed on the dashboard and only branched when ticked",
+      "matchUpdateTypes": ["major"],
+      "dependencyDashboardApproval": true
+    },
+    {
+      "description": "Payload releases these from one monorepo — mixing versions breaks at runtime",
+      "groupName": "payload monorepo",
+      "matchPackageNames": ["payload", "@payloadcms/**", "!@payloadcms/eslint-config"]
+    },
+    {
+      "groupName": "react",
+      "matchPackageNames": ["react", "react-dom", "@types/react", "@types/react-dom"]
+    },
+    {
+      "groupName": "next",
+      "matchPackageNames": ["next"]
+    },
+    {
+      "groupName": "tailwindcss",
+      "matchPackageNames": ["tailwindcss", "@tailwindcss/**"]
+    },
+    {
+      "description": "vitest and its coverage provider must share a version",
+      "groupName": "vitest",
+      "matchPackageNames": ["vitest", "@vitest/**"]
+    },
+    {
+      "groupName": "tanstack",
+      "matchPackageNames": ["@tanstack/**"]
+    },
+    {
+      "groupName": "pragmatic-drag-and-drop",
+      "matchPackageNames": [
+        "@atlaskit/pragmatic-drag-and-drop",
+        "@atlaskit/pragmatic-drag-and-drop-hitbox"
+      ]
+    },
+    {
+      "description": "@payloadcms/eslint-config tracks its own cadence, not the payload monorepo",
+      "groupName": "linters",
+      "matchPackageNames": [
+        "eslint",
+        "eslint-*",
+        "@eslint/**",
+        "prettier",
+        "@payloadcms/eslint-config"
+      ]
+    },
+    {
+      "groupName": "github-actions",
+      "matchManagers": ["github-actions"]
+    },
+    {
+      "description": "engines.node is a consumer-facing floor; the CI runner tracks it by hand",
+      "matchDepNames": ["node"],
+      "enabled": false
+    },
+    {
+      "description": "Runtime deps ship to consumers, so they need a changeset to reach npm",
+      "matchDepTypes": ["dependencies"],
+      "postUpgradeTasks": {
+        "commands": ["node scripts/renovate-changeset.mjs {{{depName}}} {{{newValue}}}"],
+        "fileFilters": [".changeset/*.md"],
+        "executionMode": "update"
+      }
+    }
+  ]
+}

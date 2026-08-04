@@ -1,0 +1,51 @@
+name: Renovate
+
+on:
+  schedule:
+    # Mondays 06:00 UTC. This cron is the real cadence gate — renovate.json
+    # deliberately sets no internal `schedule`, so everything (including
+    # lockFileMaintenance) runs whenever this workflow runs.
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: Log level
+        type: choice
+        default: info
+        options:
+          - info
+          - debug
+      dryRun:
+        description: Dry run — resolve updates and log them, but create no branches or PRs
+        type: boolean
+        default: false
+
+concurrency:
+  group: renovate
+  cancel-in-progress: false
+
+permissions: {}
+
+jobs:
+  renovate:
+    name: Renovate
+    runs-on: ubuntu-latest
+
+    steps:
+      # Set conditionally rather than inline: RENOVATE_DRY_RUN only accepts
+      # extract/lookup/full, so it must be absent rather than empty when off.
+      - name: Enable dry run
+        if: ${{ inputs.dryRun }}
+        run: echo 'RENOVATE_DRY_RUN=full' >> "$GITHUB_ENV"
+
+      - uses: renovatebot/github-action@v46
+        with:
+          token: ${{ secrets.RENOVATE_TOKEN }}
+        env:
+          RENOVATE_REPOSITORIES: magicspon/payload-forms
+          LOG_LEVEL: ${{ inputs.logLevel || 'info' }}
+          # Self-hosted-only settings: postUpgradeTasks commands must be
+          # allowlisted here, and templating must be opted into, before the
+          # changeset generator in renovate.json is permitted to run.
+          RENOVATE_ALLOWED_COMMANDS: '["^node scripts/renovate-changeset\\.mjs .+$"]'
+          RENOVATE_ALLOW_POST_UPGRADE_COMMAND_TEMPLATING: 'true'
