@@ -72,7 +72,7 @@
     "@payloadcms/next": "3.84.1",
     "@payloadcms/richtext-lexical": "3.84.1",
     "@payloadcms/ui": "3.84.1",
-    "@playwright/test": "1.58.2",
+    "@playwright/test": "1.62.1",
     "@tailwindcss/postcss": "^4.3.3",
     "@tanstack/react-form": "^1.33.3",
     "@tanstack/store": "^0.11.0",
